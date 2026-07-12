@@ -1,0 +1,42 @@
+[
+    {
+        "id": 1,
+        "name": "Pompeii Faux Leather Dark Queen Bed",
+        "price": 57090,
+        "originalPrice": 60000,
+        "rating": 5,
+        "reviews": 88,
+        "image": "https://i.postimg.cc/mgXG3Xh9/543b317f42e2db700b4ca68b9c65f16e044b6cec.png",
+        "discount": "40%"
+    },
+    {
+        "id": 2,
+        "name": "Rosewall Ebony Tripple Sofa",
+        "price": 54590,
+        "originalPrice": 70000,
+        "rating": 5,
+        "reviews": 88,
+        "image": "https://i.postimg.cc/mgXG3Xh9/543b317f42e2db700b4ca68b9c65f16e044b6cec.png",
+        "discount": "40%"
+    },
+    {
+        "id": 3,
+        "name": "Riehen Visitor Chair",
+        "price": 16690,
+        "originalPrice": 20000,
+        "rating": 5,
+        "reviews": 88,
+        "image": "https://i.postimg.cc/mgXG3Xh9/543b317f42e2db700b4ca68b9c65f16e044b6cec.png",
+        "discount": "40%"
+    },
+    {
+        "id": 4,
+        "name": "Akari Oval Table Lamp",
+        "price": 4090,
+        "originalPrice": 5000,
+        "rating": 5,
+        "reviews": 88,
+        "image": "https://i.postimg.cc/mgXG3Xh9/543b317f42e2db700b4ca68b9c65f16e044b6cec.png",
+        "discount": "40%"
+    }
+]

@@ -1,0 +1,106 @@
+[
+    {
+        "_id": "p001",
+        "productName": "Premium Laptop",
+        "image": "https://i.postimg.cc/W4yNdDWq/500c1db4866e59d380e00df88c5756c3bc6dbffa.jpg",
+        "productCategory": "Electronics",
+        "bundleType": "Starter Pack",
+        "price": 1200,
+        "bundle": [
+            {
+                "_id": "b001",
+                "productName": "Laptop Bag",
+                "image": "https://i.postimg.cc/G2mZGGwX/018b04175e61d65e44a45d5c9ae3796bbe7348d3.jpg",
+                "productCategory": "Accessories",
+                "price": 1050
+            },
+            {
+                "_id": "b002",
+                "productName": "Wireless Mouse",
+                "image": "https://i.postimg.cc/B6hfVNBW/c7653b7c8ccab26a160aa0eea83da9221be6f705.jpg",
+                "productCategory": "Accessories",
+                "price": 525
+            }
+        ]
+    },
+    {
+        "_id": "p002",
+        "productName": "Smartphone",
+        "image": "https://i.postimg.cc/W4yNdDWq/500c1db4866e59d380e00df88c5756c3bc6dbffa.jpg",
+        "productCategory": "Electronics",
+        "bundleType": "Full Pack",
+        "price": 800,
+        "bundle": [
+            {
+                "_id": "b003",
+                "productName": "Screen Protector",
+                "image": "https://i.postimg.cc/B6hfVNBW/c7653b7c8ccab26a160aa0eea83da9221be6f705.jpg ",
+                "productCategory": "Accessories",
+                "price": 10
+            },
+            {
+                "_id": "b004",
+                "productName": "Phone Case",
+                "image": "https://i.postimg.cc/W4yNdDWq/500c1db4866e59d380e00df88c5756c3bc6dbffa.jpg",
+                "productCategory": "Accessories",
+                "price": 15
+            },
+            {
+                "_id": "b005",
+                "productName": "Wireless Earbuds",
+                "image": "https://i.postimg.cc/W4yNdDWq/500c1db4866e59d380e00df88c5756c3bc6dbffa.jpg",
+                "productCategory": "Electronics",
+                "price": 100
+            }
+        ]
+    },
+    {
+        "_id": "p003",
+        "productName": "Gaming Console",
+        "image": "https://i.postimg.cc/W4yNdDWq/500c1db4866e59d380e00df88c5756c3bc6dbffa.jpg",
+        "productCategory": "Electronics",
+        "bundleType": "Entertainment Pack",
+        "price": 500,
+        "bundle": [
+            {
+                "_id": "b006",
+                "productName": "Extra Controller",
+                "image": "https://i.postimg.cc/W4yNdDWq/500c1db4866e59d380e00df88c5756c3bc6dbffa.jpg",
+                "productCategory": "Accessories",
+                "price": 60
+            },
+            {
+                "_id": "b007",
+                "productName": "Game Pass 3 Months",
+                "image": "https://i.postimg.cc/W4yNdDWq/500c1db4866e59d380e00df88c5756c3bc6dbffa.jpg",
+                "productCategory": "Digital",
+                "price": 30
+            }
+        ]
+    },
+    {
+        "_id": "p004",
+        "productName": "Smart TV",
+        "image": "https://i.postimg.cc/W4yNdDWq/500c1db4866e59d380e00df88c5756c3bc6dbffa.jpg",
+        "productCategory": "Electronics",
+        "bundleType": "Home Pack",
+        "price": 1000,
+        "bundle": [
+            {
+                "_id": "b008",
+                "productName": "Wall Mount Kit",
+                "image": "https://i.postimg.cc/W4yNdDWq/500c1db4866e59d380e00df88c5756c3bc6dbffa.jpg",
+                "productCategory": "Accessories",
+                "price": 40
+            },
+            {
+                "_id": "b009",
+                "productName": "Streaming Stick",
+                "image": "https://i.postimg.cc/W4yNdDWq/500c1db4866e59d380e00df88c5756c3bc6dbffa.jpg",
+                "productCategory": "Electronics",
+                "price": 50
+            }
+        ]
+    }
+   
+] 

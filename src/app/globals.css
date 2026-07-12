@@ -1,0 +1,118 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #ffffff;
+  /* --primary: #FF3B87;
+  --primary-hover: #b40565;
+  --secound: #d60ddd;
+  --secound-hover: rgb(131, 3, 71); */
+  --primary:  #000000 ;
+  --primary-hover: #10080c;
+  --secound: #000000;
+  --secound-hover: rgb(11, 1, 6);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-geist: var(--font-geist);
+  --font-instrument_serif: var(--font-instrument_Serif);
+  --font-poppins: var(--font-poppins);
+  --hasib_dev: var(--hasib_dev);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-secound: var(--secound);
+  --color-secound-hover: var(--secound-hover);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #ffffff;
+    --foreground: #ededed;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: 'Geist', 'Playfair_Display', 'Instrument_Serif', 'Poppins', sans-serif;
+}
+
+.font-geist {
+  font-family: var(--font-geist);
+}
+
+.font-instrument_serif {
+  font-family: var(--font-instrument_Serif);
+}
+
+.font-poppins {
+  font-family: var(--font-poppins);
+}
+
+.hasib_dev {
+  font-family: var(--hasib_dev);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-geist), sans-serif;
+}
+
+/* Smooth mega menu animation */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mega-menu-animate {
+  animation: fadeInDown 0.3s ease-out;
+}
+
+/* Better scrollbar */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #000000 #f1f1f1;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: #040002;
+  border-radius: 4px;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: #040002;
+}
+
+
+
+
+
+/* Selection color */
+::selection {
+  background: var(--color-primary);
+  color: white;
+}
+
+::-moz-selection {
+  background: var(--color-primary);
+  color: white;
+}

@@ -1,0 +1,200 @@
+[
+    {
+        "_id": "1",
+        "title": "How to Improve Your React Performance",
+        "date": "2025-08-15",
+        "authorImg": "https://randomuser.me/api/portraits/men/32.jpg",
+        "authorName": "John Doe",
+        "authorRole": "Frontend Developer",
+        "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
+        "describe": "React is powerful, but performance can suffer without optimization. In this article, we’ll explore proven techniques like memoization, lazy loading, and code-splitting to keep your apps fast and responsive.",
+        "description": [
+            "React applications can become slow as they grow in complexity. The key to maintaining high performance lies in minimizing re-renders and reducing bundle size.",
+            "By applying modern optimization strategies, you can ensure smooth user experiences even in large-scale applications."
+        ],
+        "sections": [
+            {
+                "heading": "1. Use React.memo() for Component Memoization",
+                "describe": "Prevent unnecessary re-renders by memoizing functional components.",
+                "content": [
+                    "When a parent component re-renders, all its children re-render by default — even if their props haven’t changed. Wrapping components with `React.memo()` allows React to skip re-rendering if the props are unchanged.",
+                    "This is especially useful for list items, UI components, and pure presentational elements."
+                ],
+                "image": "https://images.unsplash.com/photo-1633918409336-7aa829769d5f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                "heading": "2. Lazy Loading with React.lazy() and Suspense",
+                "describe": "Load components only when needed to reduce initial load time.",
+                "content": [
+                    "Split your app into smaller chunks using `React.lazy()`. This enables dynamic imports so that components like modals or dashboards are loaded only when accessed.",
+                    "Wrap lazy components in `Suspense` to show a fallback (like a spinner) while loading."
+                ]
+            },
+            {
+                "heading": "3. Code-Splitting with React Router",
+                "describe": "Improve performance by splitting code at route level.",
+                "content": [
+                    "Using `React.lazy()` with `React Router`, you can load each route’s component on demand. This significantly reduces the initial JavaScript payload.",
+                    "For example, your admin panel won’t be loaded until the user navigates to `/admin`."
+                ],
+                "image": "https://images.unsplash.com/photo-1555066931-4365d14bab8c?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                "heading": "4. Use the Profiler and DevTools",
+                "describe": "Identify bottlenecks with built-in React tools.",
+                "content": [
+                    "React DevTools includes a Profiler tab that helps identify slow components. Use it to analyze render times and optimize critical paths.",
+                    "Combined with browser performance tabs, you can get a full picture of what’s slowing down your app."
+                ]
+            }
+        ]
+    },
+    {
+        "_id": "2",
+        "title": "Mastering MongoDB Aggregation Pipeline",
+        "date": "2025-08-10",
+        "authorImg": "https://randomuser.me/api/portraits/women/44.jpg",
+        "authorName": "Jane Smith",
+        "authorRole": "Backend Engineer",
+        "image": "https://images.unsplash.com/photo-1517433456452-f9633a875f6f",
+        "describe": "MongoDB’s aggregation pipeline is one of the most powerful tools for transforming and analyzing data directly in the database. Let’s dive deep into its stages and real-world use cases.",
+        "description": [
+            "Unlike simple queries, the aggregation framework allows you to process data records and return computed results. It works like a data processing pipeline, where documents pass through multiple stages.",
+            "Each stage transforms the data, filtering, grouping, or computing values before passing it to the next."
+        ],
+        "sections": [
+            {
+                "heading": "$match – Filter Documents Early",
+                "describe": "Reduce data early in the pipeline to improve performance.",
+                "content": [
+                    "Use `$match` at the beginning of your pipeline to filter out irrelevant documents. This reduces memory usage and speeds up processing.",
+                    "It’s equivalent to a `WHERE` clause in SQL and benefits from indexes if used early."
+                ]
+            },
+            {
+                "heading": "$group – Aggregate Data Like SQL GROUP BY",
+                "describe": "Group documents by a field and compute sums, averages, counts, etc.",
+                "content": [
+                    "The `$group` stage lets you aggregate values using operators like `$sum`, `$avg`, `$first`, and `$push`.",
+                    "For example, calculate total sales per category or find the latest post for each user."
+                ],
+                "image": "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                "heading": "$lookup – Perform Joins Between Collections",
+                "describe": "Join data from multiple collections (similar to SQL JOIN).",
+                "content": [
+                    "`$lookup` lets you pull data from another collection based on a field match. For example, join orders with user data to get customer names.",
+                    "This is essential for denormalized data models and reporting."
+                ]
+            },
+            {
+                "heading": "Real-World Example: Sales Dashboard",
+                "describe": "Build a report showing monthly revenue by product category.",
+                "content": [
+                    "Start with `$match` to filter orders from the last year.",
+                    "Use `$addFields` to extract month and year from date.",
+                    "Then `$group` by category and month, summing the total amount.",
+                    "Finally, sort and limit results for dashboard display."
+                ],
+                "image": "https://images.unsplash.com/photo-1460925895917-afdab827c52f?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            }
+        ]
+    },
+    {
+        "_id": "3",
+        "title": "Next.js 15 New Features You Should Know",
+        "date": "2025-08-20",
+        "authorImg": "https://randomuser.me/api/portraits/men/65.jpg",
+        "authorName": "Michael Johnson",
+        "authorRole": "Full Stack Developer",
+        "image": "https://images.unsplash.com/photo-1522202176988-66273c2fd55f",
+        "describe": "Next.js 15 brings game-changing updates including React Server Actions, enhanced caching, and a refined App Router. Let’s explore what’s new and how to use it.",
+        "description": [
+            "Next.js continues to lead the full-stack React ecosystem. With version 15, the focus is on simplifying data mutations, improving performance, and giving developers more control over rendering and caching."
+        ],
+        "sections": [
+            {
+                "heading": "React Server Actions (Stable)",
+                "describe": "Run server-side logic directly from client components.",
+                "content": [
+                    "No more API routes for simple mutations! With React Server Actions, you can call server functions directly from 'use server' in your components.",
+                    "Perfect for forms, file uploads, or database updates — all with automatic hydration and error handling."
+                ]
+            },
+            {
+                "heading": "Enhanced Full-Route Caching",
+                "describe": "Better control over static and dynamic rendering.",
+                "content": [
+                    "Next.js 15 improves how static pages are cached and revalidated. You can now selectively opt out of caching per route using `dynamic = 'force-dynamic'`.",
+                    "Streaming and Suspense work better with layout-level caching, improving perceived performance."
+                ],
+                "image": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                "heading": "Improved App Router & Layouts",
+                "describe": "More flexible routing and nested layout behavior.",
+                "content": [
+                    "The App Router now supports parallel routes and conditional rendering more intuitively.",
+                    "You can also define error, loading, and skeleton UIs at any level of your app structure."
+                ]
+            },
+            {
+                "heading": "Turbopack Improvements (Beta)",
+                "describe": "Faster dev server and HMR for large apps.",
+                "content": [
+                    "Although still in beta, Turbopack is now more stable and handles complex dependencies better.",
+                    "Dev startup and hot module replacement (HMR) are significantly faster than Webpack, especially for large codebases."
+                ]
+            }
+        ]
+    },
+    {
+        "_id": "554545",
+        "title": "Next.js 15 New Features You Should Know",
+        "date": "2025-08-20",
+        "authorImg": "https://randomuser.me/api/portraits/men/65.jpg",
+        "authorName": "Michael Johnson",
+        "authorRole": "Full Stack Developer",
+        "image": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
+        "describe": "Next.js 15 brings game-changing updates including React Server Actions, enhanced caching, and a refined App Router. Let’s explore what’s new and how to use it.",
+        "description": [
+            "Next.js continues to lead the full-stack React ecosystem. With version 15, the focus is on simplifying data mutations, improving performance, and giving developers more control over rendering and caching."
+        ],
+        "sections": [
+            {
+                "heading": "React Server Actions (Stable)",
+                "describe": "Run server-side logic directly from client components.",
+                "content": [
+                    "No more API routes for simple mutations! With React Server Actions, you can call server functions directly from 'use server' in your components.",
+                    "Perfect for forms, file uploads, or database updates — all with automatic hydration and error handling."
+                ]
+            },
+            {
+                "heading": "Enhanced Full-Route Caching",
+                "describe": "Better control over static and dynamic rendering.",
+                "content": [
+                    "Next.js 15 improves how static pages are cached and revalidated. You can now selectively opt out of caching per route using `dynamic = 'force-dynamic'`.",
+                    "Streaming and Suspense work better with layout-level caching, improving perceived performance."
+                ],
+                "image": "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                "heading": "Improved App Router & Layouts",
+                "describe": "More flexible routing and nested layout behavior.",
+                "content": [
+                    "The App Router now supports parallel routes and conditional rendering more intuitively.",
+                    "You can also define error, loading, and skeleton UIs at any level of your app structure."
+                ]
+            },
+            {
+                "heading": "Turbopack Improvements (Beta)",
+                "describe": "Faster dev server and HMR for large apps.",
+                "content": [
+                    "Although still in beta, Turbopack is now more stable and handles complex dependencies better.",
+                    "Dev startup and hot module replacement (HMR) are significantly faster than Webpack, especially for large codebases."
+                ]
+            }
+        ]
+    }
+]
