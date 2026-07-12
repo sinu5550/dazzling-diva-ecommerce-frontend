@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function TrackIcon({ className = '', ...props }: React.SVGProps<SVGSVGElement>) {
+export default function TrackIcon({ className = '', ...props }) {
     return (
         <svg className={className} {...props} width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M9 11.25C10.2427 11.25 11.25 10.2427 11.25 9C11.25 7.75732 10.2427 6.75 9 6.75C7.75732 6.75 6.75 7.75732 6.75 9C6.75 10.2427 7.75732 11.25 9 11.25Z" fill="currentColor"/>

@@ -1,6 +1,6 @@
 import React from 'react';
 
-export default function ProfileIcon({ className = '', ...props }: React.SVGProps<SVGSVGElement>) {
+export default function ProfileIcon({ className = '', ...props }) {
   return (
     <svg
       width="18"
