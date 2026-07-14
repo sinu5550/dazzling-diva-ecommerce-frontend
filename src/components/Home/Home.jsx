@@ -108,7 +108,7 @@ const Home = async () => {
     <div className="space-y-10 bg-white text-gray-800">
       <HeroSlider heroSliderData={heroSliderData} />
       <ShopCategory data={allCategories} />
-      <MidBannerOne midBannerData={midBannerData} />
+      {/* <MidBannerOne midBannerData={midBannerData} /> */}
       <DiscountProducts productData={allProductsFromCampaigns} />
       <NewArrivalProducts newProductData={newProductData} />
       <Promotional promoData={promoData} />

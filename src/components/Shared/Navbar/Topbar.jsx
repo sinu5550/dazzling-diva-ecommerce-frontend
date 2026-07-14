@@ -1,15 +1,9 @@
 'use client';
 
 import Link from "next/link";
-import { User, Heart, ShoppingCart, Menu, X, Search, MapPin, Truck } from 'lucide-react';
-import Container from "@/components/Container/Container";
-// import logo from '../../../../public/assects/Logo.png';
-// import Image from "next/image";
-
+import { Heart, X } from 'lucide-react';
+import { Logo, MenuIcon, StoreIcon, TrackIcon, CartIcon, ProfileIcon } from "@/components/svg";
 import { useHeaderCounts } from "@/hooks/useHeaderCounts";
-import SearchComponent from "@/components/Search/SearchComponent";
-
-
 
 const Topbar = ({
     contactData,
@@ -17,112 +11,102 @@ const Topbar = ({
     isMobileMenuOpen,
     user = null,
     onMobileSearchToggle,
-    mobileSearchOpen
+    mobileSearchOpen,
+    scrolled = false
 }) => {
     const { wishlistCount, cartCount } = useHeaderCounts(user);
-    const { phone_number } = contactData?.data || {};
-
-    const userActions = [
-        { href: "/track-order", icon: Truck, label: "Track", badge: null },
-        { href: "/find-store", icon: MapPin, label: "Store", badge: null },
-        { href: "/my-account", icon: User, label: "Account", badge: null },
-        { href: "/wishlist", icon: Heart, label: "Wishlist", badge: wishlistCount },
-        { href: "/cart", icon: ShoppingCart, label: "Cart", badge: cartCount },
-    ];
-
-    const formatPhoneNumber = (phone) => phone?.replace(/\s/g, '') || '';
 
     return (
-        <div className="bg-white text-gray-800 text-sm">
-            <Container>
-                {/* ─── Main Topbar Row ─── */}
-                <div className="flex items-center justify-between py-2">
-                    {/* Mobile: Hamburger */}
+        <div
+            className="bg-[#F8F8F8] text-gray-800 h-[88px] flex items-center border-b border-gray-200/40 w-full"
+            style={{ fontFamily: 'var(--font-outfit, Outfit, sans-serif)' }}
+        >
+            {/* 3-column CSS grid fills 100% width — guarantees logo is always centered */}
+            <div className="w-full px-[3%] grid grid-cols-3 items-center">
+
+                {/* COL 1 — LEFT: Hamburger */}
+                <div className="flex items-center justify-start">
                     <button
-                        className="lg:hidden w-9 h-9 flex items-center justify-center hover:bg-gray-100 transition-colors"
+                        className="w-10 h-10 flex items-center justify-center  !bg-transparent hover:bg-gray-200/50 active:scale-95 transition-all duration-200 cursor-pointer"
                         onClick={onMobileMenuToggle}
                         aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
                     >
                         {isMobileMenuOpen
-                            ? <X size={19} className="text-gray-700" />
-                            : <Menu size={19} className="text-gray-700" />
+                            ? <X size={20} className="text-gray-700" />
+                            : <MenuIcon className="w-8 h-4 text-gray-700" />
                         }
                     </button>
-
-                    {/* Logo */}
-                    <div className="flex-shrink-0 lg:w-[200px]">
-                        <Link href="/" aria-label="Home">
-                            {/* <Image
-                                src={logo}
-                                alt="Dazzling Diva"
-                                width={140}
-                                height={34}
-                                priority
-                                className="h-auto"
-                            /> */}
-
-                            <h2 className="text-2xl lg:text-3xl font-bold font-geist">Dazzling Diva</h2>
-                        </Link>
-                    </div>
-
-                    {/* Desktop Search — centred, flex-1 */}
-                    <div className="hidden lg:block flex-1 max-w-xl mx-10">
-                        <SearchComponent />
-                    </div>
-
-                    {/* Desktop: User Actions */}
-                    <div className="hidden lg:flex items-center gap-1 lg:w-[200px] justify-end">
-                        {userActions.map((action) => (
-                            <Link
-                                key={action.label}
-                                href={action.href}
-                                className="relative flex flex-col items-center gap-0.5 px-3 py-1.5 group"
-                                aria-label={action.label}
-                            >
-                                <div className="relative">
-                                    <action.icon
-                                        size={19}
-                                        className="text-gray-600 group-hover:text-primary transition-colors duration-200"
-                                        strokeWidth={1.6}
-                                    />
-                                    {action.badge > 0 && (
-                                        <span className="absolute -top-1.5 -right-1.5 bg-primary text-white text-[10px] font-black rounded-full h-4 w-4 flex items-center justify-center leading-none">
-                                            {action.badge > 99 ? '99+' : action.badge}
-                                        </span>
-                                    )}
-                                </div>
-                                <span className="text-xs font text-gray-800 group-hover:text-primary transition-colors">
-                                    {action.label}
-                                </span>
-                            </Link>
-                        ))}
-                    </div>
-
-                    {/* Mobile: Search + Cart */}
-                    <div className="lg:hidden flex items-center gap-1">
-                        <button
-                            className="w-9 h-9 flex items-center justify-center hover:bg-gray-100 transition-colors"
-                            onClick={onMobileSearchToggle}
-                            aria-label="Search"
-                        >
-                            <Search size={19} className="text-gray-700" />
-                        </button>
-
-                        <Link
-                            href="/cart"
-                            className="relative w-9 h-9 flex items-center justify-center hover:bg-gray-100 transition-colors"
-                            aria-label="Cart"
-                        >
-                            <ShoppingCart size={19} className="text-gray-700" strokeWidth={1.6} />
-                            {cartCount > 0 && (
-                                <span className="absolute top-1 right-1 bg-primary text-gray-600 text-[9px] font-black rounded-full h-4 w-4 flex items-center justify-center leading-none">
-                                    {cartCount > 99 ? '99+' : cartCount}
-                                </span>
-                            )}
-                        </Link>
-                    </div>
                 </div>
-            </Container>
+
+                {/* COL 2 — CENTER: Logo */}
+                <div className="flex items-center justify-center">
+                    <Link href="/" aria-label="Home" className="block hover:opacity-90 transition-opacity">
+                        <Logo className="h-8 w-auto" />
+                    </Link>
+                </div>
+
+                {/* COL 3 — RIGHT: Store, Track Order, Icon Buttons */}
+                <div className="flex items-center justify-end gap-3">
+
+                    {/* Store — desktop only */}
+                    <Link
+                        href="/find-store"
+                        className="hidden lg:flex items-center gap-1.5 text-[16px] font-medium text-black hover:text-[#5A0C3D] transition-colors duration-200 whitespace-nowrap"
+                        aria-label="Store"
+                    >
+                        <StoreIcon className="w-[18px] h-[18px]" />
+                        <span>Store</span>
+                    </Link>
+
+                    {/* Track Order — desktop only */}
+                    <Link
+                        href="/track-order"
+                        className="hidden lg:flex items-center gap-1.5 text-[16px] font-medium text-black hover:text-[#5A0C3D] transition-colors duration-200 whitespace-nowrap"
+                        aria-label="Track Order"
+                    >
+                        <TrackIcon className="w-[18px] h-[18px]" />
+                        <span>Track Order</span>
+                    </Link>
+
+                    {/* Wishlist — desktop only */}
+                    <Link
+                        href="/wishlist"
+                        className="hidden lg:flex items-center justify-center relative w-10 h-10 rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] group/wishlist  active:scale-95 transition-all duration-200"
+                        aria-label="Wishlist"
+                    >
+                        <Heart className="w-[18px] h-[18px] text-black group-hover/wishlist:text-white" />
+                        {wishlistCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-[#5A0C3D] text-white text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center leading-none">
+                                {wishlistCount > 99 ? '99+' : wishlistCount}
+                            </span>
+                        )}
+                    </Link>
+
+                    {/* Cart */}
+                    <Link
+                        href="/cart"
+                        className="relative w-10 h-10 flex items-center justify-center rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] group/cart active:scale-95 transition-all duration-200"
+                        aria-label="Cart"
+                    >
+                        <CartIcon className="w-[18px] h-[18px] text-black group-hover/cart:text-white" />
+                        {cartCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-[#5A0C3D] text-white text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center leading-none">
+                                {cartCount > 99 ? '99+' : cartCount}
+                            </span>
+                        )}
+                    </Link>
+
+                    {/* Profile */}
+                    <Link
+                        href="/my-account"
+                        className="w-10 h-10 flex items-center justify-center rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] group/profile active:scale-95 transition-all duration-200"
+                        aria-label="Account"
+                    >
+                        <ProfileIcon className="w-[18px] h-[18px] text-black group-hover/profile:text-white" />
+                    </Link>
+
+                </div>
+            </div>
         </div>
     );
 };

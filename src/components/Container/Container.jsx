@@ -2,7 +2,7 @@
 
 const Container = ({ children, className = '' }) => {
     return (
-        <div className={`mx-[1%] ${className}`}>
+        <div className={`mx-[3%] ${className}`}>
             {children}
         </div>
     );
