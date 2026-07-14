@@ -115,29 +115,51 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
           exit="exit"
           className="absolute inset-0 w-full h-full"
         >
-          {/* Background Image */}
-          <Image
-            src={slide.image}
-            alt={slide.title}
-            fill
-            priority
-            sizes="100vw"
-            className="object-cover object-center"
-            loading="eager"
-          />
+          {slide.link ? (
+            <Link
+              href={slide.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="absolute inset-0 block w-full h-full cursor-pointer z-10"
+            >
+              {/* Background Image */}
+              <Image
+                src={slide.image}
+                alt={slide.title || "Hero banner"}
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover object-center"
+                loading="eager"
+              />
+            </Link>
+          ) : (
+            <div className="absolute inset-0 block w-full h-full">
+              {/* Background Image */}
+              <Image
+                src={slide.image}
+                alt={slide.title || "Hero banner"}
+                fill
+                priority
+                sizes="100vw"
+                className="object-cover object-center"
+                loading="eager"
+              />
+            </div>
+          )}
 
-          {/* Layered Overlay - Gradient using Tailwind */}
-          <motion.div
+          {/* Layered Overlay - Gradient removed/commented out to show pure image */}
+          {/* <motion.div
             variants={overlayVariants}
             initial="hidden"
             animate="visible"
             className="absolute inset-0 bg-gradient-to-r from-black/50 via-black/20 to-transparent"
-          />
+          /> */}
         </motion.div>
       </AnimatePresence>
 
-      {/* ── Text Content ─────────────────────────────── */}
-      <div className="absolute inset-0 flex items-center">
+      {/* ── Text Content — Removed/Commented out to show pure image ─────────────────────────────── */}
+      {/* <div className="absolute inset-0 flex items-center">
         <Container>
           <div className="w-full mx-[10%]">
             <AnimatePresence mode="wait">
@@ -149,7 +171,6 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
                 exit={{ opacity: 0, y: -20, transition: { duration: 0.3 } }}
                 className="max-w-xl lg:max-w-2xl"
               >
-                {/* Sub-title */}
                 <motion.div variants={textItemVariants}>
                   <span className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold tracking-[0.18em] uppercase mb-4 text-stone-300">
                     <span className="inline-block w-6 h-[1.5px] bg-stone-300" />
@@ -157,7 +178,6 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
                   </span>
                 </motion.div>
 
-                {/* Main title */}
                 <motion.h1
                   variants={textItemVariants}
                   className="text-white font-semibold leading-[1.12] mb-5 md:mb-7  text-2xl md:text-4xl lg:text-5xl xl:text-6xl 2xl:text-6xl"
@@ -165,7 +185,6 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
                   {slide.title}
                 </motion.h1>
 
-                {/* CTA Button */}
                 <motion.div variants={textItemVariants}>
                   <Link
                     href={slide.link}>
@@ -177,7 +196,6 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
                         boxShadow: `0 4px 24px var(--primary)73`
                       }}
                     >
-                      {/* Shimmer on hover */}
                       <span className="absolute inset-0 -translate-x-full group-hover:translate-x-full transition-transform duration-700 bg-gradient-to-r from-transparent via-white/20 to-transparent" />
                       <span>Shop Now</span>
                       <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 group-hover:-translate-x-1" />
@@ -188,7 +206,7 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
             </AnimatePresence>
           </div>
         </Container>
-      </div>
+      </div> */}
 
       {/* ── Prev / Next Arrows ──────────────────────── */}
       {heroSliderData.length > 1 && (
@@ -206,7 +224,7 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
               className="w-4 h-4 sm:w-5 sm:h-5"
               fill="none"
               viewBox="0 0 24 24"
-              stroke="currentColor"
+              stroke="#5A0C3D"
               strokeWidth={2.2}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
@@ -226,7 +244,7 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
               className="w-4 h-4 sm:w-5 sm:h-5"
               fill="none"
               viewBox="0 0 24 24"
-              stroke="currentColor"
+              stroke="#5A0C3D"
               strokeWidth={2.2}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />

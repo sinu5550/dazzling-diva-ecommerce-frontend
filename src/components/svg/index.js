@@ -4,3 +4,6 @@ export { default as StoreIcon } from './store-icon';
 export { default as TrackIcon } from './track-icon';
 export { default as CartIcon } from './cart-icon';
 export { default as ProfileIcon } from './profile-icon';
+export { default as NewIcon } from './new-icon';
+export { default as OfferIcon } from './offer-icon';
+export { default as DropdownIcon } from './dropdown';

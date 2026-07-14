@@ -141,24 +141,10 @@ const SearchComponent = () => {
             <form onSubmit={handleSearchSubmit} className="relative">
                 <div
                     className={`
-                        relative flex items-center border transition-all duration-300
-                        ${isFocused
-                            ? 'border-primary bg-white shadow-[0_0_0_3px_rgba(5,131,127,0.08)]'
-                            : 'border-gray-200 bg-gray-50 hover:border-stone-300 hover:bg-white'}
+                        relative flex items-center bg-gray-50 border border-gray-200/80 rounded-full pr-1.5 pl-4 transition-all duration-300
+                        ${isFocused ? 'border-[#5A062F] bg-white ring-2 ring-[#5A062F]/10' : 'hover:border-gray-300'}
                     `}
-                    style={{ borderRadius: 0 }}
                 >
-                    {/* Left icon */}
-                    <div className="pl-4 pr-2 pointer-events-none flex-shrink-0">
-                        {isLoading
-                            ? <Loader2 size={17} className="animate-spin text-primary" />
-                            : <Search
-                                size={17}
-                                className={`transition-colors duration-200 ${isFocused || searchQuery ? 'text-primary' : 'text-gray-400'}`}
-                            />
-                        }
-                    </div>
-
                     {/* Input */}
                     <input
                         type="text"
@@ -172,9 +158,9 @@ const SearchComponent = () => {
                         onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit(e)}
                         className="
                             flex-1 py-2.5 pr-2 bg-transparent text-[13px] font-medium
-                            text-gray-900 placeholder-gray-400 focus:outline-none tracking-wide
+                            !text-black placeholder-gray-400 focus:outline-none tracking-wide
                         "
-                        placeholder="Search by products, categories..."
+                        placeholder="search..."
                         aria-label="Search products"
                         aria-autocomplete="list"
                         aria-expanded={showDropdown}
@@ -192,31 +178,25 @@ const SearchComponent = () => {
                         </button>
                     )}
 
-                    {/* Submit button */}
+                    {/* Submit icon button */}
                     <button
                         type="submit"
                         disabled={!searchQuery.trim()}
                         className={`
-                            flex-shrink-0 flex items-center gap-1.5
-                            px-5 py-2.5 text-[11px] font-black tracking-[0.12em] uppercase
-                            transition-all duration-500 cursor-pointer
+                            flex-shrink-0 flex items-center justify-center
+                            w-7 h-7 rounded-full transition-all duration-300 cursor-pointer
                             ${searchQuery.trim()
-                                ? 'bg-primary text-white hover:bg-secound'
-                                : 'bg-gray-100 text-gray-400 cursor-not-allowed'}
+                                ? '!bg-[#5A062F] !text-white hover:bg-[#4a0524] active:scale-95'
+                                : '!bg-[#5A062F] !text-white/80'}
                         `}
                     >
-                        Search
+                        {isLoading ? (
+                            <Loader2 size={13} className="animate-spin" />
+                        ) : (
+                            <Search size={13} />
+                        )}
                     </button>
                 </div>
-
-                {/* Focus accent line */}
-                <div
-                    className={`
-                        absolute bottom-0 left-0 h-[2px] bg-primary
-                        transition-all duration-400
-                        ${isFocused ? 'w-full opacity-100' : 'w-0 opacity-0'}
-                    `}
-                />
             </form>
 
             {/* ─── Dropdown ─── */}
@@ -225,7 +205,7 @@ const SearchComponent = () => {
                     className="
                         absolute z-50 w-full mt-1 bg-white
                         border border-gray-200 shadow-[0_8px_32px_-4px_rgba(0,0,0,0.14)]
-                        max-h-[480px] overflow-y-auto
+                        max-h-[480px] overflow-y-auto rounded-[8px]
                     "
                     role="listbox"
                 >

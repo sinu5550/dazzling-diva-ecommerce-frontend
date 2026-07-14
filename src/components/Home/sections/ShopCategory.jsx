@@ -7,6 +7,7 @@ import Image from "next/image";
 import CategorySkeletonLoading from "@/components/Skeleton/CategorySkeletonLoading";
 import { HiArrowLongLeft, HiArrowLongRight } from "react-icons/hi2";
 import { motion } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Category = ({ data }) => {
 
@@ -21,11 +22,7 @@ const Category = ({ data }) => {
     const handleResize = () => {
       let items = 2;
 
-      if (window.innerWidth >= 1536) {
-        items = 5;
-      } else if (window.innerWidth >= 1280) {
-        items = 5;
-      } else if (window.innerWidth >= 1024) {
+      if (window.innerWidth >= 1024) {
         items = 4;
       } else if (window.innerWidth >= 768) {
         items = 3;
@@ -48,7 +45,7 @@ const Category = ({ data }) => {
     return (
       <Container>
         <div className="py-16 bg-[#F7F7F7]">
-          <CategorySkeletonLoading itemsCount={5} />
+          <CategorySkeletonLoading itemsCount={4} />
         </div>
       </Container>
     );
@@ -67,29 +64,36 @@ const Category = ({ data }) => {
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : maxIndex));
   };
 
+  // Helper to generate Explore link text to match the design in the image
+  const getExploreText = (name) => {
+    if (name.toLowerCase().includes("wedding")) {
+      return "Explore All Wedding Collection";
+    }
+    return `Explore All ${name.replace(/Collections?/gi, "").trim()}`;
+  };
+
   return (
-    <section className="overflow-hidden">
+    <section className="overflow-hidden py-12">
       <Container>
         {/*Heading */}
-        <div className="flex flex-col items-center mb-8 space-y-2">
-          <motion.p
-            initial={{ opacity: 0, y: 10 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-xs uppercase tracking-[0.3em] text-gray-400 font-medium"
-          >
-             Discover Styles for Every Occasion
-          </motion.p>
-          <motion.h2
+        <div className="flex flex-col items-center mb-10 space-y-1">
+          <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-2xl lg:text-[42px] font-bold text-gray-800  text-center tracking-wide"
+            className="text-[18px] font-outfit font-normal text-black text-center tracking-wide"
           >
-            Shop by Category
+            Shop By Category
+          </motion.span>
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-[32px] md:text-[48px] uppercase text-black font-normal tracking-wide text-center"
+          >
+            Find your Perfect Style
           </motion.h2>
-          <div className="h-[1px] w-12 bg-stone-400 mt-2" />
         </div>
 
         {/* Slider Wrapper */}
@@ -110,7 +114,8 @@ const Category = ({ data }) => {
                 transition-all duration-300 cursor-pointer
               "
             >
-              <HiArrowLongLeft className="text-sm lg:text-base" />
+              <ChevronLeft className="text-sm lg:text-base text-[#5A0C3D]"/>
+              
             </button>
           )}
 
@@ -124,15 +129,13 @@ const Category = ({ data }) => {
                 w-10 h-10 lg:w-12 lg:h-12
                 rounded-full bg-white shadow-lg border border-gray-200
                 flex items-center justify-center
-
                 opacity-0 invisible
                 group-hover:opacity-100 group-hover:visible
-
                 hover:bg-primary text-stone-500 hover:text-white
                 transition-all duration-300 cursor-pointer
               "
             >
-              <HiArrowLongRight className="text-sm lg:text-base" />
+              <ChevronRight className="text-sm lg:text-base text-[#5A0C3D]"/>
             </button>
           )}
 
@@ -148,7 +151,7 @@ const Category = ({ data }) => {
               {data.map((category) => (
                 <div
                   key={category.id}
-                  className="flex-shrink-0 px-3"
+                  className="flex-shrink-0 px-2"
                   style={{ width: `${100 / itemsPerPage}%` }}
                 >
                   <Link
@@ -158,44 +161,37 @@ const Category = ({ data }) => {
                     className="group/card block"
                   >
                     {/* Card */}
-                    <div className="relative h-[280px] md:h-[360px] xl:h-[420px] overflow-hidden bg-gray-200">
+                    <div className="relative h-[340px] md:h-[420px] xl:h-[480px] rounded-[20px] overflow-hidden bg-gray-200">
                       {/* Image */}
                       <Image
                         src={category.image}
                         alt={category.name}
                         fill
                         priority
-                        sizes="100vw"
+                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 25vw"
                         className="
                           object-cover
                           transition-transform duration-700
-                          group-hover/card:scale-110
+                          group-hover/card:scale-105
                         "
                       />
 
-                      {/* Overlay */}
+                      {/* Gradient Overlay */}
                       <div
                         className="
-                          absolute inset-0 bg-black/10
-                          group-hover/card:bg-black/20
+                          absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent
                           transition-all duration-500
                         "
                       />
 
-                      {/* Bottom Category Box */}
-                      <div className="absolute bottom-7 left-1/2 -translate-x-1/2 w-[80%]">
-                        <div
-                          className="
-                            bg-white text-center py-4 px-4 shadow-lg
-                            group-hover/card:bg-primary
-                            transition-all duration-300
-                          "
-                        >
-                          <h3
-                            className=" text-sm md:text-lg font-semibold text-[#16313D] group-hover/card:text-white transition-colors duration-300">
-                            {category.name}
-                          </h3>
-                        </div>
+                      {/* Text details overlay at the bottom left */}
+                      <div className="absolute bottom-6 left-6 right-6 text-white flex flex-col items-start gap-2">
+                        <h3 className="text-lg md:text-[26px] font-outfit font-semibold text-white tracking-wide leading-tight">
+                          {category.name}
+                        </h3>
+                        <span className="text-[12px] md:text-[14px] font-outfit font-light tracking-wide flex items-center gap-1 opacity-90 group-hover/card:opacity-100 group-hover/card:translate-x-1 transition-all duration-300">
+                          {getExploreText(category.name)} &rarr;
+                        </span>
                       </div>
                     </div>
                   </Link>
