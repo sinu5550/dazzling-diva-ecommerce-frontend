@@ -32,6 +32,7 @@ const DiscountProductCard = ({
   onOpenQuickView,
 }) => {
   const [selectedVariant, setSelectedVariant] = useState(null);
+  const [isHovered, setIsHovered] = useState(false);
   const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist(user);
   const { addToCart, isInCart } = useCart(user);
 
@@ -46,7 +47,7 @@ const DiscountProductCard = ({
     }
   }, [product, isVariantProduct]);
 
-  // Get display image - prioritize variant image
+  // Get display image - prioritize variant image, then main image
   const getDisplayImage = () => {
     if (isVariantProduct && selectedVariant?.image) {
       return selectedVariant.image;
@@ -56,6 +57,22 @@ const DiscountProductCard = ({
       "https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png"
     );
   };
+
+  // Extract all unique images from main product and variants to find a hover/alternative image
+  const allUniqueImages = useMemo(() => {
+    const images = [];
+    if (product.images) {
+      product.images.forEach(img => {
+        if (img && !images.includes(img)) images.push(img);
+      });
+    }
+    if (product.productVariants) {
+      product.productVariants.forEach(v => {
+        if (v.image && !images.includes(v.image)) images.push(v.image);
+      });
+    }
+    return images;
+  }, [product]);
 
   // Get images array for cart/wishlist - include variant image
   const getImagesArray = () => {
@@ -74,6 +91,7 @@ const DiscountProductCard = ({
   };
 
   const displayImage = getDisplayImage();
+  const hoverImg = allUniqueImages.find(img => img !== displayImage) || allUniqueImages[1] || null;
   const imagesArray = getImagesArray();
 
   // Calculate campaign discount price for a given price
@@ -379,9 +397,13 @@ const DiscountProductCard = ({
       className="block group/card animate-fadeIn"
       prefetch={false}
     >
-      <div className="flex flex-col relative w-full">
+      <div 
+        className="flex flex-col relative w-full"
+        onMouseEnter={() => { setIsHovered(true); onMouseEnter && onMouseEnter(); }}
+        onMouseLeave={() => { setIsHovered(false); onMouseLeave && onMouseLeave(); }}
+      >
         {/* Image Container with rounded corners & border */}
-        <div className="relative w-full aspect-[3/5] rounded-[12px] md:rounded-[12px] overflow-hidden bg-gray-100 border border-gray-100">
+        <div className="relative w-full aspect-[2/3] rounded-[12px] md:rounded-[12px] overflow-hidden bg-gray-100 border border-gray-100">
           {/* Discount Badge */}
           {discountValue > 0 && (
             <div className="absolute top-0 left-0 z-20">
@@ -411,14 +433,25 @@ const DiscountProductCard = ({
 
           {/* Product Image */}
           <div className="w-full h-full relative">
+            {/* Default Display Image */}
             <Image
               src={displayImage}
               alt={product.productName}
               fill
               priority
               sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
-              className="object-cover transition-transform duration-700 group-hover/card:scale-105"
+              className={`object-cover transition-opacity duration-700 ${hoverImg && isHovered ? 'opacity-0' : 'opacity-100'}`}
             />
+            {/* Alternative/Variant Hover Image */}
+            {hoverImg && (
+              <Image
+                src={hoverImg}
+                alt={product.productName}
+                fill
+                sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                className={`object-cover absolute inset-0 transition-opacity duration-700 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+              />
+            )}
           </div>
 
           {/* Select Options Button (Bottom Center) */}
@@ -428,7 +461,7 @@ const DiscountProductCard = ({
               e.stopPropagation();
               onOpenQuickView && onOpenQuickView(product);
             }}
-            className="absolute bottom-3 left-3 right-3 z-20 py-2.5 bg-white text-center rounded-[8px] font-outfit text-xs md:text-sm font-regular !text-black shadow-sm hover:bg-gray-50 transition-colors duration-200 cursor-pointer"
+            className="absolute bottom-3 left-3 right-3 z-20 py-2.5 bg-white text-center rounded-[8px] font-outfit text-xs md:text-sm font-regular !text-black shadow-sm hover:!bg-[#5A0C3D] hover:!text-white transition-colors duration-200 cursor-pointer"
           >
             {isVariantProduct && product.productVariants?.length > 1
               ? "Select Options"

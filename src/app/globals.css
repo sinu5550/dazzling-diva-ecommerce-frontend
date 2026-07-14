@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #ffffff;
+  --foreground: #111111;
   --primary:  #5A062F ;
   --primary-hover: #450322;
   --secound: #5A062F;
@@ -31,9 +31,12 @@
   }
 }
 
-html, body, input, button, select, textarea, option {
+html, body {
   background: var(--background);
   color: var(--foreground);
+}
+
+html, body, input, button, select, textarea, option {
   font-family: var(--font-outfit), 'Outfit', sans-serif;
 }
 

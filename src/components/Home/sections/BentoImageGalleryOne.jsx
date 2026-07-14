@@ -1,10 +1,12 @@
 'use client';
 
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import Container from '@/components/Container/Container';
+import { motion } from 'framer-motion';
 
 const BentoImageGalleryOne = ({ bentoImageGalleryData }) => {
+    // Keep original data filtering
     const data =
         bentoImageGalleryData?.filter(
             item => item.category?.toLowerCase() === 'saree'
@@ -12,94 +14,103 @@ const BentoImageGalleryOne = ({ bentoImageGalleryData }) => {
 
     if (!data.length) return null;
 
-    const items = data.slice(0, 6);
+    // Slice up to 5 items: 1 big left + 4 smaller right
+    const items = data.slice(0, 5);
 
-    const Card = ({ item, height = "h-[290px]" }) => {
-        if (!item) return <div className={`${height}`}></div>;
-
-        return (
-            <div className={`relative overflow-hidden group ${height}`}>
-                <Image
-                    src={item.image}
-                    alt={item.title}
-                    fill
-                    className="object-cover transition duration-700 group-hover:scale-110"
-                />
-
-                <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
-
-                {/* Content - Enhanced with second component styling */}
-                <div className="absolute inset-0 flex flex-col justify-end items-center text-center p-6 pb-2 group-hover:pb-14 transition-all duration-500 ease-out">
-                    <h3 className="text-white text-2xl font-bold">
-                        {item.title}
-                    </h3>
-
-                    {item.sub_title && (
-                        <p className="mt-2 text-gray-200 opacity-0 group-hover:opacity-100 transition-all duration-500 delay-100 max-w-xs">
-                            {item.sub_title}
-                        </p>
-                    )}
-
-                    {item.link && item.link !== "" && (
-                        <div className="mt-4 flex flex-col items-center opacity-0 group-hover:opacity-100 transition-all duration-500 delay-150">
-                            <div className="w-10 h-[2px] bg-white mb-3"></div>
-                            <Link
-                                href={item.link}
-                                className="inline-block px-4 py-2 border border-white text-white text-xs font-bold tracking-wider hover:bg-white hover:text-black transition-colors"
-                            >
-                                View More
-                            </Link>
-                        </div>
-                    )}
-                </div>
-            </div>
-        );
-    };
+    // If we don't have enough items, adjust layout gracefully
+    const bigItem = items[0];
+    const smallItems = items.slice(1);
 
     return (
-        <section className="py-12">
-            <Container>
-                {/* Mobile */}
-                <div className="grid md:hidden gap-4">
-                    {items.map(item => (
-                        <Card
-                            key={item.id}
-                            item={item}
-                            height="h-[320px]"
+        <section className="w-full overflow-hidden bg-white py-2">
+            <div className="w-full grid grid-cols-1 md:grid-cols-4 gap-1.5">
+                
+                {/* Left Column: 1 Big Card (spans 2 columns on desktop) */}
+                {bigItem && (
+                    <motion.div 
+                        initial={{ opacity: 0, x: -20 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 0.6 }}
+                        className="relative w-full h-[400px] sm:h-[500px] md:h-[650px] lg:h-[750px] md:col-span-2 group overflow-hidden"
+                    >
+                        <Image
+                            src={bigItem.image}
+                            alt={bigItem.title || 'Bento Image'}
+                            fill
+                            priority
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                            className="object-cover object-center transition-transform duration-1000 group-hover:scale-103"
                         />
+                        
+                        {/* Dark Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
+
+                        {/* Content */}
+                        <div className="absolute bottom-8 left-8 right-8 md:bottom-12 md:left-12 md:right-12 z-10 flex flex-col items-start text-white">
+                            {bigItem.sub_title && (
+                                <span className="text-[11px] md:text-xs font-semibold tracking-[0.2em] font-outfit text-white/70 uppercase mb-2">
+                                    {bigItem.sub_title}
+                                </span>
+                            )}
+                            <h3 className="text-xl sm:text-2xl md:text-[34px] font-bold font-outfit text-white leading-tight mb-6 max-w-sm sm:max-w-md">
+                                {bigItem.title}
+                            </h3>
+                            {bigItem.link && (
+                                <Link 
+                                    href={bigItem.link}
+                                    className="bg-white hover:bg-[#5A0C3D] hover:text-white text-black font-outfit text-xs md:text-sm font-semibold px-6 py-2.5 md:px-8 md:py-3.5 rounded-full shadow-md transition-all duration-300 cursor-pointer select-none active:scale-95"
+                                >
+                                    Discover More
+                                </Link>
+                            )}
+                        </div>
+                    </motion.div>
+                )}
+
+                {/* Right Column: 2x2 Grid of Smaller Cards (spans 2 columns on desktop) */}
+                <div className="md:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-1.5 w-full">
+                    {smallItems.map((item, index) => (
+                        <motion.div 
+                            key={item.id || index}
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.6, delay: (index + 1) * 0.1 }}
+                            className="relative w-full h-[280px] sm:h-[240px] md:h-[321px] lg:h-[371px] group overflow-hidden"
+                        >
+                            <Image
+                                src={item.image}
+                                alt={item.title || 'Bento Image'}
+                                fill
+                                sizes="(max-width: 768px) 100vw, 25vw"
+                                className="object-cover object-center transition-transform duration-1000 group-hover:scale-103"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                            
+                            <div className="absolute bottom-6 left-6 right-6 z-10 flex flex-col items-start text-white">
+                                {item.sub_title && (
+                                    <span className="text-[10px] font-semibold tracking-[0.15em] font-outfit text-white/70 uppercase mb-1">
+                                        {item.sub_title}
+                                    </span>
+                                )}
+                                <h4 className="text-sm md:text-lg font-bold font-outfit text-white leading-snug mb-3 max-w-[200px] sm:max-w-xs line-clamp-2">
+                                    {item.title}
+                                </h4>
+                                {item.link && (
+                                    <Link 
+                                        href={item.link}
+                                        className="bg-white hover:bg-[#5A0C3D] hover:text-white text-black font-outfit text-[10px] md:text-xs font-semibold px-4 py-2 rounded-full shadow-sm transition-all duration-300 cursor-pointer select-none"
+                                    >
+                                        Discover More
+                                    </Link>
+                                )}
+                            </div>
+                        </motion.div>
                     ))}
                 </div>
 
-                {/* Desktop */}
-                <div className="hidden md:grid grid-cols-4 grid-rows-1 gap-4">
-
-                    {/* Left */}
-                    <div className="flex flex-col gap-4">
-                        <Card item={items[0]} />
-                        <Card item={items[4]} />
-                    </div>
-
-                    {/* Center Left */}
-                    <Card
-                        item={items[1]}
-                        height="h-[596px]"
-                    />
-
-                    {/* Center Right */}
-                    <Card
-                        item={items[2]}
-                        height="h-[596px]"
-                    />
-
-                    {/* Right */}
-                    <div className="flex flex-col gap-4">
-                        <Card item={items[3]} />
-                        <Card item={items[5]} />
-                    </div>
-
-                </div>
-
-            </Container>
+            </div>
         </section>
     );
 };
