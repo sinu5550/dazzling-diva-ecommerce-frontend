@@ -1,52 +1,34 @@
-// components/NewProductCard.jsx
 'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { FaRegHeart, FaHeart, FaBangladeshiTakaSign } from 'react-icons/fa6';
-import { PiShareFatLight } from 'react-icons/pi';
-import { ShoppingCart } from 'lucide-react';
+import Image from 'next/image';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useCart } from '@/hooks/useCart';
+import { CartIcon } from '@/components/svg';
 import toast from 'react-hot-toast';
 
 import {
-    extractVariantOptions,
     getDefaultVariant,
     calculateVariantPrice,
-    getVariantImage,
     formatPrice
 } from '@/lib/variantHelpers';
-import ProductImage from "../ui/ProductImage";
 
-export default function NewProductCard({ product, user = null }) {
+export default function NewProductCard({ product, user = null, onOpenQuickView }) {
     const [isHovered, setIsHovered] = useState(false);
     const [selectedVariant, setSelectedVariant] = useState(null);
-    const [isWishlistLoading, setIsWishlistLoading] = useState(false);
     const [isCartLoading, setIsCartLoading] = useState(false);
-    const [isNewProduct, setIsNewProduct] = useState(false);
 
-    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist(user);
-    const { addToCart, isInCart } = useCart(user);
+    const { addToCart } = useCart(user);
 
-    // Check if product is new (within 30 days)
-    useEffect(() => {
-        if (product.createdAt) {
-            const productDate = new Date(product.createdAt);
-            const thirtyDaysAgo = new Date();
-            thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-            setIsNewProduct(productDate >= thirtyDaysAgo);
-        }
-    }, [product.createdAt]);
+    const isVariantProduct = product.productType === 'variant';
 
     // Initialize variant selection
     useEffect(() => {
-        if (product.productType === 'variant') {
+        if (isVariantProduct) {
             setSelectedVariant(getDefaultVariant(product));
         }
-    }, [product]);
-
-    const isVariantProduct = product.productType === 'variant';
+    }, [product, isVariantProduct]);
 
     // Calculate prices
     const { original: originalPrice, discounted: discountedPrice } = useMemo(() => {
@@ -58,24 +40,39 @@ export default function NewProductCard({ product, user = null }) {
     // Get display image
     const displayImage = useMemo(() => {
         return isVariantProduct
-            ? getVariantImage(selectedVariant, product)
+            ? (selectedVariant?.image || product.images?.[0] || '')
             : (product.images?.[0] || '');
     }, [isVariantProduct, selectedVariant, product]);
+
+    // Extract all unique images from main product and variants to find a hover/alternative image
+    const allUniqueImages = useMemo(() => {
+        const images = [];
+        if (product.images) {
+            product.images.forEach(img => {
+                if (img && !images.includes(img)) images.push(img);
+            });
+        }
+        if (product.productVariants) {
+            product.productVariants.forEach(v => {
+                if (v.image && !images.includes(v.image)) images.push(v.image);
+            });
+        }
+        return images;
+    }, [product]);
+
+    const hoverImg = allUniqueImages.find(img => img !== displayImage) || allUniqueImages[1] || null;
 
     // Check availability
     const availableQuantity = isVariantProduct
         ? (selectedVariant?.quantity ?? 0)
         : product.quantity;
 
-    const isAvailable = availableQuantity > 0 && product.status;
+    const isAvailable = availableQuantity > 0 && (product.status === true || product.status === "true");
 
     // Get images for cart
     const cartImages = product.images?.length > 0
         ? product.images
         : [displayImage];
-
-    const isWishlisted = isInWishlist(product.id);
-    const inCart = isInCart(product.id, isVariantProduct ? selectedVariant?.id : null);
 
     // Get variant price range
     const variantPriceRange = useMemo(() => {
@@ -90,43 +87,6 @@ export default function NewProductCard({ product, user = null }) {
         }
         return `BDT ${formatPrice(minPrice)} - BDT ${formatPrice(maxPrice)}`;
     }, [isVariantProduct, product]);
-
-    // Wishlist handler
-    const toggleWishlist = async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        if (isWishlistLoading) return;
-
-        setIsWishlistLoading(true);
-        try {
-            if (isWishlisted) {
-                await removeFromWishlist(product.id);
-                toast.success('Removed from wishlist');
-            } else {
-                const wishlistProduct = {
-                    id: product.id,
-                    slug: product.slug,
-                    sku: isVariantProduct ? selectedVariant?.sku : product.sku,
-                    productName: product.productName,
-                    price: originalPrice,
-                    discountPrice: discountedPrice,
-                    quantity: availableQuantity,
-                    images: cartImages,
-                    status: product.status,
-                    ...(isVariantProduct && selectedVariant && {
-                        variantId: selectedVariant.id,
-                        variantAttributes: selectedVariant.attributes
-                    })
-                };
-                await addToWishlist(wishlistProduct);
-                toast.success('Added to wishlist');
-            }
-        } catch (error) {
-            toast.error('Something went wrong');
-        } finally {
-            setIsWishlistLoading(false);
-        }
-    };
 
     // Cart handler
     const handleAddToCart = async (e) => {
@@ -168,137 +128,62 @@ export default function NewProductCard({ product, user = null }) {
         }
     };
 
-    // Share handler
-    const handleShare = async (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-
-        const url = `${window.location.origin}/product/${product.slug}`;
-
-        if (navigator.share) {
-            try {
-                await navigator.share({
-                    title: product.productName,
-                    text: `Check out ${product.productName}`,
-                    url: url,
-                });
-            } catch (error) {
-                if (error.name !== 'AbortError') {
-                    await copyToClipboard(url);
-                }
-            }
-        } else {
-            await copyToClipboard(url);
-        }
-    };
-
-    const copyToClipboard = async (text) => {
-        try {
-            await navigator.clipboard.writeText(text);
-            toast.success('Link copied!');
-        } catch (error) {
-            toast.error('Failed to copy');
-        }
-    };
-
     return (
-        <Link href={`/product/${product.slug}`}>
+        <Link 
+            href={`/product/${product.slug}`}
+            className="block group/card"
+        >
             <div
-                className="group relative bg-white  transition-all duration-300 overflow-hidden"
+                className="relative w-full aspect-[2/3]  overflow-hidden bg-gray-100 border border-gray-100 shadow-sm"
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                {/* New Badge */}
-                {isNewProduct && (
-                    <div className="absolute top-3 left-3 z-20">
-                        <div className="bg-secound text-white text-xs font-bold px-2 py-1 ">
-                            NEW
-                        </div>
-                    </div>
-                )}
-
-                {/* Discount Badge */}
-                {product.discountValue > 0 && !isNewProduct && (
-                    <div className="absolute top-3 left-3 z-20">
-                        <div className="bg-secound text-white text-xs font-bold px-2 py-1 ">
-                            -{product.discountValue}%
-                        </div>
-                    </div>
-                )}
-
-                {/* Action Buttons */}
-                <div className="absolute top-3 right-3 z-20 flex flex-col gap-2">
-                    <button
-                        onClick={toggleWishlist}
-                        className="bg-white p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0"
-                        disabled={isWishlistLoading}
-                    >
-                        {isWishlistLoading ? (
-                            <div className="w-4 h-4 border-2 border-rose-500 border-t-transparent rounded-full animate-spin" />
-                        ) : isWishlisted ? (
-                            <FaHeart className="text-rose-500" size={16} />
-                        ) : (
-                            <FaRegHeart className="text-gray-600" size={16} />
-                        )}
-                    </button>
-
-                    <button
-                        onClick={handleAddToCart}
-                        disabled={!isAvailable || isCartLoading}
-                        className="bg-white p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0"
-                    >
-                        {isCartLoading ? (
-                            <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-                        ) : (
-                            <ShoppingCart
-                                size={16}
-                                className={inCart ? "text-green-500" : "text-gray-600"}
-                                fill={inCart ? "currentColor" : "none"}
-                            />
-                        )}
-                    </button>
-
-                    <button
-                        onClick={handleShare}
-                        className="bg-white p-2 rounded-full shadow-md hover:shadow-lg transition-all duration-300 opacity-0 group-hover:opacity-100 transform translate-x-2 group-hover:translate-x-0"
-                    >
-                        <PiShareFatLight size={16} className="text-gray-600" />
-                    </button>
+                {/* Product Images (Cross-Fade Hover Effect) */}
+                <div className="w-full h-full relative">
+                    {/* Default Image */}
+                    <Image
+                        src={displayImage || 'https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png'}
+                        alt={product.productName}
+                        fill
+                        priority
+                        sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                        className={`object-cover transition-all duration-700 group-hover/card:scale-103 ${hoverImg && isHovered ? 'opacity-0' : 'opacity-100'}`}
+                    />
+                    
+                    {/* Hover Image */}
+                    {hoverImg && (
+                        <Image
+                            src={hoverImg}
+                            alt={product.productName}
+                            fill
+                            sizes="(max-width: 768px) 50vw, (max-width: 1024px) 33vw, 20vw"
+                            className={`object-cover absolute inset-0 transition-all duration-700 group-hover/card:scale-103 ${isHovered ? 'opacity-100' : 'opacity-0'}`}
+                        />
+                    )}
                 </div>
 
-                {/* Product Image */}
-                <ProductImage
-                    src={displayImage}
-                    alt={product.productName}
-                    isAvailable={isAvailable}
-                />
-
-                {/* Product Info */}
-                <div className="p-4">
-                    <h3 className="text-sm font-medium text-gray-800 mb-2  font-geist">
-                        {product.productName}
-                    </h3>
-
-                    {/* Price */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                        {variantPriceRange ? (
-                            <span className="text-gray-800 font-bold text-sm">
-                                {variantPriceRange}
-                            </span>
-                        ) : (
-                            <>
-                                <span className="text-gray-800 font-bold text-sm flex items-center">
-                                   BDT  {formatPrice(discountedPrice)}
-                                </span>
-
-                                {product.discountValue > 0 && (
-                                    <span className="text-gray-400 text-sm line-through flex items-center font-normal">
-                                      BDT  {formatPrice(originalPrice)}
-                                    </span>
-                                )}
-                            </>
-                        )}
+                {/* White Details Banner Overlay at the Bottom */}
+                <div className="absolute bottom-3 left-3 right-3 bg-white p-3  flex items-center justify-between shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-20 border border-gray-100/50">
+                    <div className="flex flex-col items-start min-w-0 pr-2">
+                        <span className="text-[12px] md:text-[14px] font-outfit font-regular text-black line-clamp-1 group-hover/card:text-[#5A0C3D] transition-colors duration-200">
+                            {product.productName}
+                        </span>
+                        <span className="text-[12px] md:text-[14px] font-outfit font-bold text-gray-500 mt-0.5">
+                            {variantPriceRange ? variantPriceRange : `BDT ${formatPrice(discountedPrice)}`}
+                        </span>
                     </div>
+
+                    {/* Circular Cart Button */}
+                    <button
+                        onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            onOpenQuickView && onOpenQuickView(product);
+                        }}
+                        className="w-8 h-8 md:w-9 md:h-9 bg-white rounded-full border border-gray-200 flex items-center justify-center hover:bg-[#5A0C3D] hover:border-[#5A0C3D] text-black hover:text-white active:scale-95 transition-all flex-shrink-0 cursor-pointer select-none"
+                    >
+                        <CartIcon className="w-4.5 h-4.5 text-current" />
+                    </button>
                 </div>
             </div>
         </Link>

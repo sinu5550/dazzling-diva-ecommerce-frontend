@@ -3,6 +3,7 @@ import "./globals.css";
 import Footer from "@/components/Shared/Footer/Footer";
 import Navbar from "@/components/Shared/Navbar/Navbar";
 import { Toaster } from "react-hot-toast";
+import FloatingActions from "@/components/ui/FloatingActions";
 
 const playfairDisplayFont = Playfair_Display({
   variable: "--hasib_dev",
@@ -59,6 +60,7 @@ export default function RootLayout({ children }) {
         </div>
 
         <Footer />
+        <FloatingActions />
         <Toaster />
       </body>
     </html>

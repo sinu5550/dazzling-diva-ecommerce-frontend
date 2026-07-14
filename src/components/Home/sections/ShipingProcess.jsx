@@ -6,33 +6,33 @@ import { IoHeadsetOutline } from "react-icons/io5";
 const ShipingProcess = () => {
 
     const trustBadges = [
-        { icon: HiOutlineShieldCheck, title: "Secure Checkout", sub: "SSL encrypted" },
-        { icon: HiOutlineArrowPath, title: "Easy Returns", sub: "30-day policy" },
-        { icon: HiOutlineTruck, title: "Fast Delivery", sub: "Dhaka 24h" },
-        { icon: IoHeadsetOutline, title: "24/7 Support", sub: "Always here" },
+        { icon: HiOutlineTruck, title: "Fast Delivery", sub: "Free shipping on all US orders" },
+        { icon: HiOutlineShieldCheck, title: "Safe Payment", sub: "We ensure secure payment with PEV" },
+        { icon: IoHeadsetOutline, title: "24/7 Online Support", sub: "24 hours a day, 7 days a week" },
+        { icon: HiOutlineArrowPath, title: "Free Returns", sub: "Simply return it within 30 days" },
     ];
 
     return (
-        < div className="bg-secound/70 text-white" >
+        <div className="bg-white border-b border-gray-100 py-10 pt-0 w-full">
             <Container>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-0 divide-x divide-white/10">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-6">
                     {trustBadges.map(({ icon: Icon, title, sub }) => (
                         <div
                             key={title}
-                            className="flex items-center gap-3 py-5 px-4 md:px-6 first:pl-0 last:pr-0"
+                            className="flex flex-col items-center text-center px-4"
                         >
-                            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                                <Icon size={18} className="text-white/90" />
+                            <div className="w-12 h-12 flex items-center justify-center shrink-0 mb-1 text-stone-800">
+                                <Icon size={42} strokeWidth={1.5} />
                             </div>
-                            <div>
-                                <div className="text-sm font-medium text-white/95">{title}</div>
-                                <div className="text-xs text-white/50">{sub}</div>
+                            <div className="space-y-1">
+                                <h4 className="text-[16px] font-semibold text-stone-900 font-outfit">{title}</h4>
+                                <p className="text-xs text-stone-500 font-outfit max-w-[200px] leading-relaxed">{sub}</p>
                             </div>
                         </div>
                     ))}
                 </div>
             </Container>
-        </div >
+        </div>
     );
 };
 

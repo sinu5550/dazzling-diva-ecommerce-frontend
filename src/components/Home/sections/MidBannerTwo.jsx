@@ -18,40 +18,33 @@ const MidBannerTwo = ({ midBannerData }) => {
                     alt={banner.title}
                     width={2000}
                     height={800}
-                    className="transition-transform duration-700 group-hover:scale-105 w-full h-[300px] md:h-[400px] lg:h-[500px] xl:h-[600px] 2xl:h-[700px]"
+                    className="transition-transform duration-700 group-hover:scale-105 w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[420px] xl:h-[480px] object-cover"
                     loading='lazy'
                 />
 
-                {/* Gradient Overlay */}
-                <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/40 to-transparent"></div>
+                {/* Gradient Overlay (Centered Bottom Optimized) */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#5A0C3D]/85 via-[#5A0C3D]/40 to-[#5A0C3D]/10"></div>
 
-                {/* Bottom Fade */}
-                <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-black/30 to-transparent"></div>
-
-                {/* Content */}
-                <div className="absolute inset-0 flex flex-col justify-center p-6 md:p-10 lg:p-14">
-                    <div className="mb-[5%] lg:ml-[7%] space-y-3 md:space-y-4 max-w-2xl">
-
-
-                        <h2 className="text-xl md:text-2xl lg:text-3xl xl:text-5xl w-4/5 font-bold hasib_dev leading-tight mb-4 text-white drop-shadow-lg">
+                {/* Content (Center aligned at the bottom) */}
+                <div className="absolute inset-0 flex flex-col justify-end items-center text-center p-6 md:p-10 lg:p-12">
+                    <div className="flex flex-col items-center justify-center space-y-3 max-w-2xl mx-auto mb-2">
+                        <h2 className="text-xl md:text-2xl lg:text-[34px] font-bold font-outfit leading-tight text-white drop-shadow-lg">
                             {banner.title}
                         </h2>
-                        {/* Decorative Line */}
-                        <div className="w-32 h-1 bg-white/80 rounded-full my-5"></div>
                         {banner.sub_title && (
-                            <p className="text-base md:text-lg text-white/90 leading-relaxed max-w-md drop-shadow-md">
+                            <p className="text-xs md:text-sm text-white/80 leading-relaxed max-w-md drop-shadow-md">
                                 {banner.sub_title}
                             </p>
                         )}
 
                         {banner.link && (
-                            <div className="pt-3">
+                            <div className="pt-2">
                                 <Link
                                     href={banner.link}
-                                    className="mt-2 inline-flex items-center gap-2.5 px-7 py-2.5 lg:py-3 text-sm font-semibold border border-white bg-white text-gray-900 transition-all duration-300 hover:bg-transparent hover:text-white hover:shadow-[0_0_20px_rgba(255,255,255,0.15)] cursor-pointer"
+                                    className="inline-flex items-center gap-2 px-6 py-2.5 text-xs md:text-sm font-semibold border border-white bg-white text-gray-900 rounded-full transition-all duration-300 hover:bg-[#5A0C3D] hover:border-[#5A0C3D] hover:text-white cursor-pointer select-none active:scale-95 shadow-sm"
                                 >
                                     Shop Now
-                                    <FaLongArrowAltRight size={16} />
+                                    <FaLongArrowAltRight size={14} className="mt-0.5" />
                                 </Link>
                             </div>
                         )}

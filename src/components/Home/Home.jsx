@@ -3,6 +3,7 @@ import TopPickSeason from "./sections/TopPickSeason";
 import Promotional from "./sections/Promotional";
 import { apiClient } from "@/lib/apiClient";
 import DiscountProducts from "./sections/DiscountProducts";
+import HomeBento from "./sections/HomeBento";
 import Coupon from "./sections/Coupon";
 import DelayedModal from "../ui/DelayedModal";
 import HeroSlider from "../Hero/Slider";
@@ -110,13 +111,14 @@ const Home = async () => {
       <ShopCategory data={allCategories} />
       {/* <MidBannerOne midBannerData={midBannerData} /> */}
       <DiscountProducts productData={allProductsFromCampaigns} />
+      <HomeBento />
       <NewArrivalProducts newProductData={newProductData} />
-      <Promotional promoData={promoData} />
+      {/* <Promotional promoData={promoData} /> */}
       <BentoImageGalleryOne bentoImageGalleryData={bentoImageGalleryData} />
       <TopSellingProducts topSellingProductData={topSellingProductData} />
       <MidBannerTwo midBannerData={midBannerData} />
-      <BentoImageGalleryTwo bentoImageGalleryData={bentoImageGalleryData} />
-      <TopPickSeason topPickData={topPickData} />
+      {/* <BentoImageGalleryTwo bentoImageGalleryData={bentoImageGalleryData} /> */}
+      {/* <TopPickSeason topPickData={topPickData} /> */}
 
 
       {/* <Coupon couponData={couponData} /> */}
