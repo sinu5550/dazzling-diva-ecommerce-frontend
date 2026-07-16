@@ -32,8 +32,8 @@ const Topbar = ({
                         aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
                     >
                         {isMobileMenuOpen
-                            ? <X size={20} className="text-gray-700" />
-                            : <MenuIcon className="w-8 h-4 text-gray-700" />
+                            ? <X size={20} className="text-black" />
+                            : <MenuIcon className="w-8 h-4 text-black" />
                         }
                     </button>
                 </div>

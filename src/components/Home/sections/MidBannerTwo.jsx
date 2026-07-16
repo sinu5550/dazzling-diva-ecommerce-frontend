@@ -18,7 +18,7 @@ const MidBannerTwo = ({ midBannerData }) => {
                     alt={banner.title}
                     width={2000}
                     height={800}
-                    className="transition-transform duration-700 group-hover:scale-105 w-full h-[250px] sm:h-[300px] md:h-[350px] lg:h-[420px] xl:h-[480px] object-cover"
+                    className="transition-transform duration-700 group-hover:scale-105 w-full h-[250px] sm:h-[300px] md:h-[350px]  object-cover"
                     loading='lazy'
                 />
 
@@ -27,7 +27,7 @@ const MidBannerTwo = ({ midBannerData }) => {
 
                 {/* Content (Center aligned at the bottom) */}
                 <div className="absolute inset-0 flex flex-col justify-end items-center text-center p-6 md:p-10 lg:p-12">
-                    <div className="flex flex-col items-center justify-center space-y-3 max-w-2xl mx-auto mb-2">
+                    <div className="flex flex-col items-center justify-center space-y-3 max-w-2xl mx-auto mb-8">
                         <h2 className="text-xl md:text-2xl lg:text-[34px] font-bold font-outfit leading-tight text-white drop-shadow-lg">
                             {banner.title}
                         </h2>

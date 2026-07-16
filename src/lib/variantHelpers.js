@@ -160,6 +160,7 @@ export function getVariantImage(variant, product) {
  */
 export function formatPrice(price) {
     return new Intl.NumberFormat('en-BD', {
-        maximumFractionDigits: 0,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
     }).format(price);
 }

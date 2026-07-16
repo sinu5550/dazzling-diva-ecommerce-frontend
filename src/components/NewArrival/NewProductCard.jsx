@@ -138,6 +138,20 @@ export default function NewProductCard({ product, user = null, onOpenQuickView }
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
+                {/* Badges Container (top-left) */}
+                <div className="absolute top-3 left-3 z-30 flex flex-col gap-1.5 pointer-events-none">
+                    {(product.newArrival || product.new || product.isNew || product.newProduct) && (
+                        <div className="bg-[#5A0C3D] text-white text-[10px] md:text-[11px] font-bold px-2 py-0.5  uppercase tracking-wider shadow-sm w-fit">
+                            New
+                        </div>
+                    )}
+                    {product.discountValue > 0 && (
+                        <div className="bg-rose-600 text-white text-[10px] md:text-[11px] font-bold px-2 py-0.5  shadow-sm w-fit">
+                            -{product.discountValue}%
+                        </div>
+                    )}
+                </div>
+
                 {/* Product Images (Cross-Fade Hover Effect) */}
                 <div className="w-full h-full relative">
                     {/* Default Image */}
@@ -168,9 +182,16 @@ export default function NewProductCard({ product, user = null, onOpenQuickView }
                         <span className="text-[12px] md:text-[14px] font-outfit font-regular text-black line-clamp-1 group-hover/card:text-[#5A0C3D] transition-colors duration-200">
                             {product.productName}
                         </span>
-                        <span className="text-[12px] md:text-[14px] font-outfit font-bold text-gray-500 mt-0.5">
-                            {variantPriceRange ? variantPriceRange : `BDT ${formatPrice(discountedPrice)}`}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
+                            <span className="text-[12px] md:text-[14px] font-outfit font-bold text-[#5A0C3D]">
+                                {variantPriceRange ? variantPriceRange : `BDT ${formatPrice(discountedPrice)}`}
+                            </span>
+                            {!variantPriceRange && product.discountValue > 0 && (
+                                <span className="text-[10px] md:text-[12px] font-outfit font-normal text-gray-400 line-through">
+                                    BDT {formatPrice(originalPrice)}
+                                </span>
+                            )}
+                        </div>
                     </div>
 
                     {/* Circular Cart Button */}

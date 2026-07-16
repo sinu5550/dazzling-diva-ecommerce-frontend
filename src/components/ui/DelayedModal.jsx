@@ -58,10 +58,21 @@ export default function DelayedModal({ allProducts }) {
         }).format(amount);
       };
 
+      // Helper to extract image URL safely
+      const getImageUrl = () => {
+        const img = product.images?.[0] || product.image;
+        if (!img) return "https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png";
+        if (typeof img === "string") return img;
+        if (typeof img === "object" && img !== null) {
+          return img.url || img.secure_url || "https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png";
+        }
+        return "https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png";
+      };
+
       return {
         id: product.id,
         name: product.productName,
-        image: product.images?.[0] || product.image || "",
+        image: getImageUrl(),
         price: formatCurrency(discountedPrice),
         originalPrice: formatCurrency(originalPrice),
         rating: product.rating || Math.floor(Math.random() * 3) + 3,
