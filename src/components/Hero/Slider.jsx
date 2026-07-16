@@ -217,7 +217,7 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
             whileTap={{ scale: 0.92 }}
             onClick={() => paginate(-1)}
             aria-label="Previous slide"
-            className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full border border-white/25 bg-black/30 backdrop-blur-sm text-white transition-colors duration-200 hover:bg-white/20 w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
+            className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full border border-white/25 bg-white w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -237,7 +237,7 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
             whileTap={{ scale: 0.92 }}
             onClick={() => paginate(1)}
             aria-label="Next slide"
-            className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full border border-white/25 bg-black/30 backdrop-blur-sm text-white transition-colors duration-200 hover:bg-white/20 w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
+            className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full border border-white/25 bg-white w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

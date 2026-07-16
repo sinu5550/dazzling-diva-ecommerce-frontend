@@ -13,6 +13,7 @@ import MidBannerTwo from "./sections/MidBannerTwo";
 import MidBannerOne from "./sections/MidBannerOne";
 import BentoImageGalleryTwo from "./sections/BentoImageGalleryTwo";
 import BentoImageGalleryOne from "./sections/BentoImageGalleryOne";
+import Testimonials from "./sections/Testimonials";
 
 
 
@@ -116,6 +117,7 @@ const Home = async () => {
       {/* <Promotional promoData={promoData} /> */}
       <BentoImageGalleryOne bentoImageGalleryData={bentoImageGalleryData} />
       <TopSellingProducts topSellingProductData={topSellingProductData} />
+      <Testimonials />
       <MidBannerTwo midBannerData={midBannerData} />
       {/* <BentoImageGalleryTwo bentoImageGalleryData={bentoImageGalleryData} /> */}
       {/* <TopPickSeason topPickData={topPickData} /> */}

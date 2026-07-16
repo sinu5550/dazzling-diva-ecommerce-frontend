@@ -51,9 +51,7 @@ export default function RootLayout({ children }) {
       <body
         className="antialiased text-gray-800"
       >
-        <div className="h-16 lg:h-[114px]">
-          <Navbar />
-        </div>
+        <Navbar />
 
         <div className="min-h-[calc(100vh-350px)]">
           {children}

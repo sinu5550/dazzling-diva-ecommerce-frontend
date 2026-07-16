@@ -79,18 +79,33 @@ export default function ProductCard({ product, user = null }) {
 
         const variants = product.productVariants;
         const totalStock = variants.reduce((sum, v) => sum + (v.quantity || 0), 0);
-        const prices = variants.map(v => parseFloat(v.price));
-        const minPrice = Math.min(...prices);
-        const maxPrice = Math.max(...prices);
+        const discountValue = product.discountValue || 0;
+
+        const originalPrices = variants.map(v => parseFloat(v.price));
+        const minOriginalPrice = Math.min(...originalPrices);
+        const maxOriginalPrice = Math.max(...originalPrices);
+
+        const discountedPrices = variants.map(v => {
+            const base = parseFloat(v.price);
+            return discountValue > 0 ? base - (base * discountValue / 100) : base;
+        });
+        const minDiscountedPrice = Math.min(...discountedPrices);
+        const maxDiscountedPrice = Math.max(...discountedPrices);
 
         return {
             variantCount: variants.length,
             totalStock,
-            minPrice,
-            maxPrice,
-            priceRange: minPrice === maxPrice ? `৳${formatPrice(minPrice)}` : `৳${formatPrice(minPrice)} - ৳${formatPrice(maxPrice)}`
+            minPrice: minDiscountedPrice,
+            maxPrice: maxDiscountedPrice,
+            priceRange: minDiscountedPrice === maxDiscountedPrice 
+                ? `৳${formatPrice(minDiscountedPrice)}` 
+                : `৳${formatPrice(minDiscountedPrice)} - ৳${formatPrice(maxDiscountedPrice)}`,
+            originalPriceRange: minOriginalPrice === maxOriginalPrice
+                ? `৳${formatPrice(minOriginalPrice)}`
+                : `৳${formatPrice(minOriginalPrice)} - ৳${formatPrice(maxOriginalPrice)}`,
+            hasDiscount: discountValue > 0
         };
-    }, [formatPrice]);
+    }, []);
 
     // Calculate variant stats using useMemo for performance
     const variantStats = useMemo(() => {
@@ -307,10 +322,15 @@ export default function ProductCard({ product, user = null }) {
                     <div className="mt-auto">
                         {isVariantProduct && variantStats ? (
                             // Show price range for variant products
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-wrap items-center gap-2">
                                 <span className="text-gray-800 font-bold text-sm">
                                     {variantStats.priceRange}
                                 </span>
+                                {variantStats.hasDiscount && (
+                                    <span className="text-gray-400 text-xs line-through font-normal">
+                                        {variantStats.originalPriceRange}
+                                    </span>
+                                )}
                             </div>
                         ) : (
                             // Show single price for non-variant products
