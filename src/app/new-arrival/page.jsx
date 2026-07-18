@@ -1,7 +1,5 @@
-import Container from "@/components/Container/Container";
-import NewArrtivalClient from "@/components/NewArrival/NewArrivalProduct";
+import AllProductsClient from "@/components/Products/AllProductsClient";
 import { apiClient } from "@/lib/apiClient";
-import Link from "next/link";
 import React from 'react';
 
 export const metadata = {
@@ -14,19 +12,12 @@ const Page = async () => {
     const proudctData = await apiClient("/api/product/new");
     const newArrivalProducts = proudctData?.data.products || [];
 
-
     return (
-        <Container>
-            <div className="flex gap-2 text-gray-700 mt-10 text-sm md:text-base">
-                <Link href="/" className="hover:underline hover:text-primary">Home</Link> /
-                <p className="font-semibold">New Arrival Products</p>
-            </div>
-
-            <NewArrtivalClient
-                initialProducts={newArrivalProducts}
-                isLoading={true}
-            />
-        </Container>
+        <AllProductsClient
+            initialProducts={newArrivalProducts}
+            title="New Arrivals"
+            breadcrumbLabel="New Arrivals"
+        />
     );
 };
 

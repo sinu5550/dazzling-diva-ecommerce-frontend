@@ -51,6 +51,10 @@ export async function verifyOtp(email, otp, isPasswordReset = false) {
 
             // Store user data
             localStorage.setItem('supabase_user', JSON.stringify(response.data.data.user));
+
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new Event('authChange'));
+            }
         }
 
         return response.data;
@@ -77,6 +81,10 @@ export async function login(email, password) {
 
             // Store user data
             localStorage.setItem('supabase_user', JSON.stringify(response.data.data.user));
+
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new Event('authChange'));
+            }
         }
 
         return response.data;
@@ -98,6 +106,10 @@ export async function loginWithMobile(phone, password) {
             localStorage.setItem('supabase_access_token', response.data.data.session.access_token);
             localStorage.setItem('supabase_refresh_token', response.data.data.session.refresh_token);
             localStorage.setItem('supabase_user', JSON.stringify(response.data.data.user));
+
+            if (typeof window !== 'undefined') {
+                window.dispatchEvent(new Event('authChange'));
+            }
         }
 
         return response.data;
@@ -170,6 +182,10 @@ export async function logout() {
         localStorage.removeItem('supabase_user');
         sessionStorage.clear();
 
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('authChange'));
+        }
+
         return { success: true };
     } catch (error) {
         // Clear local storage even if request fails
@@ -177,6 +193,10 @@ export async function logout() {
         localStorage.removeItem('supabase_refresh_token');
         localStorage.removeItem('supabase_user');
         sessionStorage.clear();
+
+        if (typeof window !== 'undefined') {
+            window.dispatchEvent(new Event('authChange'));
+        }
 
         console.error('❌ Logout error:', error.response?.data);
         throw new Error(error.response?.data?.error || 'Logout failed');

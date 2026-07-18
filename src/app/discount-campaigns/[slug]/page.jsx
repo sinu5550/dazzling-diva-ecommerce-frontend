@@ -1,24 +1,16 @@
-import DiscountProductDetailsClient from "@/components/DiscountProduct/DiscountProductDetailsClient";
 import { getDiscountProductBySlug } from '@/lib/products';
-import { notFound } from 'next/navigation';
+
+import ProductDetailsLoader from "@/components/Products/ProductDetailsLoader";
 
 export default async function DiscountCampaignDetailsPage({ params }) {
-
-
     const resolvedParams = await params;
     const slug = resolvedParams.slug;
-    const product = await getDiscountProductBySlug(slug);
-
-    if (!product) {
-        console.log('❌ Product not found, showing 404');
-        notFound();
-    }
-
 
     return (
-
-        <DiscountProductDetailsClient
-            product={product}
+        <ProductDetailsLoader
+            key={slug}
+            slug={slug}
+            type="campaign"
         />
     );
 }

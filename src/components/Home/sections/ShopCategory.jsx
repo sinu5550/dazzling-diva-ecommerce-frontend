@@ -114,8 +114,8 @@ const Category = ({ data }) => {
                 transition-all duration-300 cursor-pointer
               "
             >
-              <ChevronLeft className="text-sm lg:text-base text-[#5A0C3D]"/>
-              
+              <ChevronLeft className="text-sm lg:text-base text-[#5A0C3D]" />
+
             </button>
           )}
 
@@ -135,7 +135,7 @@ const Category = ({ data }) => {
                 transition-all duration-300 cursor-pointer
               "
             >
-              <ChevronRight className="text-sm lg:text-base text-[#5A0C3D]"/>
+              <ChevronRight className="text-sm lg:text-base text-[#5A0C3D]" />
             </button>
           )}
 
@@ -161,7 +161,7 @@ const Category = ({ data }) => {
                     className="group/card block"
                   >
                     {/* Card */}
-                    <div className="relative h-[340px] md:h-[420px] xl:h-[480px] rounded-[20px] overflow-hidden bg-gray-200">
+                    <div className="relative h-[340px] md:h-[420px] xl:h-[480px] rounded-[12px] overflow-hidden bg-gray-200">
                       {/* Image */}
                       <Image
                         src={category.image}

@@ -244,15 +244,13 @@ export default function ProductCard({ product, user = null }) {
                         )}
                     </button>
 
-                    <Link href={`/product/${product.slug}`}>
-                        <button
-                            title="Quick view"
-                            className="bg-white p-2 rounded-full shadow-md hover:shadow-lg hover:bg-blue-50 transition-all duration-300 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 hover:scale-110 cursor-pointer"
-                            style={{ transitionDelay: '0.2s' }}
-                        >
-                            <PiEyeLight className="text-gray-600 hover:text-blue-600" size={18} />
-                        </button>
-                    </Link>
+                    <button
+                        title="Quick view"
+                        className="bg-white p-2 rounded-full shadow-md hover:shadow-lg hover:bg-blue-50 transition-all duration-300 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 hover:scale-110 cursor-pointer"
+                        style={{ transitionDelay: '0.2s' }}
+                    >
+                        <PiEyeLight className="text-gray-600 hover:text-blue-600" size={18} />
+                    </button>
 
                     <button
                         onClick={handleAddToCart}
@@ -275,7 +273,7 @@ export default function ProductCard({ product, user = null }) {
                     <button
                         onClick={handleShare}
                         title="Share product"
-                        className="bg-white p-2 rounded-full shadow-md hover:shadow-lg hover:bg-purple-50 transition-all duration-300 transform translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 hover:scale-110 cursor-pointer"
+                        className="bg-white p-2 rounded-full shadow-md hover:shadow-lg hover:bg-purple-50 transition-all duration-300 transform hover:scale-110 cursor-pointer opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-2 lg:group-hover:translate-y-0 lg:group-hover:opacity-100"
                         style={{ transitionDelay: '0.4s' }}
                     >
                         <PiShareFatLight className="text-gray-600 hover:text-purple-600" size={18} />

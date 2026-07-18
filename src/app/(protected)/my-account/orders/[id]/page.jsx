@@ -1,6 +1,5 @@
 "use client";
 
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import { useUser } from "@/hooks/useUser";
 import { apiClient } from "@/lib/apiClient";
 import {
@@ -17,7 +16,6 @@ import {
   MapPin,
   Package,
   Phone,
-  Share2,
   Truck,
   User,
   XCircle
@@ -26,7 +24,43 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import Swal from "sweetalert2";
+
+// Skeleton Loader for Order details page
+const OrderDetailsSkeleton = () => {
+  return (
+    <div className="w-full bg-white rounded-[12px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6 text-gray-800 animate-pulse font-outfit border border-gray-100 space-y-6">
+      {/* Breadcrumbs */}
+      <div className="flex items-center gap-2 mb-6">
+        <div className="w-12 h-4 bg-gray-200 rounded-[4px]" />
+        <div className="w-4 h-4 bg-gray-200 rounded-full" />
+        <div className="w-20 h-4 bg-gray-200 rounded-[4px]" />
+        <div className="w-4 h-4 bg-gray-200 rounded-full" />
+        <div className="w-16 h-4 bg-gray-200 rounded-[4px]" />
+      </div>
+
+      {/* Header Info */}
+      <div className="flex items-center justify-between border-b border-gray-100 pb-5">
+        <div className="space-y-2">
+          <div className="w-16 h-4 bg-gray-150 rounded-[4px]" />
+          <div className="w-44 h-7 bg-gray-200 rounded-[6px]" />
+        </div>
+        <div className="w-32 h-10 bg-gray-150 rounded-[6px]" />
+      </div>
+
+      {/* Main Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="h-44 bg-gray-100 rounded-[12px]" />
+          <div className="h-64 bg-gray-100 rounded-[12px]" />
+        </div>
+        <div className="space-y-6">
+          <div className="h-48 bg-gray-100 rounded-[12px]" />
+          <div className="h-48 bg-gray-100 rounded-[12px]" />
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const OrderDetailsPage = ({ params }) => {
   const [orderId, setOrderId] = useState(null);
@@ -40,13 +74,12 @@ const OrderDetailsPage = ({ params }) => {
   }, [params]);
 
   if (!orderId) {
-    return <LoadingSpinner />;
+    return <OrderDetailsSkeleton />;
   }
 
   return <OrderDetailsContent orderId={orderId} />;
 };
 
-// Main content component
 const OrderDetailsContent = ({ orderId }) => {
   const router = useRouter();
   const { user, loading: userLoading } = useUser();
@@ -78,7 +111,6 @@ const OrderDetailsContent = ({ orderId }) => {
         throw new Error("Order not found");
       }
 
-      // Verify order belongs to current user
       const customerResult = await apiClient(
         `/api/customer/email/${encodeURIComponent(user.email)}`
       );
@@ -103,14 +135,13 @@ const OrderDetailsContent = ({ orderId }) => {
     }
   };
 
-  // Get status configuration
   const getStatusConfig = (status) => {
     const statusConfigs = {
       Pending: {
         bg: "bg-yellow-50",
         border: "border-yellow-200",
         text: "text-yellow-800",
-        icon: <Clock className="w-6 h-6" />,
+        icon: <Clock className="w-5 h-5 text-yellow-600" />,
         label: "Order Pending",
         description: "Your order is awaiting confirmation",
       },
@@ -118,7 +149,7 @@ const OrderDetailsContent = ({ orderId }) => {
         bg: "bg-blue-50",
         border: "border-blue-200",
         text: "text-blue-800",
-        icon: <CheckCircle className="w-6 h-6" />,
+        icon: <CheckCircle className="w-5 h-5 text-blue-600" />,
         label: "Order Confirmed",
         description: "Your order has been confirmed and is being prepared",
       },
@@ -126,7 +157,7 @@ const OrderDetailsContent = ({ orderId }) => {
         bg: "bg-purple-50",
         border: "border-purple-200",
         text: "text-purple-800",
-        icon: <Package className="w-6 h-6" />,
+        icon: <Package className="w-5 h-5 text-purple-600" />,
         label: "Processing",
         description: "Your order is being processed and packed",
       },
@@ -134,7 +165,7 @@ const OrderDetailsContent = ({ orderId }) => {
         bg: "bg-indigo-50",
         border: "border-indigo-200",
         text: "text-indigo-800",
-        icon: <Truck className="w-6 h-6" />,
+        icon: <Truck className="w-5 h-5 text-indigo-600" />,
         label: "Shipped",
         description: "Your order is on the way",
       },
@@ -142,7 +173,7 @@ const OrderDetailsContent = ({ orderId }) => {
         bg: "bg-green-50",
         border: "border-green-200",
         text: "text-green-800",
-        icon: <CheckCircle className="w-6 h-6" />,
+        icon: <CheckCircle className="w-5 h-5 text-green-600" />,
         label: "Delivered",
         description: "Your order has been delivered",
       },
@@ -150,7 +181,7 @@ const OrderDetailsContent = ({ orderId }) => {
         bg: "bg-red-50",
         border: "border-red-200",
         text: "text-red-800",
-        icon: <XCircle className="w-6 h-6" />,
+        icon: <XCircle className="w-5 h-5 text-red-600" />,
         label: "Cancelled",
         description: "This order has been cancelled",
       },
@@ -159,58 +190,14 @@ const OrderDetailsContent = ({ orderId }) => {
     return statusConfigs[status] || statusConfigs.Pending;
   };
 
-  // Get order timeline
-  const getOrderTimeline = (status) => {
-    const steps = [
-      {
-        key: "Pending",
-        label: "Order Placed",
-        icon: <CheckCircle className="w-5 h-5" />,
-      },
-      {
-        key: "Confirmed",
-        label: "Confirmed",
-        icon: <CheckCircle className="w-5 h-5" />,
-      },
-      {
-        key: "Processing",
-        label: "Processing",
-        icon: <Package className="w-5 h-5" />,
-      },
-      { key: "Shipped", label: "Shipped", icon: <Truck className="w-5 h-5" /> },
-      {
-        key: "Delivered",
-        label: "Delivered",
-        icon: <CheckCircle className="w-5 h-5" />,
-      },
-    ];
-
-    const statusOrder = [
-      "Pending",
-      "Confirmed",
-      "Processing",
-      "Shipped",
-      "Delivered",
-    ];
-    const currentIndex = statusOrder.indexOf(status);
-
-    return steps.map((step, index) => ({
-      ...step,
-      completed: index <= currentIndex,
-      active: index === currentIndex,
-    }));
-  };
-
-  // Format price
   const formatPrice = (price) => {
     return new Intl.NumberFormat("en-BD", {
       style: "currency",
       currency: "BDT",
-      minimumFractionDigits: 2,
+      minimumFractionDigits: 0,
     }).format(price);
   };
 
-  // Format date
   const formatDate = (dateString) => {
     return new Date(dateString).toLocaleDateString("en-US", {
       year: "numeric",
@@ -221,247 +208,143 @@ const OrderDetailsContent = ({ orderId }) => {
     });
   };
 
-  // Handle share
-  const handleShare = async () => {
-    if (navigator.share) {
-      try {
-        await navigator.share({
-          title: `Order ${order.orderNumber}`,
-          text: `Check out my order details`,
-          url: window.location.href,
-        });
-      } catch (error) {
-        console.log("Error sharing:", error);
-      }
-    } else {
-      // Fallback: Copy to clipboard
-      navigator.clipboard.writeText(window.location.href);
-      Swal.fire({
-        icon: "success",
-        title: "Link Copied!",
-        text: "Order link copied to clipboard",
-        timer: 2000,
-        showConfirmButton: false,
-      });
-    }
-  };
-
   if (userLoading || loading) {
-    return <LoadingSpinner />;
-  }
-
-  if (!user) {
-    router.push("/auth/login");
-    return null;
+    return <OrderDetailsSkeleton />;
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
-        <div className="container mx-auto px-4 max-w-4xl">
-          <div className="bg-white hasib-rounded shadow-sm p-8 text-center">
-            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">
-              Error Loading Order
-            </h2>
-            <p className="text-gray-600 mb-6">{error}</p>
-            <Link
-              href="/my-account/orders"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-teal-600 text-white hasib-rounded font-medium hover:bg-teal-700 transition-colors"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Orders
-            </Link>
-          </div>
-        </div>
+      <div className="w-full bg-white rounded-[12px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-8 text-center border border-gray-100 font-outfit">
+        <AlertCircle className="w-14 h-14 text-red-500 mx-auto mb-4 animate-pulse" />
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Error Details</h2>
+        <p className="text-sm text-gray-500 mb-6">{error}</p>
+        <button
+          onClick={() => router.push("/my-account/orders")}
+          className="inline-flex items-center gap-2 px-6 py-2.5 bg-[#5A0C3D] hover:bg-[#4a0a32] text-white rounded-[6px] text-sm font-semibold uppercase transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Orders
+        </button>
       </div>
     );
   }
 
-  if (!order) {
-    return null;
-  }
-
   const statusConfig = getStatusConfig(order.status);
-  const timeline = getOrderTimeline(order.status);
 
   return (
-    <div className="min-h-screen bg-zinc-50 hasib-rounded py-8">
-      <div className="container mx-auto px-4 max-w-7xl">
-        {/* Breadcrumb */}
-        <div className="flex items-center gap-2 text-sm text-gray-600 mb-6">
-          <Link
-            href="/"
-            className="hover:text-teal-600 flex items-center gap-1"
-          >
+    <div className="w-full bg-white rounded-[12px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6 text-gray-800 font-outfit border border-gray-100 print-area">
+      <div className="space-y-6">
+        {/* Breadcrumbs */}
+        <div className="flex items-center gap-2 text-sm text-gray-600 no-print">
+          <Link href="/" className="hover:text-[#5A0C3D] flex items-center gap-1 transition-colors duration-200">
             <Home className="w-4 h-4" />
             Home
           </Link>
-          <ChevronRight className="w-4 h-4" />
-          <Link href="/my-account" className="hover:text-teal-600">
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+          <Link href="/my-account" className="hover:text-[#5A0C3D] transition-colors duration-200">
             My Account
           </Link>
-          <ChevronRight className="w-4 h-4" />
-          <Link href="/my-account/orders" className="hover:text-teal-600">
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+          <Link href="/my-account/orders" className="hover:text-[#5A0C3D] transition-colors duration-200">
             Orders
           </Link>
-          <ChevronRight className="w-4 h-4" />
-          <span className="text-gray-900 font-medium">{order.orderNumber}</span>
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+          <span className="text-gray-900 font-medium">#{order.orderNumber}</span>
         </div>
 
-        {/* Header */}
-        <div className="bg-white hasib-rounded shadow-sm p-6 mb-6">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 mb-6">
-            <div>
-              <div className="flex items-center gap-3 mb-2">
-                <Link
-                  href="/my-account/orders"
-                  className="p-2 hover:bg-gray-100 hasib-rounded transition-colors"
-                >
-                  <ArrowLeft className="w-5 h-5 text-gray-600" />
-                </Link>
-                <h1 className="text-2xl font-bold text-gray-900">
-                  Order {order.orderNumber}
-                </h1>
-              </div>
-              <p className="text-gray-600 flex items-center gap-2 ml-11">
-                <Calendar className="w-4 h-4" />
-                Placed on {formatDate(order.orderDate)}
-              </p>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex items-center gap-3">
-              <button
-                onClick={handleShare}
-                className="flex items-center gap-2 px-4 py-2 border border-stone-300 text-gray-700 hasib-rounded hover:bg-gray-50 transition-colors"
-              >
-                <Share2 className="w-4 h-4" />
-                Share
-              </button>
-            </div>
-          </div>
-
-          {/* Status Banner */}
-          <div
-            className={`${statusConfig.bg} ${statusConfig.border} border-2 hasib-rounded px-6 py-2`}
+        {/* Back Link */}
+        <div className="no-print">
+          <button
+            onClick={() => router.push("/my-account/orders")}
+            className="flex items-center gap-2 text-sm text-gray-600 hover:text-[#5A0C3D] font-semibold transition-colors cursor-pointer"
           >
-            <div className="flex items-center gap-4">
-              <div className={`${statusConfig.text}`}>{statusConfig.icon}</div>
-              <div className="flex-1">
-                <h3 className={`text-lg font-bold ${statusConfig.text}`}>
-                  {statusConfig.label}
-                </h3>
-                <p className={`text-sm ${statusConfig.text} opacity-80`}>
-                  {statusConfig.description}
-                </p>
-              </div>
-            </div>
+            <ArrowLeft className="w-4 h-4" /> Back to My Orders
+          </button>
+        </div>
+
+        {/* Header Section */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-100 pb-5 gap-4">
+          <div>
+            <span className="text-xs text-gray-500 font-bold uppercase tracking-wider">Order Details</span>
+            <h1 className="text-xl md:text-2xl font-bold text-gray-950">
+              Order #{order.orderNumber}
+            </h1>
+          </div>
+          <div className="flex items-center gap-3 no-print">
+            <button
+              onClick={() => window.print()}
+              className="flex items-center gap-1.5 px-4 py-2 border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-[6px] text-xs font-bold transition-all uppercase cursor-pointer"
+            >
+              <FileText className="w-4 h-4" /> Print Invoice
+            </button>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Main Content - Your existing code */}
+        {/* Status Alert Banner */}
+        <div className={`p-4 rounded-[12px] border ${statusConfig.bg} ${statusConfig.border} flex items-start gap-3.5`}>
+          <div className="mt-0.5">{statusConfig.icon}</div>
+          <div>
+            <h3 className={`font-bold text-sm ${statusConfig.text}`}>
+              {statusConfig.label}
+            </h3>
+            <p className="text-xs text-gray-600 mt-0.5">
+              {statusConfig.description} on {formatDate(order.updatedAt || order.orderDate)}
+            </p>
+          </div>
+        </div>
+
+        {/* Return Notice */}
+        <div className="bg-[#5A0C3D]/5 border border-[#5A0C3D]/10 rounded-[12px] p-4 text-xs text-gray-700 flex items-start gap-2.5 no-print">
+          <AlertCircle className="w-4 h-4 text-[#5A0C3D] mt-0.5 flex-shrink-0" />
+          <div>
+            <p className="font-bold text-gray-900">Need to Return a Product?</p>
+            <p className="mt-0.5 text-gray-600">Please note that there is no direct return option on the website. To request a return, please contact our support team at <a href="tel:+8801768179927" className="font-bold underline text-[#5A0C3D] hover:text-[#4a0a32]">+8801768179927</a>.</p>
+          </div>
+        </div>
+
+        {/* Details Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Columns - Order Items */}
           <div className="lg:col-span-2 space-y-6">
-            {/* Order Timeline */}
-            {order.status !== "Cancelled" && (
-              <div className="bg-white hasib-rounded shadow-sm p-6">
-                <h2 className="text-lg font-bold text-gray-900 mb-6">
-                  Order Progress
-                </h2>
-                <div className="relative">
-                  <div className="absolute top-5 left-0 right-0 h-0.5 bg-gray-200">
-                    <div
-                      className="h-full bg-teal-600 transition-all duration-500"
-                      style={{
-                        width: `${((timeline.filter((s) => s.completed).length - 1) /
-                            (timeline.length - 1)) *
-                          100
-                          }%`,
-                      }}
-                    />
-                  </div>
-
-                  <div className="relative flex justify-between">
-                    {timeline.map((step) => (
-                      <div
-                        key={step.key}
-                        className="flex flex-col items-center"
-                      >
-                        <div
-                          className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${step.completed
-                              ? "bg-teal-600 border-teal-600 text-white"
-                              : "bg-white border-stone-300 text-gray-400"
-                            } ${step.active ? "ring-4 ring-teal-100" : ""}`}
-                        >
-                          {step.icon}
-                        </div>
-                        <p
-                          className={`mt-2 text-xs font-medium text-center ${step.completed ? "text-gray-900" : "text-gray-400"
-                            }`}
-                        >
-                          {step.label}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Order Items - Keep your existing code exactly as is */}
-            <div className="bg-white hasib-rounded shadow-sm p-6">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">
-                Order Items ({order.orderItems.length})
+            <div className="bg-white rounded-[12px] border border-gray-150 p-5 space-y-4">
+              <h2 className="text-base font-bold text-gray-950 flex items-center gap-2 border-b border-gray-50 pb-3">
+                <Package className="w-4.5 h-4.5 text-[#5A0C3D]" />
+                Order Items ({order.orderItems?.length || 0})
               </h2>
-              <div className="space-y-4">
-                {order.orderItems.map((item) => (
-                  <div
-                    key={item.id}
-                    className="flex gap-4 p-4 border border-gray-200 hasib-rounded hover:border-teal-200 transition-colors"
-                  >
-                    <div className="flex-shrink-0">
-                      <div className="w-24 h-24 bg-gray-100 hasib-rounded overflow-hidden">
-                        {item.product.images && item.product.images[0] ? (
-                          <Image
-                            src={item.product.images[0]}
-                            alt={item.product.productName}
-                            width={96}
-                            height={96}
-                            className="object-cover w-full h-full"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center">
-                            <Package className="w-10 h-10 text-gray-400" />
-                          </div>
-                        )}
-                      </div>
-                    </div>
 
-                    <div className="flex-1">
-                      <h3 className="font-semibold text-gray-900 mb-1">
-                        {item.product.productName}
-                      </h3>
-                      <p className="text-sm text-gray-500 mb-2">
-                        SKU: {item.sku || item.product.sku}
-                      </p>
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-1">
-                          <p className="text-sm text-gray-600">
-                            Unit Price: {formatPrice(item.unitPrice)}
-                          </p>
-                          <p className="text-sm text-gray-600">
-                            Quantity: {item.quantity}
-                          </p>
-
+              <div className="divide-y divide-gray-100">
+                {order.orderItems?.map((item) => (
+                  <div key={item.id} className="py-4 first:pt-0 last:pb-0 flex gap-4">
+                    <div className="w-16 h-16 bg-gray-50 rounded-[8px] overflow-hidden border border-gray-100 flex-shrink-0">
+                      {item.product?.images?.[0] ? (
+                        <Image
+                          src={item.product.images[0]}
+                          alt={item.product.productName}
+                          width={64}
+                          height={64}
+                          className="object-cover w-full h-full"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center">
+                          <Package className="w-6 h-6 text-gray-300" />
                         </div>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h4 className="font-bold text-gray-900 text-sm truncate">
+                        {item.product?.productName}
+                      </h4>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        SKU: {item.sku || item.product?.sku || "N/A"}
+                      </p>
+                      <div className="flex items-center justify-between mt-2">
+                        <span className="text-xs text-gray-600 bg-gray-100 px-2 py-0.5 rounded">
+                          Qty: {item.quantity}
+                        </span>
                         <div className="text-right">
-                          <p className="text-sm text-gray-500 line-through">
-                            {formatPrice(
-                              parseFloat(item.unitPrice) * item.quantity
-                            )}
+                          <p className="text-xs text-gray-500">
+                            {formatPrice(item.unitPrice)} × {item.quantity}
                           </p>
-                          <p className="text-lg font-bold text-teal-600">
+                          <p className="text-sm font-bold text-gray-900 mt-0.5">
                             {formatPrice(item.lineTotal)}
                           </p>
                         </div>
@@ -471,97 +354,69 @@ const OrderDetailsContent = ({ orderId }) => {
                 ))}
               </div>
             </div>
-
-            {/* Order Note */}
-            {order.note && (
-              <div className="bg-white hasib-rounded shadow-sm p-6">
-                <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <FileText className="w-5 h-5" />
-                  Order Note
-                </h2>
-                <p className="text-gray-600 bg-gray-50 p-4 hasib-rounded">
-                  {order.note}
-                </p>
-              </div>
-            )}
           </div>
 
-          {/* Sidebar - Keep your existing sidebar code */}
+          {/* Right Column - Summary & Addresses */}
           <div className="space-y-6">
             {/* Order Summary */}
-            <div className="bg-white hasib-rounded shadow-sm p-6 sticky top-6">
-              <h2 className="text-lg font-bold text-gray-900 mb-4">
+            <div className="bg-white rounded-[12px] border border-gray-150 p-5 space-y-4">
+              <h2 className="text-base font-bold text-gray-950 border-b border-gray-50 pb-3">
                 Order Summary
               </h2>
-              <div className="space-y-3">
+              <div className="space-y-2 text-xs">
                 <div className="flex justify-between text-gray-600">
                   <span>Subtotal</span>
-                  <span className="font-medium">
-                    {formatPrice(order.totalAmount)}
-                  </span>
+                  <span>{formatPrice(order.totalAmount)}</span>
                 </div>
                 {parseFloat(order.discount) > 0 && (
-                  <div className="flex justify-between text-green-600">
+                  <div className="flex justify-between text-[#137333] font-semibold">
                     <span>Discount</span>
-                    <span className="font-medium">
-                      - {formatPrice(order.discount)}
-                    </span>
+                    <span>- {formatPrice(order.discount)}</span>
                   </div>
                 )}
                 {parseFloat(order.voucher_promo) > 0 && (
-                  <div className="flex justify-between text-green-600">
+                  <div className="flex justify-between text-[#137333] font-semibold">
                     <span>Voucher Promo</span>
-                    <span className="font-medium">
-                      - {formatPrice(order.voucher_promo)}
-                    </span>
+                    <span>- {formatPrice(order.voucher_promo)}</span>
                   </div>
                 )}
                 {parseFloat(order.tax) > 0 && (
                   <div className="flex justify-between text-gray-600">
                     <span>Tax</span>
-                    <span className="font-medium">
-                      {formatPrice(order.tax)}
-                    </span>
+                    <span>{formatPrice(order.tax)}</span>
                   </div>
                 )}
                 <div className="flex justify-between text-gray-600">
                   <span>Shipping</span>
-                  <span className="font-medium">
-                    {formatPrice(order.shippingCost)}
-                  </span>
+                  <span>{formatPrice(order.shippingCost)}</span>
                 </div>
-                <div className="border-t pt-3 flex justify-between text-lg font-bold text-gray-900">
-                  <span>Total</span>
-                  <span className="text-teal-600">
+                <div className="border-t border-gray-100 pt-3.5 flex justify-between text-base font-bold text-gray-950">
+                  <span>Grand Total</span>
+                  <span className="text-[#5A0C3D]">
                     {formatPrice(order.grandTotal)}
                   </span>
                 </div>
               </div>
 
-              <div className="mt-6 pt-6 border-t">
-                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <CreditCard className="w-5 h-5" />
-                  Payment Information
+              {/* Payment Details */}
+              <div className="border-t border-gray-150 pt-4 mt-4">
+                <h3 className="text-sm font-bold text-gray-950 mb-3 flex items-center gap-1.5">
+                  <CreditCard className="w-4 h-4 text-gray-500" />
+                  Payment Details
                 </h3>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-xs">
                   <div className="flex justify-between">
                     <span className="text-gray-600">Method</span>
-                    <span className="font-medium text-gray-900">
-                      {order.paymentMethod}
-                    </span>
+                    <span className="font-semibold text-gray-900">{order.paymentMethod}</span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Paid Amount</span>
-                    <span className="font-medium text-gray-900">
-                      {formatPrice(order.paidAmount)}
-                    </span>
+                    <span className="font-semibold text-gray-900">{formatPrice(order.paidAmount)}</span>
                   </div>
                   {parseFloat(order.dueAmount) > 0 && (
                     <div className="flex justify-between">
                       <span className="text-gray-600">Due Amount</span>
-                      <span className="font-medium text-red-600">
-                        {formatPrice(order.dueAmount)}
-                      </span>
+                      <span className="font-semibold text-red-600">{formatPrice(order.dueAmount)}</span>
                     </div>
                   )}
                 </div>
@@ -570,100 +425,39 @@ const OrderDetailsContent = ({ orderId }) => {
 
             {/* Shipping Address */}
             {order.shippingAddress && (
-              <div className="bg-white hasib-rounded shadow-sm p-6">
-                <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <Truck className="w-5 h-5" />
+              <div className="bg-white rounded-[12px] border border-gray-150 p-5 space-y-4">
+                <h2 className="text-base font-bold text-gray-950 flex items-center gap-1.5 border-b border-gray-50 pb-3">
+                  <Truck className="w-4.5 h-4.5 text-gray-500" />
                   Shipping Address
                 </h2>
-                <div className="space-y-3">
+                <div className="space-y-2.5 text-xs text-gray-700">
                   <div className="flex items-start gap-2">
-                    <User className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
+                    <User className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
                     <div>
-                      <p className="font-semibold text-gray-900">
+                      <p className="font-bold text-gray-950">
                         {order.shippingAddress.recipientName}
                       </p>
-                      <p className="text-sm text-gray-500">
-                        {order.shippingAddress.type} Address
+                      <p className="text-[10px] text-gray-400 font-semibold uppercase mt-0.5">
+                        {order.shippingAddress.type}
                       </p>
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <MapPin className="w-5 h-5 text-gray-400 mt-0.5 flex-shrink-0" />
-                    <div className="text-sm text-gray-600">
-                      <p>{order.shippingAddress.address}</p>
-                      <p>
-                        {order.shippingAddress.upazila},{" "}
-                        {order.shippingAddress.district}
-                      </p>
-                      <p>
-                        {order.shippingAddress.division} -{" "}
-                        {order.shippingAddress.postalCode}
-                      </p>
-                      <p className="font-medium mt-1">
-                        {order.shippingAddress.country}
-                      </p>
+                    <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
+                    <div className="text-gray-600 leading-relaxed">
+                      <p className="font-semibold text-gray-800">{order.shippingAddress.address}</p>
+                      <p>{order.shippingAddress.upazila}, {order.shippingAddress.district}</p>
+                      <p>{order.shippingAddress.division} - {order.shippingAddress.postalCode}</p>
+                      <p className="font-bold text-[#5A0C3D] mt-0.5">{order.shippingAddress.country}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Phone className="w-5 h-5 text-gray-400 flex-shrink-0" />
-                    <p className="text-sm text-gray-600">
-                      {order.shippingAddress.phoneNumber}
-                    </p>
+                    <Phone className="w-4 h-4 text-gray-400 flex-shrink-0" />
+                    <p className="text-gray-650 font-semibold">{order.shippingAddress.phoneNumber}</p>
                   </div>
                 </div>
               </div>
             )}
-
-            {/* Customer Information */}
-            <div className="bg-white hasib-rounded shadow-sm p-6">
-              <h2 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <User className="w-5 h-5" />
-                Customer Information
-              </h2>
-              <div className="space-y-3">
-                <div>
-                  <p className="text-sm text-gray-500">Customer Code</p>
-                  <p className="font-medium text-gray-900">
-                    {order.customer.customerCode}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Full Name</p>
-                  <p className="font-medium text-gray-900">
-                    {order.customer.fullName}
-                  </p>
-                </div>
-                {order.customer.email && (
-                  <div className="flex items-center gap-2">
-                    <Mail className="w-4 h-4 text-gray-400" />
-                    <p className="text-sm text-gray-600">
-                      {order.customer.email}
-                    </p>
-                  </div>
-                )}
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-gray-400" />
-                  <p className="text-sm text-gray-600">
-                    {order.customer.phone}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Need Help */}
-            <div className="bg-gradient-to-br from-teal-50 to-blue-50 hasib-rounded shadow-sm p-6 border border-teal-100">
-              <h3 className="font-bold text-gray-900 mb-2">Need Help?</h3>
-              <p className="text-sm text-gray-600 mb-4">
-                Have questions about your order? Our support team is here to
-                help!
-              </p>
-              <Link
-                href="/corporate-enquiries"
-                className="inline-block w-full text-center px-4 py-2 bg-secound text-white rounded font-medium hover:bg-secound-hover transition-colors"
-              >
-                Contact Support
-              </Link>
-            </div>
           </div>
         </div>
       </div>

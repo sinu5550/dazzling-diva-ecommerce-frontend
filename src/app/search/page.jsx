@@ -4,7 +4,9 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Search, X, SlidersHorizontal, ChevronDown } from 'lucide-react';
 import Container from "@/components/Container/Container";
-import ProductCard from "@/components/Products/ProductCard";
+import DiscountProductCard from "@/components/DiscountProduct/DiscountProductCard";
+import QuickViewModal from "@/components/Modal/QuickViewModal";
+import { useUser } from "@/hooks/useUser";
 import { apiClient } from "@/lib/apiClient";
 import SkeletonLoader from "@/components/Skeleton/SkeletonLoader";
 
@@ -13,7 +15,12 @@ function SearchResultsContent() {
     const searchParams = useSearchParams();
     const searchQuery = searchParams.get('q') || '';
 
+    const { user } = useUser();
     const [products, setProducts] = useState([]);
+    const [wishlistLoading, setWishlistLoading] = useState({});
+    const [cartLoading, setCartLoading] = useState({});
+    const [selectedQuickViewProduct, setSelectedQuickViewProduct] = useState(null);
+    const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
     const [filteredProducts, setFilteredProducts] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [filters, setFilters] = useState({
@@ -514,9 +521,25 @@ function SearchResultsContent() {
                         />
                     ) : filteredProducts.length > 0 ? (
                         <>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
                                 {filteredProducts.map(product => (
-                                    <ProductCard key={product.id} product={product} />
+                                    <DiscountProductCard 
+                                        key={product.id} 
+                                        product={product} 
+                                        user={user}
+                                        isWishlistLoading={wishlistLoading[product.id] || false}
+                                        isCartLoading={cartLoading[product.id] || false}
+                                        onWishlistToggle={(productId, isLoading) =>
+                                            setWishlistLoading(prev => ({ ...prev, [productId]: isLoading }))
+                                        }
+                                        onCartToggle={(productId, isLoading) =>
+                                            setCartLoading(prev => ({ ...prev, [productId]: isLoading }))
+                                        }
+                                        onOpenQuickView={(prod) => {
+                                            setSelectedQuickViewProduct(prod);
+                                            setIsQuickViewOpen(true);
+                                        }}
+                                    />
                                 ))}
                             </div>
 
@@ -590,6 +613,15 @@ function SearchResultsContent() {
                     ) : null}
                 </div>
             </div>
+            <QuickViewModal
+                product={selectedQuickViewProduct}
+                isOpen={isQuickViewOpen}
+                onClose={() => {
+                    setIsQuickViewOpen(false);
+                    setSelectedQuickViewProduct(null);
+                }}
+                user={user}
+            />
         </Container>
     );
 }

@@ -6,6 +6,7 @@ import Image from 'next/image';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useCart } from '@/hooks/useCart';
 import { CartIcon } from '@/components/svg';
+import { PiShareFatLight } from 'react-icons/pi';
 import toast from 'react-hot-toast';
 
 import {
@@ -128,6 +129,22 @@ export default function NewProductCard({ product, user = null, onOpenQuickView }
         }
     };
 
+    const handleShare = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (navigator.share) {
+            navigator.share({
+                title: product.productName,
+                text: product.productName,
+                url: `/product/${product.slug}`,
+            });
+        } else {
+            navigator.clipboard.writeText(`${window.location.origin}/product/${product.slug}`);
+            toast.success('Link copied to clipboard!');
+        }
+    };
+
     return (
         <Link 
             href={`/product/${product.slug}`}
@@ -138,6 +155,17 @@ export default function NewProductCard({ product, user = null, onOpenQuickView }
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
+                {/* Share Button (top-right) */}
+                <div className="absolute top-3 right-3 z-30">
+                    <button
+                        onClick={handleShare}
+                        title="Share product"
+                        className="bg-white p-2 rounded-full shadow-md hover:shadow-lg hover:bg-purple-50 transition-all duration-300 transform hover:scale-110 cursor-pointer opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-2 lg:group-hover/card:translate-y-0 lg:group-hover/card:opacity-100"
+                    >
+                        <PiShareFatLight className="text-gray-600 hover:text-purple-600" size={16} />
+                    </button>
+                </div>
+
                 {/* Badges Container (top-left) */}
                 <div className="absolute top-3 left-3 z-30 flex flex-col gap-1.5 pointer-events-none">
                     {(product.newArrival || product.new || product.isNew || product.newProduct) && (

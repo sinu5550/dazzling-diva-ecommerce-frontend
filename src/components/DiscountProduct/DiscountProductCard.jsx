@@ -404,32 +404,49 @@ const DiscountProductCard = ({
       >
         {/* Image Container with rounded corners & border */}
         <div className="relative w-full aspect-[2/3] rounded-[12px] md:rounded-[12px] overflow-hidden bg-gray-100 border border-gray-100">
-          {/* Discount Badge */}
-          {discountValue > 0 && (
-            <div className="absolute top-0 left-0 z-20">
-              <span className="bg-[#FF0000] text-white text-[12px] md:text-[14px] font-bold px-4 pt-3 pb-1 rounded-[4px] font-outfit">
-                -{discountValue}%
-              </span>
-            </div>
-          )}
-
-          {/* Wishlist Heart Button (Top Right) */}
-          <button
-            onClick={toggleWishlist}
-            title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-            className="absolute top-3 right-3 z-20 w-8 h-8 md:w-10 md:h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 active:scale-95 transition-all cursor-pointer"
-            disabled={isWishlistLoading}
-          >
-            {isWishlistLoading ? (
-              <span className="animate-spin inline-block w-4 h-4 border-2 border-[#5A0C3D] border-t-transparent rounded-full"></span>
-            ) : (
-              <Heart 
-                className={`w-5 h-5 transition-colors duration-300 ${
-                  isWishlisted ? 'fill-[#5A0C3D] text-[#5A0C3D]' : 'text-black hover:text-[#5A0C3D]'
-                }`} 
-              />
+          {/* Badges Container (top-left) */}
+          <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 pointer-events-none">
+            {(product.newArrival || product.new || product.isNew || product.newProduct) && (
+              <div className="bg-[#5A0C3D] text-white text-[10px] md:text-[11px] font-bold px-2.5 py-1 uppercase tracking-wider shadow-sm w-fit font-outfit rounded-[4px]">
+                New In
+              </div>
             )}
-          </button>
+            {discountValue > 0 && (
+              <div className="bg-[#FF0000] text-white text-[10px] md:text-[11px] font-bold px-2.5 py-1 shadow-sm w-fit font-outfit rounded-[4px]">
+                -{discountValue}%
+              </div>
+            )}
+          </div>
+
+          {/* Action Buttons Container (Top Right) */}
+          <div className="absolute top-3 right-3 z-20 flex flex-col gap-2">
+            {/* Wishlist Heart Button */}
+            <button
+              onClick={toggleWishlist}
+              title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+              className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 active:scale-95 transition-all cursor-pointer"
+              disabled={isWishlistLoading}
+            >
+              {isWishlistLoading ? (
+                <span className="animate-spin inline-block w-4 h-4 border-2 border-[#5A0C3D] border-t-transparent rounded-full"></span>
+              ) : (
+                <Heart 
+                  className={`w-5 h-5 transition-colors duration-300 ${
+                    isWishlisted ? 'fill-[#5A0C3D] text-[#5A0C3D]' : 'text-black hover:text-[#5A0C3D]'
+                  }`} 
+                />
+              )}
+            </button>
+
+            {/* Share Button */}
+            <button
+              onClick={handleShare}
+              title="Share product"
+              className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-purple-50 active:scale-95 hover:scale-110 transition-all cursor-pointer transform opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-2 lg:group-hover/card:translate-y-0 lg:group-hover/card:opacity-100"
+            >
+              <PiShareFatLight className="text-black hover:text-purple-600" size={18} />
+            </button>
+          </div>
 
           {/* Product Image */}
           <div className="w-full h-full relative">

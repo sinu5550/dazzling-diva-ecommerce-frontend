@@ -9,7 +9,6 @@ import {
   Check,
   Trash2,
   MapPin,
-  Mail,
   Phone,
   Star,
   User,
@@ -21,8 +20,61 @@ import Swal from "sweetalert2";
 import AddressAddModal from "@/components/Modal/AddressModal/AddressAddModal";
 import AddressEditModal from "@/components/Modal/AddressModal/AddressEditModal";
 import { useUser } from "@/hooks/useUser";
-import LoadingSpinner from "@/components/ui/LoadingSpinner";
 import Link from "next/link";
+
+// Skeleton Loader for Address Book page
+const AddressBookSkeleton = () => {
+  return (
+    <div className="w-full bg-white rounded-[12px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6 text-gray-800 animate-pulse font-outfit border border-gray-100 space-y-6">
+      {/* Breadcrumbs */}
+      <div className="flex items-center gap-2 mb-6">
+        <div className="w-12 h-4 bg-gray-200 rounded-[4px]" />
+        <div className="w-4 h-4 bg-gray-200 rounded-full" />
+        <div className="w-20 h-4 bg-gray-200 rounded-[4px]" />
+        <div className="w-4 h-4 bg-gray-200 rounded-full" />
+        <div className="w-16 h-4 bg-gray-200 rounded-[4px]" />
+      </div>
+
+      {/* Header bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 p-4 bg-gray-50 border border-gray-100 rounded-[12px]">
+        <div className="space-y-2">
+          <div className="w-44 h-7 bg-gray-200 rounded-[6px]" />
+          <div className="w-64 h-4 bg-gray-200 rounded-[4px]" />
+        </div>
+        <div className="w-44 h-11 bg-gray-200 rounded-[6px]" />
+      </div>
+
+      {/* Address Grid Skeleton */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {[1, 2].map((i) => (
+          <div key={i} className="bg-white rounded-[12px] border border-gray-150 p-6 space-y-5">
+            <div className="flex items-start justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 bg-gray-150 rounded-[12px]" />
+                <div className="space-y-1.5">
+                  <div className="w-20 h-5 bg-gray-200 rounded-[4px]" />
+                  <div className="w-16 h-3 bg-gray-150 rounded-[4px]" />
+                </div>
+              </div>
+              <div className="flex gap-2">
+                <div className="w-8 h-8 bg-gray-150 rounded-[4px]" />
+                <div className="w-8 h-8 bg-gray-150 rounded-[4px]" />
+              </div>
+            </div>
+            <div className="w-full h-[1px] bg-gray-100" />
+            <div className="space-y-3">
+              <div className="w-36 h-4 bg-gray-200 rounded-[4px]" />
+              <div className="w-48 h-4 bg-gray-200 rounded-[4px]" />
+              <div className="w-full h-4 bg-gray-150 rounded-[4px]" />
+            </div>
+            <div className="w-full h-[1px] bg-gray-100" />
+            <div className="w-full h-10 bg-gray-50 rounded-[6px]" />
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
 
 const AddressBookPage = () => {
   const { user, loading: userLoading } = useUser();
@@ -34,7 +86,6 @@ const AddressBookPage = () => {
   const [addresses, setAddresses] = useState([]);
   const [error, setError] = useState(null);
 
-  // Fetch customer data and addresses
   useEffect(() => {
     const fetchCustomerData = async () => {
       if (!user?.email) {
@@ -61,11 +112,9 @@ const AddressBookPage = () => {
         }
 
         if (customerData && customerData.id) {
-          console.log("Customer found with ID:", customerData.id);
           setCustomerId(customerData.id);
           setAddresses(customerData.customerAddresses || []);
         } else {
-          console.log("No customer data found in response");
           setCustomerId(null);
           setAddresses([]);
           setError("Customer profile not found");
@@ -108,15 +157,10 @@ const AddressBookPage = () => {
       text: "This action cannot be undone",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#ef4444",
+      confirmButtonColor: "#C5221F",
       cancelButtonColor: "#6b7280",
       confirmButtonText: "Yes, Delete",
-      cancelButtonText: "Cancel",
-      customClass: {
-        popup: "rounded",
-        confirmButton: "hasib-rounded px-6 py-2.5",
-        cancelButton: "hasib-rounded px-6 py-2.5",
-      },
+      cancelButtonText: "Cancel"
     });
 
     if (result.isConfirmed) {
@@ -137,12 +181,9 @@ const AddressBookPage = () => {
             icon: "success",
             title: "Deleted Successfully",
             text: "Address has been removed",
-            confirmButtonColor: "#14b8a6",
+            confirmButtonColor: "#5A0C3D",
             timer: 2000,
-            showConfirmButton: false,
-            customClass: {
-              popup: "rounded",
-            },
+            showConfirmButton: false
           });
           await fetchAddresses();
         } else {
@@ -153,10 +194,7 @@ const AddressBookPage = () => {
           icon: "error",
           title: "Error",
           text: error?.message || "Failed to delete address",
-          confirmButtonColor: "#14b8a6",
-          customClass: {
-            popup: "rounded",
-          },
+          confirmButtonColor: "#5A0C3D"
         });
       }
     }
@@ -187,12 +225,9 @@ const AddressBookPage = () => {
         Swal.fire({
           icon: "success",
           title: "Default Address Updated",
-          confirmButtonColor: "#14b8a6",
+          confirmButtonColor: "#5A0C3D",
           timer: 1500,
-          showConfirmButton: false,
-          customClass: {
-            popup: "rounded",
-          },
+          showConfirmButton: false
         });
         await fetchAddresses();
       } else {
@@ -204,10 +239,7 @@ const AddressBookPage = () => {
         icon: "error",
         title: "Error",
         text: error?.message || "Failed to set default address",
-        confirmButtonColor: "#14b8a6",
-        customClass: {
-          popup: "rounded",
-        },
+        confirmButtonColor: "#5A0C3D"
       });
     }
   };
@@ -232,19 +264,19 @@ const AddressBookPage = () => {
     switch (type) {
       case "Home":
         return {
-          bg: "bg-gradient-to-br from-blue-50 to-blue-100",
-          text: "text-blue-700",
-          border: "border-blue-200",
+          bg: "bg-[#5A0C3D]/5",
+          text: "text-[#5A0C3D]",
+          border: "border-[#5A0C3D]/20",
         };
       case "Office":
         return {
-          bg: "bg-gradient-to-br from-purple-50 to-purple-100",
-          text: "text-purple-700",
-          border: "border-purple-200",
+          bg: "bg-blue-50",
+          text: "text-blue-700",
+          border: "border-blue-200",
         };
       default:
         return {
-          bg: "bg-gradient-to-br from-gray-50 to-gray-100",
+          bg: "bg-gray-50",
           text: "text-gray-700",
           border: "border-gray-200",
         };
@@ -252,115 +284,110 @@ const AddressBookPage = () => {
   };
 
   if (userLoading || isLoading) {
-    return <LoadingSpinner />;
+    return <AddressBookSkeleton />;
   }
 
   return (
-    <div className=" bg-stone-50 py-8 hasib-rounded">
-      <div className="max-w-6xl mx-auto px-4 space-y-5">
+    <div className="w-full bg-white rounded-[12px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6 text-gray-800 font-outfit border border-gray-100">
+      <div className="space-y-6">
+        {/* Breadcrumbs */}
         <div className="flex items-center gap-2 text-sm text-gray-600">
-          <Link
-            href="/"
-            className="hover:text-teal-600 flex items-center gap-1"
-          >
+          <Link href="/" className="hover:text-[#5A0C3D] flex items-center gap-1 transition-colors duration-200">
             <HomeIcon className="w-4 h-4" />
             Home
           </Link>
-          <ChevronRight className="w-4 h-4" />
-          <Link href="/my-account" className="hover:text-teal-600">
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+          <Link href="/my-account" className="hover:text-[#5A0C3D] transition-colors duration-200">
             My Account
           </Link>
-          <ChevronRight className="w-4 h-4" />
-          <span>My Address</span>
+          <ChevronRight className="w-4 h-4 text-gray-400" />
+          <span className="text-gray-900 font-medium">My Address</span>
         </div>
+
         {/* Header Section */}
-        <div className="bg-white p-4 hasib-rounded shadow">
+        <div className="bg-[#5A0C3D]/5 p-4 rounded-[12px] border border-[#5A0C3D]/10">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-gray-700 font-philosopher">
+            <div className="space-y-1">
+              <h1 className="text-xl font-bold text-gray-900">
                 Shipping Addresses
               </h1>
-              <p className="text-gray-600 font-medium">
+              <p className="text-xs text-gray-500 font-medium">
                 Manage and organize your delivery locations
               </p>
             </div>
 
             <button
               onClick={() => setShowAddModal(true)}
-              className="group flex items-center justify-center gap-3 px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white rounded shadow-md hover:shadow-lg transition-all duration-300 transform cursor-pointer w-full md:w-auto"
+              className="group flex items-center justify-center gap-2.5 px-4 py-2.5 bg-[#5A0C3D] hover:bg-[#4a0a32] text-white rounded-[6px] transition-all duration-300 font-semibold text-sm cursor-pointer shadow-sm w-full md:w-auto"
             >
-              <div className="w-7 h-7 bg-white/20 hasib-rounded flex items-center justify-center group-hover:scale-110 transition-transform">
-                <Plus className="w-4 h-4" />
-              </div>
-              <span className="font-semibold">Add New Address</span>
+              <Plus className="w-4 h-4" />
+              <span>Add New Address</span>
             </button>
           </div>
         </div>
 
         {/* Content Section */}
-        <div className="p-6 md:p-8">
+        <div className="mt-4">
           {addresses.length === 0 ? (
             /* Empty State */
-            <div className="flex flex-col items-center justify-center py-20 px-4">
-              <div className="w-24 h-24 bg-gradient-to-br from-teal-50 to-teal-100 rounded-3xl flex items-center justify-center mb-6 shadow-sm">
-                <MapPin className="w-12 h-12 text-teal-600" />
+            <div className="flex flex-col items-center justify-center py-16 px-4">
+              <div className="w-20 h-20 bg-[#5A0C3D]/5 rounded-[24px] flex items-center justify-center mb-6">
+                <MapPin className="w-10 h-10 text-[#5A0C3D]" />
               </div>
-              <h3 className="text-2xl font-bold text-gray-800 mb-2">
+              <h3 className="text-xl font-bold text-gray-900 mb-2">
                 No Addresses Yet
               </h3>
-              <p className="text-gray-500 mb-8 text-center max-w-md">
-                Get started by adding your first shipping address for seamless
-                deliveries
+              <p className="text-gray-500 mb-8 text-center max-w-sm text-sm">
+                Get started by adding your first shipping address for seamless deliveries
               </p>
               <button
                 onClick={() => setShowAddModal(true)}
-                className="inline-flex items-center gap-3 px-8 py-3.5 bg-gradient-to-r from-teal-500 to-teal-600 hover:from-teal-600 hover:to-teal-700 text-white rounded shadow-md hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 font-semibold"
+                className="inline-flex items-center gap-2 px-6 py-3 bg-[#5A0C3D] hover:bg-[#4a0a32] text-white rounded-[6px] shadow-sm font-bold text-sm cursor-pointer"
               >
-                <Plus className="w-5 h-5" />
+                <Plus className="w-4 h-4" />
                 Add Your First Address
               </button>
             </div>
           ) : (
             /* Address Grid */
-            <div className="grid grid-cols-1 lg:grid-cols-2  gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {addresses.map((item) => {
                 const typeColors = getTypeColor(item.type);
 
                 return (
                   <div
                     key={item.id}
-                    className={`group relative bg-white rounded-2xl border-2 transition-all duration-300 hover:shadow-xl ${
+                    className={`relative bg-white rounded-[12px] border transition-all duration-200 hover:shadow-md ${
                       item.isDefault
-                        ? "border-teal-400 shadow-lg shadow-teal-100/50"
-                        : "border-gray-200 hover:border-teal-300"
+                        ? "border-[#5A0C3D] shadow-sm"
+                        : "border-gray-200 hover:border-[#5A0C3D]/40"
                     }`}
                   >
                     {/* Default Badge */}
                     {item.isDefault && (
-                      <div className="absolute -top-3 left-6 px-4 py-1.5 bg-gradient-to-r from-rose-500 to-rose-700 text-white text-xs font-bold rounded-full shadow-md flex items-center gap-1.5">
-                        <Star className="w-3.5 h-3.5 fill-current" />
+                      <div className="absolute -top-3 left-6 px-3 py-1 bg-[#5A0C3D] text-white text-[10px] font-bold rounded-full shadow-sm flex items-center gap-1">
+                        <Star className="w-3 h-3 fill-current" />
                         DEFAULT ADDRESS
                       </div>
                     )}
 
-                    <div className="p-6 space-y-5">
+                    <div className="p-6 space-y-4">
                       {/* Header */}
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
                           <div
-                            className={`${typeColors.bg} w-12 h-12 hasib-rounded flex items-center justify-center shadow-sm border ${typeColors.border}`}
+                            className={`${typeColors.bg} w-11 h-11 rounded-[8px] flex items-center justify-center border ${typeColors.border}`}
                           >
                             <span className={typeColors.text}>
                               {getIcon(item.type)}
                             </span>
                           </div>
                           <div>
-                            <h3 className="font-bold text-gray-900 text-lg">
+                            <h3 className="font-bold text-gray-900 text-base">
                               {item.type}
                             </h3>
-                            <div className="flex items-center gap-1.5 mt-0.5">
-                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                              <span className="text-xs text-green-600 font-semibold">
+                            <div className="flex items-center gap-1 mt-0.5">
+                              <span className="text-[11px] text-[#137333] font-semibold">
                                 Active
                               </span>
                             </div>
@@ -368,17 +395,17 @@ const AddressBookPage = () => {
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex gap-2">
+                        <div className="flex gap-1.5">
                           <button
                             onClick={() => openEditModal(item)}
-                            className="p-2 text-amber-600 hover:bg-amber-50 hasib-rounded transition-colors border border-transparent hover:border-amber-200"
+                            className="p-2 text-stone-600 hover:text-[#5A0C3D] hover:bg-[#5A0C3D]/5 rounded-[6px] transition-colors border border-gray-100"
                             title="Edit Address"
                           >
                             <Edit className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteAddress(item.id)}
-                            className="p-2 text-red-600 hover:bg-red-50 hasib-rounded transition-colors border border-transparent hover:border-red-200"
+                            className="p-2 text-red-600 hover:bg-red-50 rounded-[6px] transition-colors border border-gray-100"
                             title="Delete Address"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -390,10 +417,9 @@ const AddressBookPage = () => {
                       <div className="border-t border-gray-100"></div>
 
                       {/* Address Details */}
-                      <div className="space-y-3">
-                        {/* Recipient Name */}
+                      <div className="space-y-2 text-sm text-gray-700">
                         {item.recipientName && (
-                          <div className="flex items-start gap-3">
+                          <div className="flex items-start gap-2">
                             <User className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
                             <p className="text-gray-900 font-semibold">
                               {item.recipientName}
@@ -401,37 +427,29 @@ const AddressBookPage = () => {
                           </div>
                         )}
 
-                        {/* Phone Number */}
                         {item.phoneNumber && (
-                          <div className="flex items-start gap-3">
+                          <div className="flex items-start gap-2">
                             <Phone className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                            <p className="text-gray-700 font-medium">
+                            <p className="text-gray-600 font-medium">
                               {item.phoneNumber}
                             </p>
                           </div>
                         )}
 
-                        {/* Address */}
-                        <div className="flex items-start gap-3">
+                        <div className="flex items-start gap-2">
                           <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                          <p className="text-gray-700 font-medium leading-relaxed">
-                            {item.address}
-                          </p>
-                        </div>
-
-                        <div className="pl-7 space-y-1.5 text-sm text-gray-600">
-                          <p className="font-medium">
-                            {item.upazila}, {item.district}
-                          </p>
-                          <p>
-                            {item.division} - {item.postalCode}
-                          </p>
-                          {item.city && (
-                            <p className="text-gray-500">City: {item.city}</p>
-                          )}
-                          <p className="font-semibold text-gray-700 pt-1">
-                            {item.country}
-                          </p>
+                          <div className="space-y-1">
+                            <p className="font-semibold text-gray-900">{item.address}</p>
+                            <p className="text-xs text-gray-500">
+                              {item.upazila}, {item.district}, {item.division} - {item.postalCode}
+                            </p>
+                            {item.city && (
+                              <p className="text-xs text-gray-400">City: {item.city}</p>
+                            )}
+                            <p className="text-xs font-bold text-[#5A0C3D] pt-0.5">
+                              {item.country}
+                            </p>
+                          </div>
                         </div>
                       </div>
 
@@ -441,42 +459,39 @@ const AddressBookPage = () => {
                           <div className="border-t border-gray-100"></div>
                           <button
                             onClick={() => handleSetDefault(item.id)}
-                            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gradient-to-r from-gray-50 to-gray-100 hover:from-teal-50 hover:to-teal-100 text-gray-700 hover:text-teal-700 rounded border border-gray-200 hover:border-teal-300 transition-all duration-300 font-semibold group"
+                            className="w-full flex items-center justify-center gap-1.5 px-4 py-2 bg-gray-50 hover:bg-[#5A0C3D]/5 text-gray-700 hover:text-[#5A0C3D] rounded-[6px] border border-gray-200 hover:border-[#5A0C3D]/20 transition-all duration-200 text-xs font-bold cursor-pointer"
                           >
-                            <Check className="w-4 h-4 group-hover:scale-110 transition-transform" />
+                            <Check className="w-3.5 h-3.5" />
                             Set as Default
                           </button>
                         </>
                       )}
                     </div>
-
-                    {/* Hover Effect Gradient */}
-                    <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-teal-500/0 to-amber-500/0 group-hover:from-teal-500/5 group-hover:to-amber-500/5 transition-all duration-300 pointer-events-none"></div>
                   </div>
                 );
               })}
             </div>
           )}
         </div>
-
-        {/* Modals */}
-        <AddressAddModal
-          isOpen={showAddModal}
-          onClose={() => setShowAddModal(false)}
-          onSuccess={fetchAddresses}
-          customerId={customerId}
-        />
-
-        <AddressEditModal
-          isOpen={showEditModal}
-          onClose={() => {
-            setShowEditModal(false);
-            setSelectedAddress(null);
-          }}
-          address={selectedAddress}
-          onSuccess={fetchAddresses}
-        />
       </div>
+
+      {/* Modals */}
+      <AddressAddModal
+        isOpen={showAddModal}
+        onClose={() => setShowAddModal(false)}
+        onSuccess={fetchAddresses}
+        customerId={customerId}
+      />
+
+      <AddressEditModal
+        isOpen={showEditModal}
+        onClose={() => {
+          setShowEditModal(false);
+          setSelectedAddress(null);
+        }}
+        address={selectedAddress}
+        onSuccess={fetchAddresses}
+      />
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import ProductsPageClient from '@/components/Products/ProductsPageClient';
+import AllProductsClient from '@/components/Products/AllProductsClient';
 import { getProductsBySubCategoryName } from '@/lib/products';
 
 export default async function SubCategoryProductsPage({ params, searchParams }) {
@@ -9,7 +9,7 @@ export default async function SubCategoryProductsPage({ params, searchParams }) 
   const page = parseInt(resolvedSearchParams.page || '1');
 
   try {
-    const response = await getProductsBySubCategoryName(subCategoryName, page, 100);
+    const response = await getProductsBySubCategoryName(subCategoryName, page, 24);
 
     if (!response.products.length) {
       return (
@@ -21,11 +21,11 @@ export default async function SubCategoryProductsPage({ params, searchParams }) 
     }
 
     return (
-      <ProductsPageClient
+      <AllProductsClient
         initialProducts={response.products}
-        subCategoryName={response.products[0]?.subCategory.name || subCategoryName}
-        filterType="subcategory"
-        isLoading={true}
+        title={subCategoryName}
+        breadcrumbLabel={subCategoryName}
+        fetchUrl={`/api/product?subCategoryName=${encodeURIComponent(subCategoryName)}&page=1&limit=1000`}
       />
     );
   } catch (error) {

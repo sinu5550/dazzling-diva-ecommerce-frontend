@@ -1,31 +1,16 @@
-import ProductDetailsClient from '@/components/Products/ProductDetailsClient';
-import { getProductBySlug, getRelatedProducts } from '@/lib/products';
-import { notFound } from 'next/navigation';
+import { getProductBySlug } from '@/lib/products';
+
+import ProductDetailsLoader from '@/components/Products/ProductDetailsLoader';
 
 export default async function ProductDetailsPage({ params }) {
-
-    
     const resolvedParams = await params;
     const slug = resolvedParams.slug;
-    const product = await getProductBySlug(slug);
-
-    if (!product) {
-        console.log('❌ Product not found, showing 404');
-        notFound();
-    }
-
-
-    // Fetch related products
-    const relatedProducts = await getRelatedProducts(
-        product.subCategoryId,
-        product.id,
-        4
-    );
 
     return (
-        <ProductDetailsClient
-            product={product} 
-            relatedProducts={relatedProducts}
+        <ProductDetailsLoader
+            key={slug}
+            slug={slug}
+            type="product"
         />
     );
 }
