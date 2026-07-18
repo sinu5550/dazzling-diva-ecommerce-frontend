@@ -100,13 +100,11 @@ export const useWishlist = (user = null) => {
         };
 
         window.addEventListener('storage', handleStorageChange);
-        window.addEventListener(WISHLIST_EVENTS.UPDATED, handleWishlistUpdate);
         window.addEventListener(WISHLIST_EVENTS.ITEM_ADDED, handleWishlistUpdate);
         window.addEventListener(WISHLIST_EVENTS.ITEM_REMOVED, handleWishlistUpdate);
 
         return () => {
             window.removeEventListener('storage', handleStorageChange);
-            window.removeEventListener(WISHLIST_EVENTS.UPDATED, handleWishlistUpdate);
             window.removeEventListener(WISHLIST_EVENTS.ITEM_ADDED, handleWishlistUpdate);
             window.removeEventListener(WISHLIST_EVENTS.ITEM_REMOVED, handleWishlistUpdate);
         };

@@ -79,7 +79,7 @@ export default function DiscountProductDetailsClient({ product }) {
 
     const checkIfInCart = () => {
         try {
-            const storedCart = localStorage.getItem('bd_plaza_cart');
+            const storedCart = localStorage.getItem('dazzling_diva_cart');
             if (!storedCart) return;
 
             const cart = JSON.parse(storedCart);
@@ -242,9 +242,8 @@ export default function DiscountProductDetailsClient({ product }) {
                 productType: 'variant'
             })
         };
-
         try {
-            const existingCartJSON = localStorage.getItem('bd_plaza_cart');
+            const existingCartJSON = localStorage.getItem('dazzling_diva_cart');
             let existingCart = existingCartJSON ? JSON.parse(existingCartJSON) : [];
 
             const existingProductIndex = isVariantProduct
@@ -258,7 +257,7 @@ export default function DiscountProductDetailsClient({ product }) {
                 existingCart.push(cartProduct);
             }
 
-            localStorage.setItem('bd_plaza_cart', JSON.stringify(existingCart));
+            localStorage.setItem('dazzling_diva_cart', JSON.stringify(existingCart));
             window.dispatchEvent(new CustomEvent('cartUpdated', {
                 detail: {
                     items: existingCart,

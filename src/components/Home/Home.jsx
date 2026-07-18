@@ -57,28 +57,31 @@ export async function fetchActiveCampaigns() {
 }
 
 const Home = async () => {
-
-
-  const topPickData = await apiClient("/api/top-picks");
-  const promoData = await apiClient("/api/promos");
-  const heroSliderData = await apiClient("/api/hero-sliders");
-  const couponData = await apiClient("/api/coupon");
-  const productData = await apiClient("/api/product");
-  const newProductData = await apiClient("/api/product/new");
-  const topSellingProductData = await apiClient("/api/product/top-selling?limit=10");
-  const midBannerData = await apiClient("/api/mid-banner");
-  const bentoImageGalleryData = await apiClient("/api/bento-gallery");
-
-
-  const [mainCategories, activeCampaigns] = await Promise.allSettled([
+  const [
+    heroSliderRes,
+    newProductRes,
+    topSellingRes,
+    midBannerRes,
+    bentoGalleryRes,
+    mainCategoriesRes,
+    activeCampaignsRes
+  ] = await Promise.allSettled([
+    apiClient("/api/hero-sliders"),
+    apiClient("/api/product/new"),
+    apiClient("/api/product/top-selling?limit=10"),
+    apiClient("/api/mid-banner"),
+    apiClient("/api/bento-gallery"),
     getMainCategories(),
-    fetchActiveCampaigns(),
+    fetchActiveCampaigns()
   ]);
 
-  const mainCategoriesData =
-    mainCategories.status === "fulfilled" ? mainCategories.value : [];
-  const campaignsData =
-    activeCampaigns.status === "fulfilled" ? activeCampaigns.value : [];
+  const heroSliderData = heroSliderRes.status === "fulfilled" ? heroSliderRes.value : [];
+  const newProductData = newProductRes.status === "fulfilled" ? newProductRes.value : { data: { products: [] } };
+  const topSellingProductData = topSellingRes.status === "fulfilled" ? topSellingRes.value : { data: { products: [] } };
+  const midBannerData = midBannerRes.status === "fulfilled" ? midBannerRes.value : null;
+  const bentoImageGalleryData = bentoGalleryRes.status === "fulfilled" ? bentoGalleryRes.value : [];
+  const mainCategoriesData = mainCategoriesRes.status === "fulfilled" ? mainCategoriesRes.value : [];
+  const campaignsData = activeCampaignsRes.status === "fulfilled" ? activeCampaignsRes.value : [];
 
   // Extract all categories into a flat array
   const allCategories = getAllCategories(mainCategoriesData);

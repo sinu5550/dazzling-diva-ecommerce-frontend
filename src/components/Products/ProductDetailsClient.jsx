@@ -100,7 +100,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
 
     const checkIfInCart = () => {
         try {
-            const storedCart = localStorage.getItem('bd_plaza_cart');
+            const storedCart = localStorage.getItem('dazzling_diva_cart');
             if (storedCart) {
                 const cart = JSON.parse(storedCart);
 
@@ -291,7 +291,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
         };
 
         try {
-            const existingCartJSON = localStorage.getItem('bd_plaza_cart');
+            const existingCartJSON = localStorage.getItem('dazzling_diva_cart');
             let existingCart = existingCartJSON ? JSON.parse(existingCartJSON) : [];
 
             // For variant products, check variant ID match
@@ -308,7 +308,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                 existingCart.push(cartProduct);
             }
 
-            localStorage.setItem('bd_plaza_cart', JSON.stringify(existingCart));
+            localStorage.setItem('dazzling_diva_cart', JSON.stringify(existingCart));
 
             const event = new CustomEvent('cartUpdated', {
                 detail: {
