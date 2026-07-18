@@ -8,7 +8,7 @@ export const useBundleCart = (user = null) => {
     const [bundleCart, setBundleCart] = useState([]);
     const [isInitialized, setIsInitialized] = useState(false);
 
-    const BUNDLE_CART_KEY = 'bd_plaza_bundle_cart';
+    const BUNDLE_CART_KEY = 'dazzling_diva_bundle_cart';
     const BUNDLE_LAST_UPDATE_KEY = 'bundle_cart_last_update';
 
     // Emit bundle cart update event

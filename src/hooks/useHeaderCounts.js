@@ -32,7 +32,7 @@ export const useHeaderCounts = (user = null) => {
 
         // Get regular cart count (number of unique products)
         try {
-            const regularCart = localStorage.getItem('bd_plaza_cart');
+            const regularCart = localStorage.getItem('dazzling_diva_cart');
             if (regularCart) {
                 const parsed = JSON.parse(regularCart);
                 regularProductCount = parsed.length; 
@@ -43,7 +43,7 @@ export const useHeaderCounts = (user = null) => {
 
         // Get bundle cart count (number of unique bundles)
         try {
-            const bundleCart = localStorage.getItem('bd_plaza_bundle_cart');
+            const bundleCart = localStorage.getItem('dazzling_diva_bundle_cart');
             if (bundleCart) {
                 const parsed = JSON.parse(bundleCart);
                 bundleProductCount = parsed.length; // Count number of unique bundles
@@ -58,7 +58,7 @@ export const useHeaderCounts = (user = null) => {
     // Function to calculate wishlist count
     const calculateWishlistCount = () => {
         try {
-            const wishlist = localStorage.getItem('bd_plaza_wishlist');
+            const wishlist = localStorage.getItem('dazzling_diva_wishlist');
             if (wishlist) {
                 const parsed = JSON.parse(wishlist);
                 return Array.isArray(parsed) ? parsed.length : 0;
@@ -121,9 +121,9 @@ export const useHeaderCounts = (user = null) => {
         // Listen for storage changes (cross-tab updates)
         const handleStorageChange = (e) => {
             if (
-                e.key === 'bd_plaza_cart' ||
-                e.key === 'bd_plaza_bundle_cart' ||
-                e.key === 'bd_plaza_wishlist'
+                e.key === 'dazzling_diva_cart' ||
+                e.key === 'dazzling_diva_bundle_cart' ||
+                e.key === 'dazzling_diva_wishlist'
             ) {
                 setCartCount(calculateTotalCartCount());
                 setWishlistCount(calculateWishlistCount());

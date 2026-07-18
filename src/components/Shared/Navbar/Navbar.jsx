@@ -1,5 +1,3 @@
-import { Suspense } from 'react';
-import { NavbarSkeleton } from "./NavbarSkeleton";
 import { apiClient } from "@/lib/apiClient";
 import NavbarClient from "./NavbarClient";
 
@@ -62,12 +60,10 @@ export default async function Navbar() {
     };
 
     return (
-        <Suspense fallback={<NavbarSkeleton />}>
-            <NavbarClient
-                data={navbarData}
-                contactData={contactData}
-                config={CONFIG}
-            />
-        </Suspense>
+        <NavbarClient
+            data={navbarData}
+            contactData={contactData}
+            config={CONFIG}
+        />
     );
 }

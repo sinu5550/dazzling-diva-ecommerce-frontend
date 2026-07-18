@@ -3,7 +3,7 @@
 
 import { useState, useEffect } from 'react';
 
-const CHECKOUT_SESSION_KEY = 'bd_plaza_checkout_session';
+const CHECKOUT_SESSION_KEY = 'dazzling_diva_checkout_session';
 
 export const useCheckoutSession = () => {
     const [checkoutSession, setCheckoutSession] = useState(null);

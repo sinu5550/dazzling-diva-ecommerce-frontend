@@ -5,7 +5,17 @@ import { getCurrentUser } from '@/lib/auth-helpers';
 
 export const useUser = () => {
     
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState(() => {
+        if (typeof window !== 'undefined') {
+            try {
+                const stored = localStorage.getItem('supabase_user');
+                return stored ? JSON.parse(stored) : null;
+            } catch (e) {
+                return null;
+            }
+        }
+        return null;
+    });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 

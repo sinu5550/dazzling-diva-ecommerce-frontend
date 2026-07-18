@@ -128,9 +128,7 @@ const Topbar = ({
                     </Link>
 
                     {/* Account Section */}
-                    {loading ? (
-                        <div className="w-10 h-10 rounded-full border border-[#44444433] bg-white animate-pulse" />
-                    ) : user ? (
+                    {user ? (
                         <div className="relative group/account">
                             <Link
                                 href="/my-account"
@@ -146,9 +144,13 @@ const Topbar = ({
                                 </div>
                                 <div className="hidden md:flex flex-col items-start leading-tight text-left">
                                     <span className="text-[9px] text-gray-500 font-normal">Hello,</span>
-                                    <span className="text-[12px] font-semibold text-black max-w-[80px] truncate">
-                                        {getDisplayName()}
-                                    </span>
+                                    {loading ? (
+                                        <div className="h-3 w-14 bg-gray-200 animate-pulse rounded mt-0.5" />
+                                    ) : (
+                                        <span className="text-[12px] font-semibold text-black max-w-[80px] truncate">
+                                            {getDisplayName()}
+                                        </span>
+                                    )}
                                 </div>
                             </Link>
                             {/* Hover Dropdown Menu / Dashboard Access */}
