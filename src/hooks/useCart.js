@@ -17,7 +17,7 @@ export const useCart = (user = null) => {
     const [loading, setLoading] = useState(true);
 
     const isAuthenticated = !!user;
-    const CART_STORAGE_KEY = 'bd_plaza_cart';
+    const CART_STORAGE_KEY = 'dazzling_diva_cart';
 
     // Get cart count
     const getCartCount = useCallback(() => {
@@ -69,12 +69,14 @@ export const useCart = (user = null) => {
                 setCart(localCart);
             }
         } catch (error) {
-            console.error('Error loading cart:', error);
+            console.warn('Error loading cart (falling back to localStorage):', error.message);
 
-            if (!isAuthenticated) {
-                const stored = localStorage.getItem(CART_STORAGE_KEY);
-                const localCart = stored ? JSON.parse(stored) : [];
-                setCart(localCart);
+            const stored = localStorage.getItem(CART_STORAGE_KEY);
+            const localCart = stored ? JSON.parse(stored) : [];
+            setCart(localCart);
+
+            if (isAuthenticated) {
+                toast.error('Failed to sync cart with server');
             }
         } finally {
             setLoading(false);
@@ -100,10 +102,16 @@ export const useCart = (user = null) => {
 
         window.addEventListener('storage', handleStorageChange);
         window.addEventListener(CART_EVENTS.UPDATED, handleCartUpdate);
+        window.addEventListener(CART_EVENTS.ITEM_ADDED, handleCartUpdate);
+        window.addEventListener(CART_EVENTS.ITEM_REMOVED, handleCartUpdate);
+        window.addEventListener(CART_EVENTS.QUANTITY_CHANGED, handleCartUpdate);
 
         return () => {
             window.removeEventListener('storage', handleStorageChange);
             window.removeEventListener(CART_EVENTS.UPDATED, handleCartUpdate);
+            window.removeEventListener(CART_EVENTS.ITEM_ADDED, handleCartUpdate);
+            window.removeEventListener(CART_EVENTS.ITEM_REMOVED, handleCartUpdate);
+            window.removeEventListener(CART_EVENTS.QUANTITY_CHANGED, handleCartUpdate);
         };
     }, [loadCart]);
 

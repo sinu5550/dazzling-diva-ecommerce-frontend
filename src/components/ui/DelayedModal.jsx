@@ -241,17 +241,17 @@ export default function DelayedModal({ allProducts }) {
   // Don't show modal if no products
   if (!showModal || formattedProducts.length === 0) return null;
 
-  return (
+    return (
     <div
       className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ease-out ${
         isVisible
-          ? "backdrop-blur-sm bg-black/30"
+          ? "backdrop-blur-sm bg-black/40"
           : "backdrop-blur-none bg-black/0"
       }`}
       onClick={handleClose}
     >
       <div
-        className={`relative bg-white hasib-rounded shadow-xl max-w-5xl w-full transform transition-all duration-300 ease-out ${
+        className={`relative bg-white rounded-xl shadow-xl max-w-4xl w-full overflow-hidden transform transition-all duration-300 ease-out font-outfit ${
           isVisible
             ? "scale-100 opacity-100 translate-y-0"
             : "scale-95 opacity-0 translate-y-4"
@@ -261,11 +261,11 @@ export default function DelayedModal({ allProducts }) {
         {/* Close button */}
         <button
           onClick={handleClose}
-          className="absolute top-3 right-3 text-white hover:text-gray-200 transition-colors duration-200 p-1 rounded-full z-10 bg-black/30"
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200 p-1.5 rounded-full z-15 bg-gray-100 hover:bg-gray-200"
           aria-label="Close modal"
         >
           <svg
-            className="w-5 h-5"
+            className="w-4 h-4"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -273,144 +273,138 @@ export default function DelayedModal({ allProducts }) {
             <path
               strokeLinecap="round"
               strokeLinejoin="round"
-              strokeWidth={2}
+              strokeWidth={2.5}
               d="M6 18L18 6M6 6l12 12"
             />
           </svg>
         </button>
 
         {/* Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-2">
-          {/* Left section with background image */}
-          <div
-            className="relative p-8 text-white rounded-l-lg min-h-[400px]"
-            style={{
-              backgroundImage:
-                "url('https://res.cloudinary.com/du04p5ikw/image/upload/v1758004433/dealy_i120zf.jpg')",
-              backgroundSize: "cover",
-              backgroundPosition: "center",
-            }}
-          >
-            <div className="absolute inset-0 bg-black/40 rounded-l-lg"></div>
-            <div className="relative z-10 h-full flex flex-col justify-center items-center text-center">
-              <h2 className="text-2xl lg:text-4xl font-bold mb-4 font-philosopher">
+        <div className="grid grid-cols-1 md:grid-cols-12 min-h-[420px]">
+          {/* Left section - Solid System Color Banner */}
+          <div className="md:col-span-5 bg-[#5A0C3D] p-8 text-white flex flex-col justify-center items-center text-center relative">
+            <div className="relative z-10 flex flex-col justify-center items-center h-full">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] mb-2 bg-[#CCFF00]/10 px-2.5 py-1 rounded-full">
+                Exclusive Offer
+              </span>
+              <h2 className="text-2xl lg:text-3xl font-bold mb-4 font-outfit tracking-tight">
                 Don't Miss These Deals!
               </h2>
-              <p className="text-lg mb-6">{getDiscountText()}</p>
+              <p className="text-xl font-bold mb-6 font-outfit text-[#CCFF00]">
+                {getDiscountText().replace('₹', '৳')}
+              </p>
 
               {/* Show coupon code only if active coupon exists */}
               {activeCoupon && (
-                <>
-                  <div className="bg-white py-2 px-4 mb-6 max-w-xl">
-                    <div className="flex items-center justify-center space-x-2">
-                      <span className="text-lg font-bold text-gray-900 tracking-wide">
-                        {activeCoupon.code || "Dazzling Diva"}
-                      </span>
-                      <span className="mx-2 text-gray-500">|</span>
-                      <button
-                        className="text-amber-600 hover:text-amber-700"
-                        onClick={() =>
-                          copyToClipboard(activeCoupon.code || "Dazzling Diva")
-                        }
+                <div className="w-full">
+                  <div className="bg-white/10 backdrop-blur-sm border border-white/20 py-2.5 px-4 rounded-lg mb-4 flex items-center justify-between gap-2 max-w-[240px] mx-auto">
+                    <span className="text-base font-bold text-white tracking-wider font-outfit">
+                      {activeCoupon.code || "DAZZLE"}
+                    </span>
+                    <button
+                      className="text-[#CCFF00] hover:text-white transition-colors duration-200"
+                      onClick={() =>
+                        copyToClipboard(activeCoupon.code || "DAZZLE")
+                      }
+                      title="Copy code"
+                    >
+                      <svg
+                        className="w-4 h-4 cursor-pointer"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
                       >
-                        <svg
-                          className="w-4 h-4 cursor-pointer"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                          />
-                        </svg>
-                      </button>
-                    </div>
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                        />
+                      </svg>
+                    </button>
                   </div>
-                  <p className="text-sm text-white/90 mb-6 max-w-xs">
-                    {getCouponDescription()}
+                  <p className="text-xs text-white/80 mb-6 max-w-[240px] mx-auto leading-relaxed">
+                    {getCouponDescription().replace('₹', '৳')}
                   </p>
-                </>
+                </div>
               )}
 
               {/* If no active coupon, show alternative message */}
               {!activeCoupon && (
-                <p className="text-sm text-white/90 mb-6 max-w-xs">
-                  Check out our exclusive deals on selected products. Limited
-                  time offers!
+                <p className="text-xs text-white/80 mb-6 max-w-[240px] mx-auto leading-relaxed">
+                  Check out our exclusive deals on selected products. Limited time offers!
                 </p>
               )}
 
               {/* Action buttons */}
-              <div className="w-full max-w-sm">
-                <button
-                  onClick={() => handleButtonClick("/discount-campaigns")}
-                  className="w-full bg-[#FDDA06] text-gray-900 font-semibold py-3 hover:bg-yellow-500 transition-colors duration-200"
-                >
-                  {activeCoupon ? "Grab the discount" : "View All Deals"}
-                </button>
-              </div>
+              <button
+                onClick={() => handleButtonClick("/discount-campaigns")}
+                className="w-full max-w-[220px] bg-white text-[#5A0C3D] hover:bg-[#CCFF00] hover:text-[#5A0C3D] font-semibold py-2.5 rounded-lg transition-colors duration-300 shadow-md text-sm uppercase tracking-wider cursor-pointer"
+              >
+                {activeCoupon ? "Grab the discount" : "View All Deals"}
+              </button>
             </div>
           </div>
 
-          {/* Right section with products and CTA */}
-          <div className="p-6">
-            <h3 className="text-2xl font-semibold text-gray-900 mb-4 font-philosopher">
-              Discount Products
-            </h3>
+          {/* Right section - Products List */}
+          <div className="md:col-span-7 p-8 flex flex-col justify-between bg-white">
+            <div>
+              <h3 className="text-xl font-bold text-gray-900 mb-6 font-outfit">
+                Featured Discounts
+              </h3>
 
-            <div className="space-y-4 mb-5">
-              {/* Map through products from allProducts */}
-              {formattedProducts?.map((product) => (
-                <div
-                  key={product.id}
-                  className="flex items-start space-x-3 cursor-pointer bg-gray-50 hover:bg-gray-100 p-2 border border-stone-100 rounded transition-colors"
-                  onClick={() => handleProductClick(product.id)}
-                >
-                  <div className="w-24 h-20 bg-gray-200 rounded flex-shrink-0 relative">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      width={96}
-                      height={80}
-                      className="w-full h-full rounded"
-                    />
-                    {product.hasDiscount && (
-                      <div className="absolute top-0 left-0 bg-red-600 text-white text-xs px-1 py-0.5 rounded-tr rounded-bl">
-                        {product.discountValue}% OFF
-                      </div>
-                    )}
-                  </div>
-                  <div className="flex-1">
-                    <h4 className="text-md font-bold text-gray-900 line-clamp-2">
-                      {product.name}
-                    </h4>
-                    <div className="flex items-center mt-1">
-                      <span className="text-md font-bold text-rose-500">
-                        {product.price}
-                      </span>
+              <div className="space-y-4">
+                {/* Map through products from allProducts */}
+                {formattedProducts?.map((product) => (
+                  <div
+                    key={product.id}
+                    className="flex items-center space-x-4 cursor-pointer bg-gray-50 hover:bg-gray-100/80 p-3 border border-gray-100 rounded-lg transition-all duration-200 hover:shadow-sm"
+                    onClick={() => handleProductClick(product.id)}
+                  >
+                    <div className="w-16 h-16 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 relative">
+                      <Image
+                        src={product.image}
+                        alt={product.name}
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover"
+                      />
                       {product.hasDiscount && (
-                        <span className="text-sm text-gray-500 line-through ml-2">
-                          {product.originalPrice}
-                        </span>
+                        <div className="absolute top-0 left-0 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-br-md">
+                          {product.discountValue}% OFF
+                        </div>
                       )}
                     </div>
-                  
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-semibold text-gray-900 truncate font-outfit">
+                        {product.name}
+                      </h4>
+                      <div className="flex items-center mt-1 gap-2">
+                        <span className="text-sm font-bold text-[#5A0C3D] font-outfit">
+                          {product.price}
+                        </span>
+                        {product.hasDiscount && (
+                          <span className="text-xs text-gray-400 line-through font-outfit">
+                            {product.originalPrice}
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
 
             {/* Auto-close indicator with countdown */}
-            <div className="text-center">
-              <p className="text-xs text-gray-500 mb-2">
-                auto-closing in {countdown} seconds
-              </p>
-              <div className="w-full bg-gray-200 rounded-full h-1">
+            <div className="mt-8">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-xs text-gray-400 font-medium">
+                  Auto-closing in {countdown}s
+                </span>
+              </div>
+              <div className="w-full bg-gray-100 rounded-full h-1">
                 <div
-                  className="bg-teal-500 h-1 rounded-full transition-all duration-1000 ease-linear"
+                  className="bg-[#5A0C3D] h-1 rounded-full transition-all duration-1000 ease-linear"
                   style={{
                     width: `${progress}%`,
                   }}

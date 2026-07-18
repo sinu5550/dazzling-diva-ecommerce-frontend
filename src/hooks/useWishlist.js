@@ -17,7 +17,7 @@ export const useWishlist = (user = null) => {
     const [loading, setLoading] = useState(true);
 
     const isAuthenticated = !!user;
-    const WISHLIST_STORAGE_KEY = 'bd_plaza_wishlist';
+    const WISHLIST_STORAGE_KEY = 'dazzling_diva_wishlist';
 
     // Generate unique ID for variant products
     const getWishlistItemId = (productId, variantId = null) => {
@@ -88,22 +88,35 @@ export const useWishlist = (user = null) => {
     useEffect(() => {
         loadWishlist();
 
-        // Listen for storage events (cross-tab updates)
+        // Listen for storage events (cross-tab updates) and same-tab custom events
         const handleStorageChange = (e) => {
             if (e.key === 'wishlist_last_update') {
                 loadWishlist();
             }
         };
 
+        const handleWishlistUpdate = () => {
+            loadWishlist();
+        };
+
         window.addEventListener('storage', handleStorageChange);
-        return () => window.removeEventListener('storage', handleStorageChange);
+        window.addEventListener(WISHLIST_EVENTS.UPDATED, handleWishlistUpdate);
+        window.addEventListener(WISHLIST_EVENTS.ITEM_ADDED, handleWishlistUpdate);
+        window.addEventListener(WISHLIST_EVENTS.ITEM_REMOVED, handleWishlistUpdate);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener(WISHLIST_EVENTS.UPDATED, handleWishlistUpdate);
+            window.removeEventListener(WISHLIST_EVENTS.ITEM_ADDED, handleWishlistUpdate);
+            window.removeEventListener(WISHLIST_EVENTS.ITEM_REMOVED, handleWishlistUpdate);
+        };
     }, []);
 
     const loadWishlist = useCallback(async () => {
         setLoading(true);
         try {
             if (isAuthenticated) {
-                const response = await apiClient.get('/api/wishlist');
+                const response = await apiClient('/api/wishlist');
                 const apiData = response.data || [];
 
                 // If API returns wishlist items with product nested
@@ -125,17 +138,17 @@ export const useWishlist = (user = null) => {
                 emitWishlistUpdate(WISHLIST_EVENTS.UPDATED, { items: normalizedData });
             }
         } catch (error) {
-            console.error('Error loading wishlist:', error);
+            console.warn('Error loading wishlist (falling back to localStorage):', error.message);
 
-            if (!isAuthenticated) {
-                const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
-                const localWishlist = stored ? JSON.parse(stored) : [];
-                const normalizedData = localWishlist.map(normalizeProductData);
+            const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
+            const localWishlist = stored ? JSON.parse(stored) : [];
+            const normalizedData = localWishlist.map(normalizeProductData);
 
-                setWishlist(normalizedData);
-                emitWishlistUpdate(WISHLIST_EVENTS.UPDATED, { items: normalizedData });
-            } else {
-                toast.error('Failed to load wishlist');
+            setWishlist(normalizedData);
+            emitWishlistUpdate(WISHLIST_EVENTS.UPDATED, { items: normalizedData });
+
+            if (isAuthenticated) {
+                toast.error('Failed to sync wishlist with server');
             }
         } finally {
             setLoading(false);
@@ -191,7 +204,10 @@ export const useWishlist = (user = null) => {
                     ...(product.variantId && { variantId: product.variantId })
                 };
 
-                const response = await apiClient.post('/api/wishlist', payload);
+                const response = await apiClient('/api/wishlist', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
 
                 // Handle different API response structures
                 let productData;
@@ -257,8 +273,9 @@ export const useWishlist = (user = null) => {
 
             if (isAuthenticated) {
             
-                await apiClient.delete(`/api/wishlist/${productId}`, {
-                    data: { variantId }
+                await apiClient(`/api/wishlist/${productId}`, {
+                    method: 'DELETE',
+                    body: JSON.stringify({ variantId })
                 });
 
                 setWishlist(prev => {
@@ -310,7 +327,9 @@ export const useWishlist = (user = null) => {
     const clearWishlist = useCallback(async () => {
         try {
             if (isAuthenticated) {
-                await apiClient.delete('/api/wishlist');
+                await apiClient('/api/wishlist', {
+                    method: 'DELETE'
+                });
                 setWishlist([]);
                 emitWishlistUpdate(WISHLIST_EVENTS.UPDATED, { items: [] });
                 toast.success('Wishlist cleared');

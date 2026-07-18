@@ -65,9 +65,27 @@ export const useUser = () => {
         return await fetchUser();
     };
 
-    // Initial fetch on mount
+    // Initial fetch on mount and listen to changes
     useEffect(() => {
         fetchUser();
+
+        const handleStorageChange = (e) => {
+            if (e.key === 'supabase_access_token' || e.key === 'supabase_user') {
+                fetchUser();
+            }
+        };
+
+        const handleAuthChange = () => {
+            fetchUser();
+        };
+
+        window.addEventListener('storage', handleStorageChange);
+        window.addEventListener('authChange', handleAuthChange);
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            window.removeEventListener('authChange', handleAuthChange);
+        };
     }, []);
 
     return {

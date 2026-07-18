@@ -141,24 +141,21 @@ export default function NewProductClient({ initialProducts, isLoading: initialLo
 
     return (
 
-        <div className="py-12 text-gray-800">
-            <div className="flex justify-between">
+        <div className="pb-12 text-gray-800 font-outfit">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white border border-gray-200/80 p-4 rounded-2xl shadow-xs mb-8">
                 {/* Page Header */}
-                <div className="mb-8">
-                    <h1 className="text-lg md:text-xl lg:text-2xl font-bold text-gray-900 mb-2 font-philosopher">
-                        New Arrival Products
-                    </h1>
-                    <p className="text-gray-600">
-                        Found {filteredProducts.length} {filteredProducts.length === 1 ? 'product' : 'products'}
-                    </p>
+                <div>
+                    <span className="text-sm font-medium text-gray-500">
+                        Showing <strong className="text-gray-800">{filteredProducts.length}</strong> {filteredProducts.length === 1 ? 'Product' : 'Products'}
+                    </span>
                 </div>
                 {/* Sort By */}
-                <div className="mb-6">
-                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Sort By</h3>
+                <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-400 font-medium whitespace-nowrap">Sort by:</span>
                     <select
                         value={filters.sortBy}
                         onChange={(e) => setFilters(prev => ({ ...prev, sortBy: e.target.value }))}
-                        className="w-full p-2 border border-stone-300 text-sm focus:border-primary focus:ring-primary text-gray-800 cursor-pointer"
+                        className="p-2 border border-stone-200 text-sm focus:border-[#5A0C3D] focus:ring-[#5A0C3D] text-gray-800 rounded-xl cursor-pointer"
                     >
                         <option value="latest">Latest First</option>
                         <option value="oldest">Oldest First</option>

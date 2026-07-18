@@ -7,3 +7,4 @@ export { default as ProfileIcon } from './profile-icon';
 export { default as NewIcon } from './new-icon';
 export { default as OfferIcon } from './offer-icon';
 export { default as DropdownIcon } from './dropdown';
+export { default as FAQIcon } from './faq-icon';

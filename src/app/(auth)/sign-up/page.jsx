@@ -3,7 +3,7 @@
 import Image from "next/image";
 import logo from '../../../../public/assects/signUp.png';
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, Controller } from 'react-hook-form';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
@@ -11,16 +11,31 @@ import { Eye, EyeOff } from "lucide-react";
 import { FcGoogle } from "react-icons/fc";
 import { useRouter } from 'next/navigation';
 import { signUp } from '@/lib/auth-helpers.js';
+import { useUser } from '@/hooks/useUser';
 import Swal from 'sweetalert2';
 import { apiClient } from "@/lib/apiClient";
 import toast from "react-hot-toast";
 
 const SignUp = () => {
-
     const router = useRouter();
+    const { user, loading: userLoading } = useUser();
     const { control, register, handleSubmit, formState: { errors }, reset } = useForm();
     const [showPassword, setShowPassword] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+
+    useEffect(() => {
+        if (!userLoading && user) {
+            router.replace('/my-account');
+        }
+    }, [user, userLoading, router]);
+
+    if (userLoading || user) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50/50">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-[#5A0C3D]"></div>
+            </div>
+        );
+    }
 
 
     // Function to create customer in database
@@ -133,173 +148,151 @@ const SignUp = () => {
     };
 
     return (
-        <div
-            className="w-full text-center py-10 lg:py-20 px-4 flex items-center justify-center relative max-h-screen"
-            style={{
-                backgroundImage: "url('https://res.cloudinary.com/dh34eqbhu/image/upload/v1781151577/cover24325_xrjcc3.svg')",
-                backgroundSize: 'cover',
-                backgroundPosition: 'center',
-                backgroundRepeat: 'no-repeat',
-                backgroundAttachment: 'fixed'
-            }}
-        >
-            {/* Overlay background color */}
-            <div className="absolute inset-0 bg-black/60"></div>
+        <div className="min-h-screen bg-gray-50/50 flex flex-col justify-center py-16 px-4 sm:px-6 lg:px-8 font-outfit">
+            <div className="sm:mx-auto sm:w-full sm:max-w-md">
+                <h2 className="text-center text-3xl font-extrabold text-gray-900 font-outfit">
+                    Create Account
+                </h2>
+                <p className="mt-2 text-center text-sm text-gray-600">
+                    Join us today to enjoy faster checkouts, order tracking, and more
+                </p>
+            </div>
 
-            {/* Content wrapper */}
-            <div className="relative w-full max-w-4xl mx-auto text-gray-900 font-poppins z-10">
-                <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-white mb-12">
-                    Create Your Account
-                </h1>
-
-                <div className="flex flex-col lg:flex-row overflow-hidden shadow-2xl">
-                    {/* Left Section - Welcome & Info */}
-                    <div className="bg-secound/95 p-5 md:p-8 lg:w-1/2 flex flex-col justify-center">
-                        <h4 className="text-lg md:text-2xl font-semibold mb-2 text-white">
-                            Welcome to Dazzling Diva!
-                        </h4>
-                        <p className="text-gray-200 mb-6">
-                            Already have an account? Sign in to enjoy faster checkout, track orders, and more!
-                        </p>
-                        
-                        <div className="mt-4 mb-6">
-                            <Image
-                                src={logo}
-                                alt="Illustration"
-                                width={300}
-                                height={250}
-                                className="w-full max-w-sm mx-auto opacity-90"
-                                priority
+            <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+                <div className="bg-white py-8 px-6 shadow-sm border border-gray-100 rounded-xl sm:px-10">
+                    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+                        {/* Full Name */}
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                                Full Name
+                            </label>
+                            <input
+                                {...register("fullName", {
+                                    required: "Full name is required",
+                                    minLength: {
+                                        value: 2,
+                                        message: "Name must be at least 2 characters"
+                                    }
+                                })}
+                                type="text"
+                                placeholder="Your Name"
+                                disabled={isLoading}
+                                className="block w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-[6px] text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-colors"
                             />
+                            {errors.fullName && (
+                                <p className="mt-2 text-xs text-red-600">{errors.fullName.message}</p>
+                            )}
                         </div>
-                        
-                        <Link
-                            href="/login"
-                            className="mt-4 mx-10 bg-white text-primary font-semibold py-2 md:py-3 px-4 hover:bg-gray-100 transition duration-150 ease-in-out uppercase cursor-pointer text-center"
-                        >
-                            Sign In
-                        </Link>
-                    </div>
 
-                    {/* Right Section - Form */}
-                    <div className="bg-white p-5 md:px-8 md:py-14 lg:w-1/2">
-                        <h4 className="text-lg font-medium mb-2">
-                            Join Dazzling Diva Today
-                        </h4>
-                        <p className="text-gray-700 mb-6 text-xs">
-                            Please provide your details to get started
-                        </p>
-
-                        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6 mx-7">
-                            {/* Full Name */}
-                            <div>
-                                <input
-                                    {...register("fullName", {
-                                        required: "Full name is required",
-                                        minLength: {
-                                            value: 2,
-                                            message: "Name must be at least 2 characters"
-                                        }
-                                    })}
-                                    type="text"
-                                    placeholder="Full Name"
-                                    disabled={isLoading}
-                                    className="block w-full pl-3 pr-10 py-2 md:py-3 bg-gray-50/70  border border-stone-300 leading-5 placeholder-gray-500 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                />
-                                {errors.fullName && (
-                                    <p className="mt-2 text-sm text-red-600">{errors.fullName.message}</p>
-                                )}
-                            </div>
-
-                            {/* Phone Input */}
-                            <div>
-                                <Controller
-                                    name="phone"
-                                    control={control}
-                                    rules={{
-                                        required: "Phone number is required"
-                                    }}
-                                    render={({ field }) => (
-                                        <PhoneInput
-                                            {...field}
-                                            country={'bd'}
-                                            enableSearch={true}
-                                            inputClass="!w-full !py-4 md:!py-5 !bg-white !pl-12 !text-sm !"
-                                            buttonClass="!"
-                                            disabled={isLoading}
-                                        />
-                                    )}
-                                />
-                                {errors.phone && (
-                                    <p className="mt-2 text-sm text-red-600">{errors.phone.message}</p>
-                                )}
-                            </div>
-
-                            {/* Email Input */}
-                            <div>
-                                <input
-                                    {...register("email", {
-                                        required: "Email is required",
-                                        pattern: {
-                                            value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                                            message: "Invalid email address"
-                                        }
-                                    })}
-                                    type="email"
-                                    placeholder="Email Address"
-                                    disabled={isLoading}
-                                    className="block w-full pl-3 pr-10 py-2 md:py-3 bg-gray-50/70  border border-stone-300 leading-5 placeholder-gray-500 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
-                                />
-                                {errors.email && (
-                                    <p className="mt-2 text-sm text-red-600">{errors.email.message}</p>
-                                )}
-                            </div>
-
-                            {/* Password Input */}
-                            <div>
-                                <div className="relative ">
-                                    <input
-                                        {...register("password", {
-                                            required: "Password is required",
-                                            minLength: {
-                                                value: 6,
-                                                message: "Password must have at least 6 characters"
-                                            }
-                                        })}
-                                        type={showPassword ? "text" : "password"}
-                                        placeholder="Password"
+                        {/* Phone Input */}
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                                Phone Number
+                            </label>
+                            <Controller
+                                name="phone"
+                                control={control}
+                                rules={{
+                                    required: "Phone number is required"
+                                }}
+                                render={({ field }) => (
+                                    <PhoneInput
+                                        {...field}
+                                        country={'bd'}
+                                        enableSearch={true}
+                                        inputClass="!w-full !py-5 !bg-gray-50/50 !border-gray-200 !rounded-[6px] !pl-12 !text-sm !text-gray-900 focus:!border-[#5A0C3D] focus:!ring-[#5A0C3D]"
+                                        buttonClass="!bg-transparent !border-r-0 !border-gray-200 !rounded-l-[6px]"
+                                        dropdownClass="!text-gray-900"
+                                        searchClass="!text-gray-900"
                                         disabled={isLoading}
-                                        className="block w-full pl-3 pr-10 py-2 md:py-3 bg-gray-50/70  border border-stone-300 leading-5 placeholder-gray-500 focus:outline-none focus:ring-primary focus:border-primary sm:text-sm"
                                     />
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute inset-y-0 right-3 flex items-center text-gray-500 hover:text-secound"
-                                        disabled={isLoading}
-                                    >
-                                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
-                                    </button>
-                                </div>
-                                {errors.password && (
-                                    <p className="mt-2 text-sm text-red-600">{errors.password.message}</p>
                                 )}
-                                <p className="mt-1 text-xs text-gray-500 text-left">
-                                    Must be at least 6 characters
-                                </p>
-                            </div>
+                            />
+                            {errors.phone && (
+                                <p className="mt-2 text-xs text-red-600">{errors.phone.message}</p>
+                            )}
+                        </div>
 
-                            {/* Submit Button */}
-                            <div>
-                                <button
-                                    type="submit"
+                        {/* Email Input */}
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                                Email Address
+                            </label>
+                            <input
+                                {...register("email", {
+                                    required: "Email is required",
+                                    pattern: {
+                                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                        message: "Invalid email address"
+                                    }
+                                })}
+                                type="email"
+                                placeholder="yourname@example.com"
+                                disabled={isLoading}
+                                className="block w-full px-4 py-2.5 bg-gray-50/50 border border-gray-200 rounded-[6px] text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-colors"
+                            />
+                            {errors.email && (
+                                <p className="mt-2 text-xs text-red-600">{errors.email.message}</p>
+                            )}
+                        </div>
+
+                        {/* Password Input */}
+                        <div>
+                            <label className="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-2">
+                                Password
+                            </label>
+                            <div className="relative">
+                                <input
+                                    {...register("password", {
+                                        required: "Password is required",
+                                        minLength: {
+                                            value: 6,
+                                            message: "Password must have at least 6 characters"
+                                        }
+                                    })}
+                                    type={showPassword ? "text" : "password"}
+                                    placeholder="Create password"
                                     disabled={isLoading}
-                                    className="group relative w-full flex justify-center py-2 md:py-3 px-4 border border-transparent text-sm font-medium text-white bg-primary hover:bg-primary/80 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition duration-150 ease-in-out uppercase cursor-pointer disabled:bg-primary/50 disabled:cursor-not-allowed"
+                                    className="block w-full pl-4 pr-10 py-2.5 bg-gray-50/50 border border-gray-200 rounded-[6px] text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-colors"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute inset-y-0 right-3 flex items-center text-gray-400 hover:text-gray-600"
+                                    disabled={isLoading}
                                 >
-                                    {isLoading ? 'Creating Account...' : 'Sign Up'}
+                                    {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                                 </button>
                             </div>
-                        </form>
+                            {errors.password && (
+                                <p className="mt-2 text-xs text-red-600">{errors.password.message}</p>
+                            )}
+                            <p className="mt-1 text-xs text-gray-400 text-left">
+                                Must be at least 6 characters
+                            </p>
+                        </div>
+
+                        {/* Submit Button */}
+                        <div>
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-semibold rounded-[6px] text-white bg-[#5A0C3D] hover:bg-[#450322] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#5A0C3D] transition duration-150 ease-in-out uppercase cursor-pointer disabled:bg-gray-300 disabled:text-gray-500 disabled:cursor-not-allowed shadow-sm"
+                            >
+                                {isLoading ? 'Creating Account...' : 'Sign Up'}
+                            </button>
+                        </div>
+                    </form>
+
+                    <div className="mt-6 border-t border-gray-100 pt-6 text-center">
+                        <p className="text-sm text-gray-600">
+                            Already have an account?{' '}
+                            <Link href="/login" className="font-semibold text-[#5A0C3D] hover:underline">
+                                Sign in
+                            </Link>
+                        </p>
                     </div>
+
                 </div>
             </div>
         </div>

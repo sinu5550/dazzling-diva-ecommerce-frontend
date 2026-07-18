@@ -1,7 +1,7 @@
 // app/discount-campaigns/page.js
 import React from 'react';
 import { apiClient } from "@/lib/apiClient";
-import DiscountProductClient from "@/components/DiscountProduct/DiscountProductClient";
+import AllProductsClient from "@/components/Products/AllProductsClient";
 
 // API active campaigns fetch
 export async function fetchActiveCampaigns() {
@@ -79,11 +79,13 @@ const DiscountCampaignsPage = async () => {
     });
 
     return (
-        <div className="space-y-10 lg:space-y-28">
-            <DiscountProductClient
-                products={allProductsFromCampaigns}
-                isLoading={true} />
-        </div>
+        <AllProductsClient
+            initialProducts={allProductsFromCampaigns}
+            title="Special Offers"
+            breadcrumbLabel="Offers"
+            bannerSrc="/assects/flashdeals-banner.png"
+            bannerType="campaign"
+        />
     );
 };
 

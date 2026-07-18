@@ -204,7 +204,7 @@ export default function NavbarClient({ data, contactData, config }) {
   return (
     <>
       {/* Navbar Shell — Relative, normal flow so 1st and 2nd nav bars scroll out of view */}
-      <div className="navbar-shell w-full relative z-50">
+      <div className="navbar-shell w-full relative z-[60]">
         {/* Announcement Bar */}
         {announcementOpen && (
           <div className="bg-[#5A0C3D] text-white text-[14px] h-[38px] px-4 relative flex items-center justify-center font-outfit font-normal">

@@ -99,7 +99,7 @@ export default function FloatingActions() {
                 <div className="relative group/speeddial flex flex-col items-center">
                     
                     {/* Collapsed menu items */}
-                    <div className="flex flex-col items-center gap-3.5 mb-3.5 transition-all duration-300 scale-0 opacity-0 origin-bottom translate-y-10 pointer-events-none group-hover/speeddial:scale-100 group-hover/speeddial:opacity-100 group-hover/speeddial:translate-y-0 group-hover/speeddial:pointer-events-auto">
+                    <div className="absolute bottom-full flex flex-col items-center gap-3.5 pb-3.5 transition-all duration-300 scale-0 opacity-0 origin-bottom translate-y-10 pointer-events-none group-hover/speeddial:scale-100 group-hover/speeddial:opacity-100 group-hover/speeddial:translate-y-0 group-hover/speeddial:pointer-events-auto">
                         
                         {/* Facebook Page Button */}
                         <div className="group relative">
