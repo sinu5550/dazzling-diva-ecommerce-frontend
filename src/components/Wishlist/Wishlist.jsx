@@ -28,7 +28,7 @@ const EmptyWishlist = () => (
         </p>
         <Link
             href="/"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-secound  text-white rounded font-bold hover:secound-hover transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-[#5A0C3D] hover:bg-[#450322] text-white rounded-[8px] font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer"
         >
             <FaShoppingBag />
             Start Shopping
@@ -175,7 +175,7 @@ const WishlistClient = ({ user = null }) => {
                 {/* Desktop Table */}
                 <div className="hidden lg:block bg-white hasib-rounded shadow overflow-hidden">
                     <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-amber-50">
+                        <thead className="bg-stone-50">
                             <tr>
                                 <th className="px-6 py-4 text-left text-xs font-medium text-gray-800 uppercase tracking-wider">
                                     Product
@@ -238,6 +238,7 @@ const WishlistClient = ({ user = null }) => {
                                                         width={80}
                                                         height={80}
                                                         className="hasib-rounded object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                                                        style={{ width: 'auto', height: 'auto' }}
                                                         onError={(e) => {
                                                             e.target.src = '/placeholder.png';
                                                         }}
@@ -251,7 +252,7 @@ const WishlistClient = ({ user = null }) => {
                                                 <div className="flex-1 min-w-0">
                                                     <Link
                                                         href={`/product/${product.slug}`}
-                                                        className="font-medium text-gray-900 hover:text-secound transition-colors line-clamp-2"
+                                                        className="font-medium text-gray-900 hover:text-[#5A0C3D] transition-colors line-clamp-2"
                                                     >
                                                         {product.productName}
                                                     </Link>
@@ -278,7 +279,7 @@ const WishlistClient = ({ user = null }) => {
                                                 <span className="font-semibold text-gray-900 text-lg">
                                                     {formatPrice(product.discountPrice)}
                                                 </span>
-                                                {product.discountValue && product.price !== product.discountPrice && (
+                                                {Number(product.discountValue) > 0 && product.price !== product.discountPrice && (
                                                     <span className="text-sm text-gray-500 line-through">
                                                         {formatPrice(product.price)}
                                                     </span>
@@ -371,6 +372,7 @@ const WishlistClient = ({ user = null }) => {
                                             width={100}
                                             height={100}
                                             className="hasib-rounded object-cover"
+                                            style={{ width: 'auto', height: 'auto' }}
                                             onError={(e) => {
                                                 e.target.src = '/placeholder.png';
                                             }}
@@ -385,7 +387,7 @@ const WishlistClient = ({ user = null }) => {
                                     <div className="flex-1 min-w-0">
                                         <Link
                                             href={`/product/${product.slug}`}
-                                            className="font-semibold text-gray-900 hover:text-secound block line-clamp-2"
+                                            className="font-semibold text-gray-900 hover:text-[#5A0C3D] block line-clamp-2"
                                         >
                                             {product.productName}
                                         </Link>
@@ -408,7 +410,7 @@ const WishlistClient = ({ user = null }) => {
                                             <span className="font-bold text-lg">
                                                 {formatPrice(product.discountPrice)}
                                             </span>
-                                            {product.discountValue && product.price !== product.discountPrice && (
+                                            {Number(product.discountValue) > 0 && product.price !== product.discountPrice && (
                                                 <span className="text-sm text-gray-500 line-through ml-2">
                                                     {formatPrice(product.price)}
                                                 </span>

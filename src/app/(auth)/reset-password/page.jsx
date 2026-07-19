@@ -47,7 +47,7 @@ const ResetPassword = () => {
     const inputClass = "w-full px-4 py-3 rounded-full border border-stone-300 bg-stone-100 text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition pr-12";
 
     return (
-        <div className="min-h-screen bg-primary/70 flex items-center justify-center px-4 py-20"
+        <div className="min-h-[calc(100vh-160px)] bg-primary/70 flex items-center justify-center px-4 py-8 md:py-20"
             style={{
                 backgroundImage: "url('https://res.cloudinary.com/dh34eqbhu/image/upload/v1781151577/cover24325_xrjcc3.svg')",
                 backgroundSize: 'cover',

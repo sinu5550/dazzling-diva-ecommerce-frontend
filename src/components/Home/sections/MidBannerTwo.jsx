@@ -11,7 +11,7 @@ const MidBannerTwo = ({ midBannerData }) => {
     if (!banner) return null;
 
     return (
-        <div className="grid grid-cols-1 gap-4 h-full mt-5 w-full">
+        <div className="grid grid-cols-1 gap-4 h-full mt-5 mb-0 w-full">
             <div className="relative group flex-1 overflow-hidden transition-all duration-300">
                 <Image
                     src={banner.image}

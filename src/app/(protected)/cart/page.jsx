@@ -143,7 +143,7 @@ const CartPage = () => {
         return (
             <Container className="py-10">
                 <div className="flex items-center justify-center min-h-[400px]">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5A0C3D]"></div>
                 </div>
             </Container>
         );
@@ -186,7 +186,7 @@ const CartPage = () => {
     return (
         <Container className="py-10">
             <div className="flex items-center gap-2 text-gray-700 text-sm md:text-base">
-                <Link href="/" className="hover:underline hover:text-teal-600 flex items-center gap-1">
+                <Link href="/" className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1">
                     Home <IoIosArrowForward />
                 </Link>
                 <p className="font-semibold">Cart</p>
@@ -236,13 +236,14 @@ const CartPage = () => {
 
                                             {/* Product Image */}
                                             <div className="flex-shrink-0">
-                                                <Image
-                                                    src={item.images?.[0] || item.image}
-                                                    alt={item.productName || item.name}
-                                                    width={500}
-                                                    height={500}
-                                                    className="w-32 h-32 object-cover hasib-rounded border border-gray-100"
-                                                />
+                                                    <Image
+                                                        src={item.images?.[0] || item.image}
+                                                        alt={item.productName || item.name}
+                                                        width={500}
+                                                        height={500}
+                                                        className="w-32 h-32 object-cover hasib-rounded border border-gray-100"
+                                                        style={{ width: 'auto', height: 'auto' }}
+                                                    />
                                             </div>
 
                                             {/* Product Details */}
@@ -253,7 +254,7 @@ const CartPage = () => {
                                                         <div>
                                                             <Link
                                                                 href={`/product/${item.slug || item.productId}`}
-                                                                className="font-medium text-gray-800 hover:text-teal-600 font-xl lg:text-xl"
+                                                                className="font-medium text-gray-800 hover:text-[#5A0C3D] font-xl lg:text-xl"
                                                             >
                                                                 {item.productName || item.name}
                                                             </Link>
@@ -317,7 +318,7 @@ const CartPage = () => {
 
                                                                 <span className="px-3 py-2 bg-white font-bold text-gray-800 min-w-[40px] text-center">
                                                                     {isUpdating ? (
-                                                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-teal-600 mx-auto"></div>
+                                                                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#5A0C3D] mx-auto"></div>
                                                                     ) : (
                                                                         item.quantity || 1
                                                                     )}
@@ -346,7 +347,7 @@ const CartPage = () => {
                                                         <div className="text-sm text-gray-600 mb-1">
                                                             {formatPrice(item.price)} × {item.quantity || 1}
                                                         </div>
-                                                        <div className="text-xl font-bold text-teal-600">
+                                                        <div className="text-xl font-bold text-[#5A0C3D]">
                                                             {formatPrice(itemTotal)}
                                                         </div>
                                                     </div>
@@ -385,7 +386,7 @@ const CartPage = () => {
                             {/* Continue Shopping Link */}
                             <Link
                                 href="/"
-                                className="block text-center mt-4 text-teal-600 hover:text-teal-700 font-semibold hover:underline transition-colors"
+                                className="block text-center mt-4 text-[#5A0C3D] hover:text-[#450322] font-semibold hover:underline transition-colors"
                             >
                                 ← Continue Shopping
                             </Link>
@@ -412,7 +413,7 @@ const CartPage = () => {
                                 <div className="pt-4 border-t-2 border-gray-200">
                                     <div className="flex justify-between items-center">
                                         <span className="text-lg font-bold text-gray-800">Total</span>
-                                        <span className="text-2xl font-bold text-teal-600">{formatPrice(total)}</span>
+                                        <span className="text-2xl font-bold text-[#5A0C3D]">{formatPrice(total)}</span>
                                     </div>
                                 </div>
                             </div>
@@ -421,7 +422,7 @@ const CartPage = () => {
                             <button
                                 onClick={handleCheckout}
                                 disabled={loading || cartItems.length === 0}
-                                className="w-full py-3 font-medium text-gray-950 bg-primary hover:bg-primary-hover transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-3"
+                                className="w-full py-3 font-medium text-white bg-[#5A0C3D] hover:bg-[#450322] rounded-[8px] transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-3"
                             >
                                 Proceed to Checkout
                                 <FaArrowRight />

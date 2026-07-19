@@ -93,7 +93,7 @@ const Login = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50/50 flex flex-col justify-center py-16 px-4 sm:px-6 lg:px-8 font-outfit">
+        <div className="min-h-[calc(100vh-160px)] bg-gray-50/50 flex flex-col justify-start md:justify-center py-8 md:py-16 px-4 sm:px-6 lg:px-8 font-outfit">
             <div className="sm:mx-auto sm:w-full sm:max-w-md">
                 <h2 className="text-center text-3xl font-extrabold text-gray-900 font-outfit">
                     Welcome Back

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { FaWhatsapp, FaFacebookF, FaFacebookMessenger, FaComments } from 'react-icons/fa';
 import { TbArrowBadgeUpFilled } from "react-icons/tb";
 import { apiClient } from "@/lib/apiClient";
@@ -13,6 +13,8 @@ export default function FloatingActions() {
     const [isVisible, setIsVisible] = useState(false);
     const [scrollProgress, setScrollProgress] = useState(0);
     const [contactData, setContactData] = useState(null);
+    const [isOpen, setIsOpen] = useState(false);
+    const speedDialRef = useRef(null);
 
     const { user } = useUser();
     const { getCartCount, getCartTotal } = useCart(user);
@@ -40,7 +42,20 @@ export default function FloatingActions() {
             })
             .catch(err => console.error("[FloatingActions] Error fetching contact details:", err));
 
-        return () => window.removeEventListener('scroll', handleScroll);
+        // Click outside listener to close speed dial
+        const handleClickOutside = (event) => {
+            if (speedDialRef.current && !speedDialRef.current.contains(event.target)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        document.addEventListener('touchstart', handleClickOutside);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll);
+            document.removeEventListener('mousedown', handleClickOutside);
+            document.removeEventListener('touchstart', handleClickOutside);
+        };
     }, []);
 
     const scrollToTop = () => {
@@ -75,17 +90,22 @@ export default function FloatingActions() {
             {/* Sticky Cart Widget (Right Center) */}
             <Link 
                 href="/cart"
-                className="fixed right-0 top-[45%] z-[998] flex flex-col items-center bg-white shadow-[0_0_20px_rgba(0,0,0,0.15)] rounded-l-xl overflow-hidden border border-gray-200 border-r-0 hover:translate-x-[-4px] transition-transform duration-300 select-none group/sticky-cart"
+                className="fixed right-0 top-[45%] z-[998] flex flex-col items-center bg-[#5A0C3D] md:bg-white shadow-[0_0_20px_rgba(0,0,0,0.15)] rounded-l-xl overflow-hidden border border-[#5A0C3D]/10 md:border-gray-200 border-r-0 hover:translate-x-[-4px] transition-transform duration-300 select-none group/sticky-cart"
             >
                 {/* Top Section: Brand maroon color background */}
-                <div className="bg-[#5A0C3D] text-white p-3.5 flex flex-col items-center justify-center w-20 min-h-[75px] group-hover/sticky-cart:bg-[#4a0a32] transition-colors">
-                    <CartIcon className="w-6 h-6 text-white mb-1" />
-                    <span className="text-[11px] font-semibold font-outfit whitespace-nowrap">
+                <div className="bg-[#5A0C3D] text-white p-2.5 md:p-3.5 flex flex-col items-center justify-center w-12 h-12 md:w-20 md:min-h-[75px] group-hover/sticky-cart:bg-[#4a0a32] transition-colors relative">
+                    <div className="relative">
+                        <CartIcon className="w-5 h-5 md:w-6 md:h-6 text-white mb-0 md:mb-1" />
+                        <span className="md:hidden absolute -top-2.5 -right-2.5 bg-white text-[#5A0C3D] text-[9px] font-bold font-outfit w-4.5 h-4.5 rounded-full flex items-center justify-center border border-[#5A0C3D]/20 shadow-sm">
+                            {cartCount}
+                        </span>
+                    </div>
+                    <span className="hidden md:block text-[11px] font-semibold font-outfit whitespace-nowrap">
                         {cartCount} {cartCount === 1 ? 'Item' : 'Items'}
                     </span>
                 </div>
                 {/* Bottom Section: White background with price */}
-                <div className="bg-white text-gray-800 py-2.5 px-3 flex items-center justify-center w-20 border-t border-gray-150">
+                <div className="hidden md:flex bg-white text-gray-800 py-2.5 px-3 items-center justify-center w-20 border-t border-gray-150">
                     <span className="text-[13px] font-bold font-outfit text-gray-900">
                         ৳{cartTotal.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                     </span>
@@ -95,11 +115,17 @@ export default function FloatingActions() {
             {/* Bottom-right Floating Actions Panel */}
             <div className="fixed bottom-6 right-6 z-[999] flex flex-col items-center gap-3.5 font-outfit">
                 
-                {/* Social Links Speed Dial (Collapsed by default, opens on hover) */}
-                <div className="relative group/speeddial flex flex-col items-center">
+                {/* Social Links Speed Dial (Collapsed by default, opens on hover/click) */}
+                <div ref={speedDialRef} className="relative group/speeddial flex flex-col items-center">
                     
                     {/* Collapsed menu items */}
-                    <div className="absolute bottom-full flex flex-col items-center gap-3.5 pb-3.5 transition-all duration-300 scale-0 opacity-0 origin-bottom translate-y-10 pointer-events-none group-hover/speeddial:scale-100 group-hover/speeddial:opacity-100 group-hover/speeddial:translate-y-0 group-hover/speeddial:pointer-events-auto">
+                    <div className={`absolute bottom-full flex flex-col items-center gap-3.5 pb-3.5 transition-all duration-300 origin-bottom 
+                        ${isOpen 
+                            ? 'scale-100 opacity-100 translate-y-0 pointer-events-auto' 
+                            : 'scale-0 opacity-0 translate-y-10 pointer-events-none'
+                        } 
+                        group-hover/speeddial:scale-100 group-hover/speeddial:opacity-100 group-hover/speeddial:translate-y-0 group-hover/speeddial:pointer-events-auto`}
+                    >
                         
                         {/* Facebook Page Button */}
                         <div className="group relative">
@@ -109,6 +135,7 @@ export default function FloatingActions() {
                                 rel="noopener noreferrer"
                                 className="flex h-11 w-11 items-center justify-center rounded-full bg-[#1877F2] text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
                                 aria-label="Facebook Page"
+                                onClick={() => setIsOpen(false)}
                             >
                                 <FaFacebookF size={20} />
                             </a>
@@ -125,6 +152,7 @@ export default function FloatingActions() {
                                 rel="noopener noreferrer"
                                 className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-tr from-[#006AFF] to-[#00B2FF] text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
                                 aria-label="Messenger Chat"
+                                onClick={() => setIsOpen(false)}
                             >
                                 <FaFacebookMessenger size={20} />
                             </a>
@@ -141,6 +169,7 @@ export default function FloatingActions() {
                                 rel="noopener noreferrer"
                                 className="flex h-11 w-11 items-center justify-center rounded-full bg-[#25D366] text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
                                 aria-label="WhatsApp Chat"
+                                onClick={() => setIsOpen(false)}
                             >
                                 <FaWhatsapp size={24} />
                             </a>
@@ -152,8 +181,11 @@ export default function FloatingActions() {
                     </div>
 
                     {/* Main trigger button with chat icons */}
-                    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#5A0C3D] text-white shadow-xl cursor-pointer hover:scale-105 active:scale-95 transition-all duration-300 border border-white/10">
-                        <FaComments size={20} className="group-hover/speeddial:scale-110 transition-transform duration-300" />
+                    <div 
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="flex h-11 w-11 items-center justify-center rounded-full bg-[#5A0C3D] text-white shadow-xl cursor-pointer hover:scale-105 active:scale-95 transition-all duration-300 border border-white/10"
+                    >
+                        <FaComments size={20} className={`${isOpen ? 'scale-110 rotate-12' : ''} group-hover/speeddial:scale-110 transition-all duration-300`} />
                     </div>
 
                 </div>

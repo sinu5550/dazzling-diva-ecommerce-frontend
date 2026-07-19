@@ -73,7 +73,7 @@ const Category = ({ data }) => {
   };
 
   return (
-    <section className="overflow-hidden py-12">
+    <section className="overflow-hidden py-12 pt-4">
       <Container>
         {/*Heading */}
         <div className="flex flex-col items-center mb-10 space-y-1">
@@ -106,7 +106,7 @@ const Category = ({ data }) => {
               className="
                 absolute left-2 lg:-left-5 top-1/2 -translate-y-1/2 z-20
                 w-10 h-10 lg:w-12 lg:h-12
-                rounded-full bg-white shadow-lg border border-gray-200
+                rounded-full !bg-white shadow-lg border border-gray-200
                 flex items-center justify-center
                 opacity-0 invisible
                 group-hover:opacity-100 group-hover:visible
@@ -127,7 +127,7 @@ const Category = ({ data }) => {
               className="
                 absolute right-2 lg:-right-5 top-1/2 -translate-y-1/2 z-20
                 w-10 h-10 lg:w-12 lg:h-12
-                rounded-full bg-white shadow-lg border border-gray-200
+                rounded-full !bg-white shadow-lg border border-gray-200
                 flex items-center justify-center
                 opacity-0 invisible
                 group-hover:opacity-100 group-hover:visible

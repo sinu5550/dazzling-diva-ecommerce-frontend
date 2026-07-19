@@ -701,7 +701,7 @@ export default function Checkout() {
                         }
                     </div>
                 `,
-        confirmButtonColor: "#F4D941",
+        confirmButtonColor: "#5A0C3D",
         confirmButtonText: "Continue Shopping",
         width: "550px",
       });
