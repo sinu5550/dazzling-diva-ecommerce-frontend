@@ -243,7 +243,7 @@ export default function DelayedModal({ allProducts }) {
 
     return (
     <div
-      className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-all duration-300 ease-out ${
+      className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 transition-all duration-300 ease-out ${
         isVisible
           ? "backdrop-blur-sm bg-black/40"
           : "backdrop-blur-none bg-black/0"
@@ -251,7 +251,7 @@ export default function DelayedModal({ allProducts }) {
       onClick={handleClose}
     >
       <div
-        className={`relative bg-white rounded-xl shadow-xl max-w-4xl w-full overflow-hidden transform transition-all duration-300 ease-out font-outfit ${
+        className={`relative bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto transform transition-all duration-300 ease-out font-outfit ${
           isVisible
             ? "scale-100 opacity-100 translate-y-0"
             : "scale-95 opacity-0 translate-y-4"

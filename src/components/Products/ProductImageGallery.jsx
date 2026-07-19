@@ -51,13 +51,13 @@ export default function ProductImageGallery({ images, productName }) {
 
 
             {/* Thumbnail Images */}
-            <div className="flex gap-4 overflow-x-auto pb-2 mt-8">
+            <div className="flex gap-4 overflow-x-auto pb-2 mt-8 hide-scrollbar">
                 {images.map((image, index) => (
                     <button
                         key={index}
                         onClick={() => setSelectedImage(index)}
                         className={`relative flex-shrink-0 w-14 md:w-20 h-14 md:h-20 border  overflow-hidden transition-all ${selectedImage === index
-                                ? 'border-teal-600 shadow-lg'
+                                ? 'border-secound shadow-lg'
                                 : 'border-gray-200 hover:border-gray-400'
                             }`}
                     >

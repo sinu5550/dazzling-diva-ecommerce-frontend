@@ -594,7 +594,7 @@ export default function Checkout() {
                             </h1>
                             <p class="flex justify-between">
                                 <strong>Order Number:</strong> 
-                                <span class="text-teal-600 font-mono text-xl">#${
+                                <span class="text-[#5A062F] font-mono text-xl">#${
                                   orderData.orderNumber || "N/A"
                                 }</span>
                             </p>
@@ -746,7 +746,7 @@ export default function Checkout() {
     return (
       <Container className="text-gray-800 py-10">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secound"></div>
         </div>
       </Container>
     );
@@ -758,13 +758,13 @@ export default function Checkout() {
         <div className="flex items-center gap-2 text-gray-700 mt-10 text-sm md:text-base">
           <Link
             href="/"
-            className="hover:underline hover:text-teal-600 flex items-center gap-1"
+            className="hover:underline hover:text-secound flex items-center gap-1"
           >
             Home <IoIosArrowForward />
           </Link>
           <Link
             href="/cart"
-            className="hover:underline hover:text-teal-600 flex items-center gap-1"
+            className="hover:underline hover:text-secound flex items-center gap-1"
           >
             Cart <IoIosArrowForward />
           </Link>
@@ -798,13 +798,13 @@ export default function Checkout() {
       <div className="flex items-center gap-2 text-gray-700 mt-10 text-sm md:text-base">
         <Link
           href="/"
-          className="hover:underline hover:text-teal-600 flex items-center gap-1"
+          className="hover:underline hover:text-secound flex items-center gap-1"
         >
           Home <IoIosArrowForward />
         </Link>
         <Link
           href="/cart"
-          className="hover:underline hover:text-teal-600 flex items-center gap-1"
+          className="hover:underline hover:text-secound flex items-center gap-1"
         >
           Cart <IoIosArrowForward />
         </Link>

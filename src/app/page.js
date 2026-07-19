@@ -7,9 +7,7 @@ const MainLayout = () => {
   return (
     <div>
       <Home />
-      <div className="hidden md:flex">
-        <DelayedModal />
-      </div>
+      <DelayedModal />
     </div>
   )
 }

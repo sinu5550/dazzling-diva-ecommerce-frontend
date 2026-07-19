@@ -92,7 +92,7 @@ const Topbar = ({
                 {/* COL 2 — CENTER: Logo */}
                 <div className="flex items-center justify-center">
                     <Link href="/" aria-label="Home" className="block hover:opacity-90 transition-opacity">
-                        <Logo className="h-8 w-auto" />
+                        <Logo className="h-6 md:h-8 w-auto" />
                     </Link>
                 </div>
 
