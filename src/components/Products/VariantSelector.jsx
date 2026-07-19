@@ -166,7 +166,7 @@ export default function VariantSelector({ product, onVariantChange, className = 
                     const matchingVariant = findMatchingVariant(product, selectedAttributes);
                     if (!matchingVariant) {
                         return (
-                            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 hasib-rounded">
+                            <div className="mt-4 p-3 bg-yellow-50 border border-yellow-200 diva-rounded">
                                 <p className="text-sm text-yellow-700 font-medium">
                                     ⚠️ This combination is not available. Please select another combination.
                                 </p>
@@ -174,7 +174,7 @@ export default function VariantSelector({ product, onVariantChange, className = 
                         );
                     } else if (matchingVariant && matchingVariant.quantity === 0) {
                         return (
-                            <div className="mt-4 p-3 bg-red-50 border border-red-200 hasib-rounded">
+                            <div className="mt-4 p-3 bg-red-50 border border-red-200 diva-rounded">
                                 <p className="text-sm text-red-600 font-medium">
                                     ⚠️ This combination is currently out of stock.
                                 </p>

@@ -442,7 +442,7 @@ const BlogDetails = ({ blogData }) => {
               <div className="flex flex-wrap items-center justify-center gap-4 mb-10">
                 <button
                   onClick={() => setIsLiked(!isLiked)}
-                  className={`flex items-center px-8 py-3 hasib-rounded font-medium transition-all duration-300 ${isLiked
+                  className={`flex items-center px-8 py-3 diva-rounded font-medium transition-all duration-300 ${isLiked
                     ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
                     : "bg-gray-100 text-gray-600 hover:bg-gray-200 hover:shadow-md"
                     }`}
@@ -465,7 +465,7 @@ const BlogDetails = ({ blogData }) => {
                     <button
                       key={platform}
                       onClick={() => handleShare(platform)}
-                      className="p-3 hasib-rounded border border-gray-200 hover:border-stone-300 hover:shadow-md transition-all duration-200 flex flex-col items-center"
+                      className="p-3 diva-rounded border border-gray-200 hover:border-stone-300 hover:shadow-md transition-all duration-200 flex flex-col items-center"
                     >
                       {platform === "facebook" && (
                         <FaFacebook className="w-6 h-6 text-blue-600 mb-2" />

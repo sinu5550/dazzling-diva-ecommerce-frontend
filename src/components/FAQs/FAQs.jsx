@@ -111,7 +111,7 @@ const FAQs = () => {
                         </h3>
 
                         {/* Accordion */}
-                        <div className="bg-white hasib-rounded shadow-sm divide-y overflow-hidden w-full ">
+                        <div className="bg-white diva-rounded shadow-sm divide-y overflow-hidden w-full ">
                             {section.faqs?.map((item, faqIdx) => {
                                 const index = `${sectionIdx}-${faqIdx}`;
                                 const isOpen = openIndex === index;

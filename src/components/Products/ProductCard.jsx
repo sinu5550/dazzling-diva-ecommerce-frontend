@@ -288,7 +288,7 @@ export default function ProductCard({ product, user = null }) {
                 )}
 
                 {/* Product Image */}
-                <div className="relative hasib-rounded flex-shrink-0 ">
+                <div className="relative diva-rounded flex-shrink-0 ">
                     {/* Product Image */}
                     <ProductImage
                         src={displayImage}

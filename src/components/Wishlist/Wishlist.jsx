@@ -173,7 +173,7 @@ const WishlistClient = ({ user = null }) => {
                 </div>
 
                 {/* Desktop Table */}
-                <div className="hidden lg:block bg-white hasib-rounded shadow overflow-hidden">
+                <div className="hidden lg:block bg-white diva-rounded shadow overflow-hidden">
                     <table className="min-w-full divide-y divide-gray-200">
                         <thead className="bg-stone-50">
                             <tr>
@@ -237,7 +237,7 @@ const WishlistClient = ({ user = null }) => {
                                                         alt={product.productName}
                                                         width={80}
                                                         height={80}
-                                                        className="hasib-rounded object-cover cursor-pointer hover:opacity-80 transition-opacity"
+                                                        className="diva-rounded object-cover cursor-pointer hover:opacity-80 transition-opacity"
                                                         style={{ width: 'auto', height: 'auto' }}
                                                         onError={(e) => {
                                                             e.target.src = '/placeholder.png';
@@ -308,7 +308,7 @@ const WishlistClient = ({ user = null }) => {
                                                 <button
                                                     onClick={() => handleDelete(product.id, product.variantId)}
                                                     disabled={isDeleteLoading}
-                                                    className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 hasib-rounded transition-colors disabled:opacity-50"
+                                                    className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 diva-rounded transition-colors disabled:opacity-50"
                                                     aria-label="Remove from wishlist"
                                                 >
                                                     {isDeleteLoading ? (
@@ -360,7 +360,7 @@ const WishlistClient = ({ user = null }) => {
                         };
 
                         return (
-                            <div key={product.wishlistId} className="bg-white p-4 hasib-rounded shadow-md">
+                            <div key={product.wishlistId} className="bg-white p-4 diva-rounded shadow-md">
                                 <div className="flex gap-4 mb-4">
                                     <Link
                                         href={`/product/${product.slug}`}
@@ -371,7 +371,7 @@ const WishlistClient = ({ user = null }) => {
                                             alt={product.productName}
                                             width={100}
                                             height={100}
-                                            className="hasib-rounded object-cover"
+                                            className="diva-rounded object-cover"
                                             style={{ width: 'auto', height: 'auto' }}
                                             onError={(e) => {
                                                 e.target.src = '/placeholder.png';
@@ -439,7 +439,7 @@ const WishlistClient = ({ user = null }) => {
                                     <button
                                         onClick={() => handleDelete(product.id, product.variantId)}
                                         disabled={isDeleteLoading}
-                                        className="p-2.5 text-gray-600 hover:text-red-600 hover:bg-red-50 hasib-rounded transition-colors border border-gray-200 disabled:opacity-50"
+                                        className="p-2.5 text-gray-600 hover:text-red-600 hover:bg-red-50 diva-rounded transition-colors border border-gray-200 disabled:opacity-50"
                                         aria-label="Remove from wishlist"
                                     >
                                         {isDeleteLoading ? (

@@ -109,13 +109,13 @@ const CartButton = ({
             disabled: "border-gray-200 text-gray-300 cursor-not-allowed opacity-50"
         },
         button: {
-            button: "px-4 py-2 hasib-rounded font-medium transition-all duration-200 cursor-pointer",
+            button: "px-4 py-2 diva-rounded font-medium transition-all duration-200 cursor-pointer",
             active: "bg-green-600 text-white hover:bg-green-700",
             inactive: "bg-primary text-black hover:bg-primary-hover",
             disabled: "bg-gray-300 text-gray-500 cursor-not-allowed opacity-50"
         },
         buttonOutline: {
-            button: "px-4 py-2 hasib-rounded font-medium border-2 transition-all duration-200 cursor-pointer",
+            button: "px-4 py-2 diva-rounded font-medium border-2 transition-all duration-200 cursor-pointer",
             active: "border-green-600 text-green-600 bg-green-50",
             inactive: "border-primary text-primary hover:bg-primary hover:text-black",
             disabled: "border-gray-200 text-gray-400 cursor-not-allowed opacity-50"
@@ -227,7 +227,7 @@ const CartButton = ({
 
             {/* Tooltip */}
             {showTooltip && !showLabel && isHovered && !isLoading && getCurrentTooltip() && (
-                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs hasib-rounded whitespace-nowrap z-50 pointer-events-none">
+                <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs diva-rounded whitespace-nowrap z-50 pointer-events-none">
                     {getCurrentTooltip()}
                     <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1">
                         <div className="border-4 border-transparent border-t-gray-900"></div>

@@ -13,7 +13,7 @@ export default function ProductTabs({ product }) {
     ];
 
     return (
-        <div className="border border-gray-200 hasib-rounded overflow-hidden">
+        <div className="border border-gray-200 diva-rounded overflow-hidden">
                 {/* Tab Headers - Horizontal scroll on mobile */}
                 <div className="flex border-b border-gray-200 bg-gray-50 overflow-x-auto hide-scrollbar">
                     {tabs.map((tab) => (

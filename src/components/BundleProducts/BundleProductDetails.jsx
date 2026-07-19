@@ -184,7 +184,7 @@ const BundleProductDetails = ({ bundle }) => {
                                         if (!product?.images?.[0]) return null;
 
                                         return (
-                                            <div key={index} className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-white hasib-rounded overflow-hidden group border border-gray-200">
+                                            <div key={index} className="relative w-20 h-20 sm:w-24 sm:h-24 lg:w-28 lg:h-28 bg-white diva-rounded overflow-hidden group border border-gray-200">
                                                 <Image
                                                     src={product.images[0]}
                                                     alt={product.productName}
@@ -199,7 +199,7 @@ const BundleProductDetails = ({ bundle }) => {
                                         );
                                     })}
                                     {bundleItems?.length > 4 && (
-                                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 hasib-rounded border flex items-center justify-center">
+                                        <div className="w-20 h-20 sm:w-24 sm:h-24 bg-gray-100 diva-rounded border flex items-center justify-center">
                                             <span className="text-gray-600 font-bold text-sm sm:text-base">+{bundleItems.length - 4}</span>
                                         </div>
                                     )}
@@ -214,7 +214,7 @@ const BundleProductDetails = ({ bundle }) => {
 
                         {/* Pricing - Mobile optimized */}
                         <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-                            <span className="text-3xl sm:text-4xl font-bold text-rose-600 flex items-center">
+                            <span className="text-3xl sm:text-4xl font-bold text-primary flex items-center">
                                 <FaBangladeshiTakaSign className="text-xl sm:text-2xl mr-1" />
                                 {parseFloat(finalPrice || price).toLocaleString()}
                             </span>
@@ -235,7 +235,7 @@ const BundleProductDetails = ({ bundle }) => {
 
                         {/* Discount Details - Mobile optimized */}
                         {discountPercentage > 0 && (
-                            <div className="bg-rose-50 border border-rose-200 hasib-rounded p-3 sm:p-4">
+                            <div className="bg-rose-50 border border-rose-200 diva-rounded p-3 sm:p-4">
                                 <div className="grid grid-cols-2 gap-3 sm:gap-4">
                                     <div>
                                         <p className="text-lg sm:text-sm text-rose-800">Discount</p>
@@ -258,7 +258,7 @@ const BundleProductDetails = ({ bundle }) => {
                             <button
                                 onClick={handleAddToCart}
                                 disabled={loading || isInCart || !isAvailable}
-                                className={`flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 sm:px-6 hasib-rounded uppercase font-semibold text-sm sm:text-base transition-all ${isInCart
+                                className={`flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 sm:px-6 diva-rounded uppercase font-semibold text-sm sm:text-base transition-all ${isInCart
                                     ? 'bg-green-600 text-white hover:bg-green-700'
                                     : !isAvailable
                                         ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
@@ -291,7 +291,7 @@ const BundleProductDetails = ({ bundle }) => {
                             <button
                                 onClick={handleBuyNow}
                                 disabled={loading || !isAvailable}
-                                className={`flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 sm:px-6 hasib-rounded font-semibold text-sm sm:text-base transition-all uppercase ${!isAvailable
+                                className={`flex items-center justify-center gap-2 py-2.5 sm:py-3 px-4 sm:px-6 diva-rounded font-semibold text-sm sm:text-base transition-all uppercase ${!isAvailable
                                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                     : 'bg-primary hover:bg-primary-hover text-black'
                                     } disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -312,7 +312,7 @@ const BundleProductDetails = ({ bundle }) => {
                         </div>
 
                         {/* Bundle Contents - Mobile optimized */}
-                        <div className="space-y-3 sm:space-y-4 border border-stone-200 p-3 sm:p-4 hasib-rounded">
+                        <div className="space-y-3 sm:space-y-4 border border-stone-200 p-3 sm:p-4 diva-rounded">
                             <h3 className="font-bold text-base sm:text-lg">Bundle Contents ({bundleItems?.length || 0} items)</h3>
                             <div className="space-y-3">
                                 {bundleItems?.map((item, index) => {
@@ -320,11 +320,11 @@ const BundleProductDetails = ({ bundle }) => {
                                     if (!product) return null;
 
                                     return (
-                                        <div key={index} className="bg-gray-50 p-3 sm:p-4 hasib-rounded border border-gray-100">
+                                        <div key={index} className="bg-gray-50 p-3 sm:p-4 diva-rounded border border-gray-100">
                                             <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
                                                 {/* Left side: Product image and info */}
                                                 <div className="flex items-center gap-3 flex-1">
-                                                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white hasib-rounded overflow-hidden flex-shrink-0">
+                                                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white diva-rounded overflow-hidden flex-shrink-0">
                                                         {product.images?.[0] ? (
                                                             <img
                                                                 src={product.images[0]}
@@ -340,7 +340,7 @@ const BundleProductDetails = ({ bundle }) => {
                                                     <div className="flex-1 min-w-0">
                                                         <h4 className="font-semibold text-gray-800 text-sm sm:text-base truncate">{product.productName}</h4>
                                                         <div className="text-gray-600">
-                                                            <span className="font-medium text-rose-600 text-sm sm:text-base">৳{parseFloat(product.price).toLocaleString()}</span>
+                                                            <span className="font-medium text-primary text-sm sm:text-base">৳{parseFloat(product.price).toLocaleString()}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -390,14 +390,14 @@ const BundleProductDetails = ({ bundle }) => {
                         </div>
 
                         {/* Delivery Info - Mobile optimized */}
-                        <div className="bg-sky-50 border border-sky-200 hasib-rounded p-3">
+                        <div className="bg-sky-50 border border-sky-200 diva-rounded p-3">
                             <p className="text-lg sm:text-sm text-sky-500">
                                 <strong>Est. Delivery between</strong> 3-7 Business days
                             </p>
                         </div>
 
                         {/* Service Cards - Mobile optimized */}
-                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 bg-yellow-50 hasib-rounded p-4 sm:p-6 mt-4">
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 bg-yellow-50 diva-rounded p-4 sm:p-6 mt-4">
                             <div className="text-center">
                                 <MdOutlineAssignmentReturn className="text-2xl sm:text-3xl mx-auto mb-2 text-gray-700" />
                                 <h5 className="text-lg font-semibold text-gray-900 mb-1">

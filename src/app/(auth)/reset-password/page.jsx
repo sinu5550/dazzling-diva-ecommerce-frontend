@@ -128,7 +128,7 @@ const ResetPassword = () => {
                     </div>
 
                     {/* Password Requirements */}
-                    <div className="bg-gray-50 p-4 hasib-rounded">
+                    <div className="bg-gray-50 p-4 diva-rounded">
                         <p className="text-xs text-gray-600 font-medium mb-2">Password must contain:</p>
                         <ul className="text-xs text-gray-600 space-y-1">
                             <li>• At least 6 characters</li>

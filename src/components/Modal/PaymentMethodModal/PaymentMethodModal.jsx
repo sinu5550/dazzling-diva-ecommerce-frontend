@@ -184,7 +184,7 @@ const PaymentMethodModal = ({ isOpen, onClose, onSelectPayment, totalAmount }) =
                                             value={paymentDetails[field.name] || ''}
                                             onChange={(e) => handleInputChange(field.name, e.target.value)}
                                             placeholder={field.placeholder}
-                                            className="w-full px-3 py-2 border border-stone-300 hasib-rounded focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                                            className="w-full px-3 py-2 border border-stone-300 diva-rounded focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                                             required={field.required}
                                         />
                                     </div>

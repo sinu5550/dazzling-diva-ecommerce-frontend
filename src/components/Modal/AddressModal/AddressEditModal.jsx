@@ -514,14 +514,14 @@ const AddressEditModal = ({ isOpen, onClose, address, onSuccess }) => {
                                 type="button"
                                 onClick={handleClose}
                                 disabled={isSubmitting}
-                                className="px-6 py-2.5 border border-stone-300 hasib-rounded text-gray-700 font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                className="px-6 py-2.5 border border-stone-300 diva-rounded text-gray-700 font-medium hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                             >
                                 Cancel
                             </button>
                             <button
                                 type="submit"
                                 disabled={isSubmitting}
-                                className="px-8 py-2.5 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-medium hasib-rounded hover:from-teal-600 hover:to-teal-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-md hover:shadow-lg"
+                                className="px-8 py-2.5 bg-gradient-to-r from-teal-500 to-teal-600 text-white font-medium diva-rounded hover:from-teal-600 hover:to-teal-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 shadow-md hover:shadow-lg"
                             >
                                 {isSubmitting ? (
                                     <>

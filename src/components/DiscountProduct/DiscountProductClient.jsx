@@ -289,7 +289,7 @@ const DiscountProductClient = ({ products = [], user = null, isLoading: initialL
                             <h2 className="text-2xl font-bold text-gray-800 mb-4">No products match your filters</h2>
                             <button
                                 onClick={clearFilters}
-                                className="px-6 py-3 bg-amber-500 text-white hasib-rounded hover:bg-amber-600 transition-colors font-medium"
+                                className="px-6 py-3 bg-amber-500 text-white diva-rounded hover:bg-amber-600 transition-colors font-medium"
                             >
                                 Clear All Filters
                             </button>
@@ -364,7 +364,7 @@ const DiscountProductClient = ({ products = [], user = null, isLoading: initialL
                         <div className="lg:hidden">
                             <button
                                 onClick={() => setShowFilters(!showFilters)}
-                                className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 hasib-rounded mb-4"
+                                className="w-full flex items-center justify-between p-4 bg-white border border-gray-200 diva-rounded mb-4"
                             >
                                 <span className="flex items-center gap-2 font-medium">
                                     <SlidersHorizontal size={18} />
@@ -377,7 +377,7 @@ const DiscountProductClient = ({ products = [], user = null, isLoading: initialL
                         {/* Filters Sidebar */}
                         {(showFilters || typeof window !== 'undefined' && window.innerWidth >= 1024) && (
                             <div className="lg:w-1/5 w-full text-gray-800">
-                                <div className="bg-white hasib-rounded border border-gray-100 p-6 sticky top-24 shadow">
+                                <div className="bg-white diva-rounded border border-gray-100 p-6 sticky top-24 shadow">
                                     <div className="flex items-center justify-between mb-6">
                                         <h2 className="text-lg font-semibold flex items-center gap-2">
                                             <SlidersHorizontal size={18} />
@@ -539,7 +539,7 @@ const DiscountProductClient = ({ products = [], user = null, isLoading: initialL
                                     </p>
                                     <button
                                         onClick={clearFilters}
-                                        className="px-6 py-3 bg-amber-500 text-white hasib-rounded hover:bg-amber-600 transition-colors font-medium"
+                                        className="px-6 py-3 bg-amber-500 text-white diva-rounded hover:bg-amber-600 transition-colors font-medium"
                                     >
                                         Clear All Filters
                                     </button>

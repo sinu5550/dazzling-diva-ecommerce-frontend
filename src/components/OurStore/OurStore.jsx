@@ -38,7 +38,7 @@ const OurStore = ({storeData}) => {
                                 <img
                                     src={store.image.trim()} // Trim whitespace
                                     alt={store.name}
-                                    className="w-full h-full object-cover hasib-rounded shadow-md min-h-[300px]"
+                                    className="w-full h-full object-cover diva-rounded shadow-md min-h-[300px]"
                                 />
                             </div>
 

@@ -281,67 +281,28 @@ export default function DelayedModal({ allProducts }) {
 
         {/* Content */}
         <div className="grid grid-cols-1 md:grid-cols-12 min-h-[420px]">
-          {/* Left section - Solid System Color Banner */}
-          <div className="md:col-span-5 bg-[#5A0C3D] p-8 text-white flex flex-col justify-center items-center text-center relative">
+          {/* Left section - Solid System Color Banner (Hidden on Mobile, Brand Banner on PC) */}
+          <div className="hidden md:flex md:col-span-5 bg-[#5A0C3D] p-8 text-white flex-col justify-center items-center text-center relative">
             <div className="relative z-10 flex flex-col justify-center items-center h-full">
-              <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] mb-2 bg-[#CCFF00]/10 px-2.5 py-1 rounded-full">
-                Exclusive Offer
+              <span className="text-xs font-bold uppercase tracking-widest text-[#CCFF00] mb-2 bg-[#CCFF00]/10 px-3 py-1 rounded-full">
+                New Collection
               </span>
-              <h2 className="text-2xl lg:text-3xl font-bold mb-4 font-outfit tracking-tight">
-                Don't Miss These Deals!
+              <h2 className="text-3xl font-bold mb-3 font-outfit tracking-tight uppercase">
+                Dazzling Diva
               </h2>
-              <p className="text-xl font-bold mb-6 font-outfit text-[#CCFF00]">
-                {getDiscountText().replace('₹', '৳')}
+              <p className="text-[#CCFF00] text-sm font-medium tracking-wide mb-6 uppercase">
+                Elegance in Every Detail
+              </p>
+              <p className="text-xs text-white/90 mb-8 max-w-[240px] mx-auto leading-relaxed">
+                Discover our handpicked collection of exquisite jewelry and accessories designed to make you shine.
               </p>
 
-              {/* Show coupon code only if active coupon exists */}
-              {activeCoupon && (
-                <div className="w-full">
-                  <div className="bg-white/10 backdrop-blur-sm border border-white/20 py-2.5 px-4 rounded-lg mb-4 flex items-center justify-between gap-2 max-w-[240px] mx-auto">
-                    <span className="text-base font-bold text-white tracking-wider font-outfit">
-                      {activeCoupon.code || "DAZZLE"}
-                    </span>
-                    <button
-                      className="text-[#CCFF00] hover:text-white transition-colors duration-200"
-                      onClick={() =>
-                        copyToClipboard(activeCoupon.code || "DAZZLE")
-                      }
-                      title="Copy code"
-                    >
-                      <svg
-                        className="w-4 h-4 cursor-pointer"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                        />
-                      </svg>
-                    </button>
-                  </div>
-                  <p className="text-xs text-white/80 mb-6 max-w-[240px] mx-auto leading-relaxed">
-                    {getCouponDescription().replace('₹', '৳')}
-                  </p>
-                </div>
-              )}
-
-              {/* If no active coupon, show alternative message */}
-              {!activeCoupon && (
-                <p className="text-xs text-white/80 mb-6 max-w-[240px] mx-auto leading-relaxed">
-                  Check out our exclusive deals on selected products. Limited time offers!
-                </p>
-              )}
-
-              {/* Action buttons */}
+              {/* Action button */}
               <button
                 onClick={() => handleButtonClick("/discount-campaigns")}
-                className="w-full max-w-[220px] bg-white text-[#5A0C3D] hover:bg-[#CCFF00] hover:text-[#5A0C3D] font-semibold py-2.5 rounded-lg transition-colors duration-300 shadow-md text-sm uppercase tracking-wider cursor-pointer"
+                className="w-full max-w-[200px] bg-white text-[#5A0C3D] hover:bg-[#CCFF00] hover:text-[#5A0C3D] font-semibold py-2.5 rounded-lg transition-colors duration-300 shadow-md text-xs uppercase tracking-wider cursor-pointer"
               >
-                {activeCoupon ? "Grab the discount" : "View All Deals"}
+                Explore Collection
               </button>
             </div>
           </div>

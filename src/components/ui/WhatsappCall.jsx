@@ -142,13 +142,13 @@ const WhatsappCall = () => {
                             <div className="flex space-x-4 justify-center">
                                 <button
                                     onClick={() => setShowModal(false)}
-                                    className="px-5 py-2 hasib-rounded font-medium border border-white text-white hover:bg-white hover:bg-opacity-10 transition-colors"
+                                    className="px-5 py-2 diva-rounded font-medium border border-white text-white hover:bg-white hover:bg-opacity-10 transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleConfirmChat}
-                                    className="px-5 py-2 hasib-rounded font-medium text-white shadow-lg hover:shadow-xl transition-all"
+                                    className="px-5 py-2 diva-rounded font-medium text-white shadow-lg hover:shadow-xl transition-all"
                                     style={{
                                         background: `linear-gradient(135deg, ${colors.accent}, #E82C50)`
                                     }}

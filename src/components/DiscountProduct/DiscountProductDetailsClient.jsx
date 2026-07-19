@@ -35,7 +35,21 @@ export default function DiscountProductDetailsClient({ product }) {
     const [isClient, setIsClient] = useState(false);
     const [isInCart, setIsInCart] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
-    const [displayImages, setDisplayImages] = useState(product?.images || []);
+    const getAllProductImages = () => {
+        const baseImages = product?.images || [];
+        const variantImages = product?.productVariants
+            ? product.productVariants.map(v => v.image).filter(Boolean)
+            : [];
+        const combined = [...baseImages, ...variantImages];
+        const filtered = combined.filter(img => 
+            img && 
+            img !== 'https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png' &&
+            !img.includes('ju2uf9y33y1bncwufrl7.png')
+        );
+        return Array.from(new Set(filtered));
+    };
+
+    const [displayImages, setDisplayImages] = useState(getAllProductImages());
 
     const isVariantProduct = useMemo(() => {
         return product?.productType === 'variant' ||
@@ -94,10 +108,12 @@ export default function DiscountProductDetailsClient({ product }) {
     };
 
     const updateDisplayImages = (variant) => {
+        const allImages = getAllProductImages();
         if (variant?.image) {
-            setDisplayImages([variant.image, ...(product.images || [])]);
+            const filtered = allImages.filter(img => img !== variant.image);
+            setDisplayImages([variant.image, ...filtered]);
         } else {
-            setDisplayImages(product.images || []);
+            setDisplayImages(allImages);
         }
     };
 
@@ -299,7 +315,7 @@ export default function DiscountProductDetailsClient({ product }) {
             <div className="min-h-screen flex flex-col items-center justify-center">
                 <h1 className="text-2xl font-bold text-gray-800 mb-4">Product Not Found</h1>
                 <p className="text-gray-600 mb-6">The product you are looking for does not exist.</p>
-                <Link href="/discount-campaigns" className="bg-teal-600 text-white px-6 py-3 hasib-rounded hover:bg-teal-700 transition-colors">
+                <Link href="/discount-campaigns" className="bg-teal-600 text-white px-6 py-3 diva-rounded hover:bg-teal-700 transition-colors">
                     Browse Discount Campaigns
                 </Link>
             </div>
@@ -320,7 +336,7 @@ export default function DiscountProductDetailsClient({ product }) {
 
                 {/* Campaign Banner */}
                 {hasCampaignDiscount && campaignInfo && (
-                    <div className="mb-6 p-4 hasib-rounded bg-gradient-to-r from-red-50 to-orange-50 border border-red-200">
+                    <div className="mb-6 p-4 diva-rounded bg-gradient-to-r from-red-50 to-orange-50 border border-red-200">
                         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
                                 <div className="text-white text-sm font-bold px-3 py-1.5 rounded shadow" style={getCampaignBadgeStyle()}>
@@ -376,7 +392,7 @@ export default function DiscountProductDetailsClient({ product }) {
                             </Link>
                         </div>
                         {/* loyal point Info */}
-                        <div className="bg-amber-50 border border-amber-200 hasib-rounded p-3">
+                        <div className="bg-amber-50 border border-amber-200 diva-rounded p-3">
                             <p className="text-sm text-amber-800">
                                 <strong>Buy Now:</strong> Skip the cart and checkout instantly with this product only.
                             </p>
@@ -385,7 +401,7 @@ export default function DiscountProductDetailsClient({ product }) {
                         {/* Price Section */}
                         <div className="py-4 border-t border-b border-gray-200">
                             <div className="flex items-center gap-4 flex-wrap">
-                                <span className="text-4xl font-bold text-rose-600">
+                                <span className="text-4xl font-bold text-primary">
                                     {formatPriceWithIcon(discountedPrice)}
                                 </span>
                                 {hasCampaignDiscount && originalPrice > discountedPrice && (
@@ -423,7 +439,7 @@ export default function DiscountProductDetailsClient({ product }) {
                         {/* Quantity and Actions */}
                         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 pt-4">
                             {/* Quantity Selector */}
-                            <div className="flex items-center border border-stone-300 hasib-rounded">
+                            <div className="flex items-center border border-stone-300 diva-rounded">
                                 <button
                                     onClick={() => handleQuantityChange('decrement')}
                                     className="px-4 py-2.5 hover:bg-gray-50 text-black transition-colors text-xl"
@@ -449,7 +465,7 @@ export default function DiscountProductDetailsClient({ product }) {
                                     <button
                                         onClick={handleAddToCart}
                                         disabled={!isAvailable || isInCart}
-                                        className={`bg-transparent hover:bg-secound border border-secound text-secound hover:text-white py-3 px-6 hasib-rounded font-semibold flex items-center justify-center gap-2 transition-colors uppercase w-full ${isInCart ? 'bg-green-100 text-green-600 border-green-600 hover:bg-green-200' : ''} ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        className={`bg-transparent hover:bg-secound border border-secound text-secound hover:text-white py-3 px-6 diva-rounded font-semibold flex items-center justify-center gap-2 transition-colors uppercase w-full ${isInCart ? 'bg-green-100 text-green-600 border-green-600 hover:bg-green-200' : ''} ${!isAvailable ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         {isInCart ? <><FaCheck /> In Cart</> : "ADD TO CART"}
                                     </button>
@@ -457,7 +473,7 @@ export default function DiscountProductDetailsClient({ product }) {
                                     <button
                                         onClick={handleBuyNow}
                                         disabled={!isAvailable || buyNowLoading}
-                                        className={`bg-primary hover:bg-primary-hover text-black hover:text-white py-3 px-8 hasib-rounded font-semibold transition-colors uppercase w-full ${!isAvailable || buyNowLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                        className={`bg-primary hover:bg-primary-hover !text-white py-3 px-8 diva-rounded font-semibold transition-colors uppercase w-full ${!isAvailable || buyNowLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                                     >
                                         {buyNowLoading ? (
                                             <span className="flex items-center justify-center gap-2">
@@ -492,7 +508,7 @@ export default function DiscountProductDetailsClient({ product }) {
                                                 campaign
                                             </p>
                                             {campaignInfo.endAt && (
-                                                <div className="inline-flex items-center space-x-1.5 bg-yellow-50 border border-yellow-200 hasib-rounded px-3 py-1.5 mt-2">
+                                                <div className="inline-flex items-center space-x-1.5 bg-yellow-50 border border-yellow-200 diva-rounded px-3 py-1.5 mt-2">
                                                     <span className="text-yellow-600">⏰</span>
                                                     <span className="text-sm font-medium text-yellow-800">Limited time offer!</span>
                                                     <span className="text-xs text-yellow-600">
@@ -503,7 +519,7 @@ export default function DiscountProductDetailsClient({ product }) {
                                         </div>
                                     </div>
                                     <div className="md:border-l md:border-blue-200 md:pl-4">
-                                        <div className="bg-white hasib-rounded p-3 border border-green-200 shadow-xs">
+                                        <div className="bg-white diva-rounded p-3 border border-green-200 shadow-xs">
                                             <div className="text-center">
                                                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">You Save</p>
                                                 <div className="flex items-center justify-center space-x-2">
@@ -542,14 +558,14 @@ export default function DiscountProductDetailsClient({ product }) {
                         </div>
 
                         {/* Delivery Info */}
-                        <div className="bg-gray-50 hasib-rounded p-4 mt-6">
+                        <div className="bg-gray-50 diva-rounded p-4 mt-6">
                             <p className="text-sm text-gray-700">
                                 <span className="font-semibold">Est. Delivery between</span> 10 - 14 days
                             </p>
                         </div>
 
                         {/* Service Cards */}
-                        <div className="grid grid-cols-3 gap-4 bg-yellow-50 hasib-rounded p-6 mt-4">
+                        <div className="grid grid-cols-3 gap-4 bg-yellow-50 diva-rounded p-6 mt-4">
                             <div className="text-center">
                                 <MdOutlineAssignmentReturn className="text-3xl mx-auto mb-2 text-gray-700" />
                                 <h5 className="text-xs font-semibold text-gray-900 mb-1">Return & Refund Policy</h5>

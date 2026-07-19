@@ -1005,7 +1005,7 @@ const OrderSummary = ({
             <>
               {loyaltyBalance.balance > 0 ? (
                 <>
-                  <div className="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 hasib-rounded p-4 mb-3">
+                  <div className="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 diva-rounded p-4 mb-3">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
