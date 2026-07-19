@@ -1,15 +1,11 @@
 // utils/apiClient.js
-export async function apiClient(endpoint, { revalidate, timeout = 15000, ...options } = {}) {
+export async function apiClient(endpoint, { revalidate, ...options } = {}) {
     const baseURL = process.env.NEXT_PUBLIC_API_URL;
     const token = typeof window !== 'undefined' ? localStorage.getItem('supabase_access_token') : null;
-
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeout);
 
     try {
         const res = await fetch(`${baseURL}${endpoint}`, {
             ...options,
-            signal: controller.signal,
             headers: {
                 "Content-Type": "application/json",
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),
@@ -18,8 +14,6 @@ export async function apiClient(endpoint, { revalidate, timeout = 15000, ...opti
             // cache: "no-store",
             next: { revalidate },
         });
-
-        clearTimeout(timeoutId);
 
         if (!res.ok) {
             if (res.status === 401 && typeof window !== 'undefined') {
@@ -34,7 +28,11 @@ export async function apiClient(endpoint, { revalidate, timeout = 15000, ...opti
 
         return res.json();
     } catch (error) {
-        clearTimeout(timeoutId);
+        if (error.name === 'AbortError') {
+            // Return a never-resolving promise for browser/navigation aborts
+            // to suppress downstream state updates and errors on unmounted components
+            return new Promise(() => {});
+        }
         throw error;
     }
 }

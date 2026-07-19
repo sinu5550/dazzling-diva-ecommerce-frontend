@@ -3,7 +3,14 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import Topbar from "./Topbar";
 import Container from "@/components/Container/Container";
-import { Search, X, ChevronDown, ArrowRight, ChevronRight, ChevronLeft } from "lucide-react";
+import {
+  Search,
+  X,
+  ChevronDown,
+  ArrowRight,
+  ChevronRight,
+  ChevronLeft,
+} from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../../../public/assects/Logo.png";
@@ -23,7 +30,7 @@ export default function NavbarClient({ data, contactData, config }) {
   const [scrolled, setScrolled] = useState(false);
   const [isSticky, setIsSticky] = useState(false);
   const [announcementOpen, setAnnouncementOpen] = useState(true);
-  
+
   // Category flyout states
   const [flyoutL1, setFlyoutL1] = useState(null);
   const [flyoutL2, setFlyoutL2] = useState(null);
@@ -47,7 +54,9 @@ export default function NavbarClient({ data, contactData, config }) {
     if (!el) return;
     const tolerance = 2; // small tolerance margin
     setCanScrollLeft(el.scrollLeft > tolerance);
-    setCanScrollRight(el.scrollLeft + el.clientWidth < el.scrollWidth - tolerance);
+    setCanScrollRight(
+      el.scrollLeft + el.clientWidth < el.scrollWidth - tolerance,
+    );
   }, []);
 
   const scrollContainer = useCallback((direction) => {
@@ -56,44 +65,55 @@ export default function NavbarClient({ data, contactData, config }) {
     const scrollAmount = 240;
     el.scrollBy({
       left: direction === "left" ? -scrollAmount : scrollAmount,
-      behavior: "smooth"
+      behavior: "smooth",
     });
   }, []);
 
-  const setScrollRef = useCallback((node) => {
-    if (scrollRef.current) {
-      if (scrollRef.current._handleWheel) {
-        scrollRef.current.removeEventListener("wheel", scrollRef.current._handleWheel);
+  const setScrollRef = useCallback(
+    (node) => {
+      if (scrollRef.current) {
+        if (scrollRef.current._handleWheel) {
+          scrollRef.current.removeEventListener(
+            "wheel",
+            scrollRef.current._handleWheel,
+          );
+        }
+        if (scrollRef.current._handleScroll) {
+          scrollRef.current.removeEventListener(
+            "scroll",
+            scrollRef.current._handleScroll,
+          );
+        }
       }
-      if (scrollRef.current._handleScroll) {
-        scrollRef.current.removeEventListener("scroll", scrollRef.current._handleScroll);
+      if (node) {
+        const handleWheel = (e) => {
+          if (e.deltaY === 0) return;
+          e.preventDefault();
+          node.scrollLeft += e.deltaY;
+        };
+
+        const handleScroll = () => {
+          checkScrollLimits();
+        };
+
+        node.addEventListener("wheel", handleWheel, { passive: false });
+        node.addEventListener("scroll", handleScroll, { passive: true });
+        node._handleWheel = handleWheel;
+        node._handleScroll = handleScroll;
+
+        // Initial limits check after rendering content
+        setTimeout(() => {
+          const tolerance = 2;
+          setCanScrollLeft(node.scrollLeft > tolerance);
+          setCanScrollRight(
+            node.scrollLeft + node.clientWidth < node.scrollWidth - tolerance,
+          );
+        }, 150);
       }
-    }
-    if (node) {
-      const handleWheel = (e) => {
-        if (e.deltaY === 0) return;
-        e.preventDefault();
-        node.scrollLeft += e.deltaY;
-      };
-
-      const handleScroll = () => {
-        checkScrollLimits();
-      };
-
-      node.addEventListener("wheel", handleWheel, { passive: false });
-      node.addEventListener("scroll", handleScroll, { passive: true });
-      node._handleWheel = handleWheel;
-      node._handleScroll = handleScroll;
-
-      // Initial limits check after rendering content
-      setTimeout(() => {
-        const tolerance = 2;
-        setCanScrollLeft(node.scrollLeft > tolerance);
-        setCanScrollRight(node.scrollLeft + node.clientWidth < node.scrollWidth - tolerance);
-      }, 150);
-    }
-    scrollRef.current = node;
-  }, [checkScrollLimits]);
+      scrollRef.current = node;
+    },
+    [checkScrollLimits],
+  );
 
   // Scroll detection
   useEffect(() => {
@@ -241,13 +261,13 @@ export default function NavbarClient({ data, contactData, config }) {
             : "border-b border-transparent shadow-none"
         }`}
       >
-        <Container className="w-full ">
+        <div className="w-full px-[3%]">
           {/* Desktop Nav Row — 3-column grid */}
           <div className="hidden lg:grid grid-cols-3 items-center w-full gap-3">
             {/* COL 1 — LEFT: Select Category + New In + Offers */}
             <div className="flex items-center gap-5 justify-start">
               {/* Select Category Dropdown */}
-              <div 
+              <div
                 className="relative flex-shrink-0 group"
                 onMouseLeave={() => {
                   setFlyoutL1(null);
@@ -263,7 +283,6 @@ export default function NavbarClient({ data, contactData, config }) {
 
                 {/* Level 1 Dropdown */}
                 <div className="absolute left-0 mt-1.5 w-64 bg-white border border-gray-150 shadow-xl rounded-xl py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                  
                   {/* All products link */}
                   <div className="relative">
                     <Link
@@ -276,7 +295,8 @@ export default function NavbarClient({ data, contactData, config }) {
                   </div>
 
                   {mainCategories?.map((mainCat) => {
-                    const hasL2 = mainCat.categories && mainCat.categories.length > 0;
+                    const hasL2 =
+                      mainCat.categories && mainCat.categories.length > 0;
                     const isHovered = flyoutL1?.id === mainCat.id;
 
                     return (
@@ -296,18 +316,22 @@ export default function NavbarClient({ data, contactData, config }) {
                           }`}
                         >
                           <span>{mainCat.name}</span>
-                          {hasL2 && <ChevronRight size={14} className="text-gray-400" />}
+                          {hasL2 && (
+                            <ChevronRight size={14} className="text-gray-400" />
+                          )}
                         </Link>
 
                         {/* Level 2 Submenu */}
                         {isHovered && hasL2 && (
-                          <div 
+                          <div
                             className="absolute left-full top-0 pl-2 w-[16.5rem] z-50"
                             onMouseLeave={() => setFlyoutL2(null)}
                           >
                             <div className="bg-white border border-gray-150 shadow-xl rounded-xl py-2">
                               {mainCat.categories.map((cat) => {
-                                const hasL3 = cat.subCategories && cat.subCategories.length > 0;
+                                const hasL3 =
+                                  cat.subCategories &&
+                                  cat.subCategories.length > 0;
                                 const isL2Hovered = flyoutL2?.id === cat.id;
 
                                 return (
@@ -320,11 +344,18 @@ export default function NavbarClient({ data, contactData, config }) {
                                       href={`/products/category/${encodeName(cat.name)}`}
                                       onClick={handleLinkClick}
                                       className={`flex items-center justify-between px-4 py-2.5 text-[15px] font-medium text-gray-700 hover:bg-gray-50 hover:text-[#5A0C3D] transition-colors ${
-                                        isL2Hovered ? "bg-gray-50 text-[#5A0C3D]" : ""
+                                        isL2Hovered
+                                          ? "bg-gray-50 text-[#5A0C3D]"
+                                          : ""
                                       }`}
                                     >
                                       <span>{cat.name}</span>
-                                      {hasL3 && <ChevronRight size={14} className="text-gray-400" />}
+                                      {hasL3 && (
+                                        <ChevronRight
+                                          size={14}
+                                          className="text-gray-400"
+                                        />
+                                      )}
                                     </Link>
 
                                     {/* Level 3 Submenu */}
@@ -361,7 +392,13 @@ export default function NavbarClient({ data, contactData, config }) {
                 href="/new-arrival"
                 className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-gray-800 text-[16px] font-normal rounded-full border border-[#44444433] transition-all duration-200 flex-shrink-0 whitespace-nowrap shiny-button"
               >
-                <Image src="/assects/new-icon.svg" alt="New In" width={16} height={16} className="w-5 h-5" />
+                <Image
+                  src="/assects/new-icon.svg"
+                  alt="New In"
+                  width={16}
+                  height={16}
+                  className="w-5 h-5"
+                />
                 <span>New In</span>
               </Link>
 
@@ -370,7 +407,13 @@ export default function NavbarClient({ data, contactData, config }) {
                 href="/discount-campaigns"
                 className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-gray-800 text-[16px] font-normal rounded-full border border-[#44444433] transition-all duration-200 flex-shrink-0 whitespace-nowrap shiny-button"
               >
-                <Image src="/assects/offer-icon.svg" alt="Offers" width={16} height={16} className="w-5 h-5" />
+                <Image
+                  src="/assects/offer-icon.svg"
+                  alt="Offers"
+                  width={16}
+                  height={16}
+                  className="w-5 h-5"
+                />
                 <span>Offers</span>
               </Link>
             </div>
@@ -439,7 +482,7 @@ export default function NavbarClient({ data, contactData, config }) {
             <div className="w-full">
               <SearchComponent />
             </div>
-            <div className="flex items-center gap-2 overflow-x-auto no-scrollbar pb-0.5">
+            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-0.5">
               <Link
                 href="/product"
                 className="px-3.5 py-1.5 bg-white text-gray-800 text-[12px] font-normal rounded-full border border-[#44444433] whitespace-nowrap flex-shrink-0"
@@ -469,7 +512,7 @@ export default function NavbarClient({ data, contactData, config }) {
               ))}
             </div>
           </div>
-        </Container>
+        </div>
         {/* Mega Menu - positioned absolute inside primary-nav */}
         <div
           className={`
@@ -658,7 +701,7 @@ export default function NavbarClient({ data, contactData, config }) {
         }
 
         .shiny-button::after {
-          content: '';
+          content: "";
           position: absolute;
           top: 0;
           left: -150%;
@@ -691,7 +734,8 @@ export default function NavbarClient({ data, contactData, config }) {
         }
 
         @keyframes iconPulse {
-          0%, 100% {
+          0%,
+          100% {
             transform: scale(1);
           }
           50% {
@@ -761,7 +805,7 @@ function MobileDrawer({
       <div
         className={`
                     absolute top-0 left-0 w-[85%] max-w-[380px] h-full bg-white
-                    transform transition-transform duration-300 ease-out overflow-y-auto
+                    transform transition-transform duration-300 ease-out overflow-y-auto hide-scrollbar
                     ${isOpen ? "translate-x-0 shadow-lg" : "-translate-x-full"}
                 `}
         onClick={(e) => e.stopPropagation()}

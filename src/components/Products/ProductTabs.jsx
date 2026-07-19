@@ -15,13 +15,13 @@ export default function ProductTabs({ product }) {
     return (
         <div className="border border-gray-200 hasib-rounded overflow-hidden">
                 {/* Tab Headers - Horizontal scroll on mobile */}
-                <div className="flex border-b border-gray-200 bg-gray-50 overflow-x-auto scrollbar-hide">
+                <div className="flex border-b border-gray-200 bg-gray-50 overflow-x-auto hide-scrollbar">
                     {tabs.map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id)}
                             className={`flex-shrink-0 text-xs md:text-base px-4 py-3 sm:px-6 sm:py-4 font-semibold transition-colors whitespace-nowrap ${activeTab === tab.id
-                                ? 'bg-white text-teal-600 border-b-2 border-teal-600'
+                                ? 'bg-white text-secound border-b-2 border-secound'
                                 : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >

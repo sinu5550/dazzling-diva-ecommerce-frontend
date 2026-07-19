@@ -865,28 +865,28 @@ const OrderSummary = ({
           {bundleItems.length > 0 && (
             <div className="mt-6">
               <h3 className="font-semibold mb-3 flex items-center gap-2">
-                <FaBox className="text-teal-600" />
+                <FaBox className="text-secound" />
                 Bundles ({bundleItems.length})
               </h3>
               <table className="w-full border-collapse rounded text-sm mt-2">
                 <thead>
-                  <tr className="bg-teal-50">
-                    <th className="p-3 text-left border border-teal-200 font-semibold">
+                  <tr className="bg-secound/5">
+                    <th className="p-3 text-left border border-secound/20 font-semibold">
                       Image
                     </th>
-                    <th className="p-3 text-left border border-teal-200 font-semibold">
+                    <th className="p-3 text-left border border-secound/20 font-semibold">
                       Bundle Info
                     </th>
-                    <th className="p-3 text-right border border-teal-200 font-semibold">
+                    <th className="p-3 text-right border border-secound/20 font-semibold">
                       Original Price
                     </th>
-                    <th className="p-3 text-right border border-teal-200 font-semibold">
+                    <th className="p-3 text-right border border-secound/20 font-semibold">
                       Discount
                     </th>
-                    <th className="p-3 text-right border border-teal-200 font-semibold">
+                    <th className="p-3 text-right border border-secound/20 font-semibold">
                       VAT/TAX
                     </th>
-                    <th className="p-3 text-right border border-teal-200 font-semibold">
+                    <th className="p-3 text-right border border-secound/20 font-semibold">
                       Final Price
                     </th>
                   </tr>
@@ -908,7 +908,7 @@ const OrderSummary = ({
                         key={`bundle-${item.id || index}`}
                         className="border-b"
                       >
-                        <td className="p-3 border border-teal-200">
+                        <td className="p-3 border border-secound/20">
                           <div className="relative w-16 h-16">
                             <Image
                               src={item.image}
@@ -917,13 +917,13 @@ const OrderSummary = ({
                               height={400}
                               className="w-full h-full object-cover rounded"
                             />
-                            <div className="absolute -top-1 -right-1 bg-teal-500 text-white text-[10px] p-1 rounded-full">
+                            <div className="absolute -top-1 -right-1 bg-secound text-white text-[10px] p-1 rounded-full">
                               <FaBox />
                             </div>
                           </div>
                         </td>
 
-                        <td className="p-3 border border-teal-200">
+                        <td className="p-3 border border-secound/20">
                           <div>
                             <h4 className="font-semibold text-gray-900">
                               {item.name}
@@ -940,13 +940,13 @@ const OrderSummary = ({
                           </div>
                         </td>
 
-                        <td className="p-3 border border-teal-200 text-right">
+                        <td className="p-3 border border-secound/20 text-right">
                           <div className="font-medium">
                             {formatPrice(originalPrice)}
                           </div>
                         </td>
 
-                        <td className="p-3 border border-teal-200 text-right">
+                        <td className="p-3 border border-secound/20 text-right">
                           {discountAmount > 0 ? (
                             <div className="font-medium text-red-600">
                               -{formatPrice(discountAmount)}
@@ -956,7 +956,7 @@ const OrderSummary = ({
                           )}
                         </td>
 
-                        <td className="p-3 border border-teal-200 text-right">
+                        <td className="p-3 border border-secound/20 text-right">
                           {bundleVAT > 0 ? (
                             <div className="font-medium">
                               {formatPrice(bundleVAT / quantity)}
@@ -966,8 +966,8 @@ const OrderSummary = ({
                           )}
                         </td>
 
-                        <td className="p-3 border border-teal-200 text-right">
-                          <div className="font-bold text-teal-700">
+                        <td className="p-3 border border-secound/20 text-right">
+                          <div className="font-bold text-secound-hover">
                             {formatPrice(finalPrice)}
                           </div>
                         </td>
@@ -1311,7 +1311,7 @@ const OrderSummary = ({
 
           <div className="border-t-2 border-stone-300 pt-3 mt-3 flex justify-between text-lg font-bold">
             <span>Grand Total</span>
-            <span className="text-teal-600">
+            <span className="text-secound">
               {formatPrice(totals.finalTotal)}
             </span>
           </div>

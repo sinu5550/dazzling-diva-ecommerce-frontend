@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function Logo({ className = '', ...props }) {
     return (
-        <svg className={className} {...props} width="232" height="33" viewBox="0 0 232 33" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+        <svg className={className} {...props} viewBox="0 0 232 33" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
 <rect width="231.429" height="32.7273" fill="url(#pattern0_4_12)"/>
 <defs>
 <pattern id="pattern0_4_12" patternContentUnits="objectBoundingBox" width="1" height="1">

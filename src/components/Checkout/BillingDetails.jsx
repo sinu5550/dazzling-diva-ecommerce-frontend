@@ -355,7 +355,7 @@ const BillingDetails = ({
                             type="radio"
                             value="local"
                             {...register("shipping")}
-                            className="h-4 w-4 text-teal-600"
+                            className="h-4 w-4 text-secound"
                             defaultChecked
                         />
                         <div className="flex-1">
@@ -368,7 +368,7 @@ const BillingDetails = ({
                             type="radio"
                             value="dhaka-city"
                             {...register("shipping")}
-                            className="h-4 w-4 text-teal-600"
+                            className="h-4 w-4 text-secound"
                         />
                         <div className="flex-1">
                             <p className="font-medium">Dhaka City</p>
@@ -380,7 +380,7 @@ const BillingDetails = ({
                             type="radio"
                             value="outside"
                             {...register("shipping")}
-                            className="h-4 w-4 text-teal-600"
+                            className="h-4 w-4 text-secound"
                         />
                         <div className="flex-1">
                             <p className="font-medium">Outside Dhaka</p>
@@ -399,7 +399,7 @@ const BillingDetails = ({
                             type="radio"
                             value="cod"
                             {...register("payment")}
-                            className="h-4 w-4 text-teal-600"
+                            className="h-4 w-4 text-secound"
                             defaultChecked
                         />
                         <div>
@@ -411,7 +411,7 @@ const BillingDetails = ({
                             type="radio"
                             value="online"
                             {...register("payment")}
-                            className="h-4 w-4 text-teal-600"
+                            className="h-4 w-4 text-secound"
                         />
                         <div>
                             <p className="font-medium">Online Payment</p>
@@ -436,7 +436,7 @@ const BillingDetails = ({
     if (isLoading) {
         return (
             <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secound"></div>
             </div>
         );
     }
@@ -455,7 +455,7 @@ const BillingDetails = ({
                         </div>
                         <Link
                             href="/my-account"
-                            className="text-sm text-teal-600 hover:text-teal-800 hover:underline"
+                            className="text-sm text-secound hover:text-secound-hover hover:underline"
                         >
                             Edit Profile
                         </Link>
@@ -481,7 +481,7 @@ const BillingDetails = ({
                             <button
                                 type="button"
                                 onClick={() => setShowAllAddresses(true)}
-                                className="text-sm text-teal-600 hover:text-teal-800 font-medium hover:underline flex items-center gap-1"
+                                className="text-sm text-secound hover:text-secound-hover font-medium hover:underline flex items-center gap-1"
                             >
                                 Change Address <FaLongArrowAltRight className="text-xs" />
                             </button>
@@ -520,7 +520,7 @@ const BillingDetails = ({
                         <button
                             type="button"
                             onClick={() => setIsAddModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2 text-teal-600 border border-teal-600 hasib-rounded hover:bg-teal-50 transition-colors font-medium cursor-pointer"
+                            className="flex items-center gap-2 px-4 py-2 text-secound border border-secound hasib-rounded hover:bg-secound/5 transition-colors font-medium cursor-pointer"
                         >
                             <Plus className="w-4 h-4" />
                             Add New Address
@@ -695,7 +695,7 @@ const BillingDetails = ({
                         </div>
                         {user && customerId && (
                             <div className="flex items-center">
-                                <input type="checkbox" {...register("isDefault")} className="h-4 w-4 text-teal-600 rounded" defaultChecked={addresses.length === 0} />
+                                <input type="checkbox" {...register("isDefault")} className="h-4 w-4 text-secound rounded" defaultChecked={addresses.length === 0} />
                                 <label className="ml-2 text-gray-700">Set as default shipping address</label>
                             </div>
                         )}
@@ -709,7 +709,7 @@ const BillingDetails = ({
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 bg-teal-600 text-white hasib-rounded font-bold hover:bg-teal-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                            className="w-full py-3 bg-secound text-white hasib-rounded font-bold hover:bg-secound-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg"
                         >
                             {loading ? "Processing..." : user ? "Place Order" : "Continue to Payment"}
                         </button>
@@ -753,11 +753,11 @@ const BillingDetails = ({
                                     return (
                                         <div
                                             key={address.id}
-                                            className={`relative bg-white rounded-xl border-2 transition-all duration-300 cursor-pointer hover:shadow-lg ${isSelected ? 'border-teal-500 shadow-lg' : 'border-gray-200 hover:border-teal-300'}`}
+                                            className={`relative bg-white rounded-xl border-2 transition-all duration-300 cursor-pointer hover:shadow-lg ${isSelected ? 'border-secound shadow-lg' : 'border-gray-200 hover:border-secound/40'}`}
                                             onClick={() => handleAddressSelect(address)}
                                         >
                                             {address.isDefault && (
-                                                <div className="absolute -top-2 left-4 px-3 py-1 bg-gradient-to-r from-teal-500 to-teal-600 text-white text-xs font-bold rounded-full shadow-md flex items-center gap-1.5">
+                                                <div className="absolute -top-2 left-4 px-3 py-1 bg-gradient-to-r from-secound to-secound-hover text-white text-xs font-bold rounded-full shadow-md flex items-center gap-1.5">
                                                     <Star className="w-3 h-3 fill-current" /> DEFAULT
                                                 </div>
                                             )}
@@ -777,7 +777,7 @@ const BillingDetails = ({
                                                     <p className="font-semibold">{address.country}</p>
                                                 </div>
                                                 <div className="flex items-center justify-center pt-2">
-                                                    <div className={`w-6 h-6 border-2 rounded-full flex items-center justify-center ${isSelected ? 'border-teal-500 bg-teal-500' : 'border-stone-300'}`}>
+                                                    <div className={`w-6 h-6 border-2 rounded-full flex items-center justify-center ${isSelected ? 'border-secound bg-secound' : 'border-stone-300'}`}>
                                                         {isSelected && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
                                                     </div>
                                                 </div>
@@ -790,7 +790,7 @@ const BillingDetails = ({
                                 <button
                                     onClick={() => setShowAllAddresses(false)}
                                     disabled={!selectedAddress}
-                                    className="flex-1 py-3 bg-teal-600 text-white hasib-rounded font-bold hover:bg-teal-700 transition-colors disabled:opacity-50"
+                                    className="flex-1 py-3 bg-secound text-white hasib-rounded font-bold hover:bg-secound-hover transition-colors disabled:opacity-50"
                                 >
                                     Use Selected Address
                                 </button>
