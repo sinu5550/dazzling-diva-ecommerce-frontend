@@ -227,8 +227,8 @@ export default function NavbarClient({ data, contactData, config }) {
       <div className="navbar-shell w-full relative z-[60]">
         {/* Announcement Bar */}
         {announcementOpen && (
-          <div className="bg-[#5A0C3D] text-white text-[14px] h-[38px] px-4 relative flex items-center justify-center font-outfit font-normal">
-            <span className="text-center tracking-wide flex items-center gap-1">
+          <div className="bg-[#5A0C3D] text-white text-[13px] md:text-[14px] min-h-[38px] py-2 md:py-0 px-4 relative flex items-center justify-center font-outfit font-normal">
+            <span className="text-center tracking-wide px-8 leading-normal">
               Limited Time! Enjoy 15% OFF on Regular Items — Online Only. Shop
               Before It Ends!
             </span>
@@ -491,15 +491,29 @@ export default function NavbarClient({ data, contactData, config }) {
               </Link>
               <Link
                 href="/new-arrival"
-                className="px-3.5 py-1.5 bg-white text-gray-800 text-[12px] font-normal rounded-full border border-[#44444433] whitespace-nowrap flex-shrink-0 shiny-button"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white text-gray-800 text-[12px] font-normal rounded-full border border-[#44444433] whitespace-nowrap flex-shrink-0 shiny-button"
               >
-                New In
+                <Image
+                  src="/assects/new-icon.svg"
+                  alt="New In"
+                  width={14}
+                  height={14}
+                  className="w-3.5 h-3.5"
+                />
+                <span>New In</span>
               </Link>
               <Link
                 href="/discount-campaigns"
-                className="px-3.5 py-1.5 bg-white text-gray-800 text-[12px] font-normal rounded-full border border-[#44444433] whitespace-nowrap flex-shrink-0 shiny-button"
+                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white text-gray-800 text-[12px] font-normal rounded-full border border-[#44444433] whitespace-nowrap flex-shrink-0 shiny-button"
               >
-                Offers
+                <Image
+                  src="/assects/offer-icon.svg"
+                  alt="Offers"
+                  width={14}
+                  height={14}
+                  className="w-3.5 h-3.5"
+                />
+                <span>Offers</span>
               </Link>
               {normalCategories?.map((cat) => (
                 <Link

@@ -89,7 +89,7 @@ const WishlistCartButton = ({
             className={`
                 flex items-center justify-center gap-2 px-4 py-2 rounded transition-colors text-sm font-medium
                 ${isDisabled ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : ''}
-                ${moved || isAlreadyInCart ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-primary text-black hover:bg-transparent border border-primary hover:text-primary-hover'}
+                ${moved || isAlreadyInCart ? 'bg-green-100 text-green-600 border border-green-600' : 'bg-[#5A0C3D] text-white hover:bg-transparent border border-[#5A0C3D] hover:text-[#5A0C3D] rounded-[8px]'}
             `}
             aria-label={moved || isAlreadyInCart ? "Already in cart" : "Move to cart"}
         >

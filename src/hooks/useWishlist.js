@@ -113,45 +113,18 @@ export const useWishlist = (user = null) => {
     const loadWishlist = useCallback(async () => {
         setLoading(true);
         try {
-            if (isAuthenticated) {
-                const response = await apiClient('/api/wishlist');
-                const apiData = response.data || [];
-
-                // If API returns wishlist items with product nested
-                let normalizedData;
-                if (apiData.length > 0 && apiData[0].product) {
-                    normalizedData = apiData.map(item => normalizeProductData(item.product));
-                } else {
-                    normalizedData = apiData.map(normalizeProductData);
-                }
-
-                setWishlist(normalizedData);
-                emitWishlistUpdate(WISHLIST_EVENTS.UPDATED, { items: normalizedData });
-            } else {
-                const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
-                const localWishlist = stored ? JSON.parse(stored) : [];
-                const normalizedData = localWishlist.map(normalizeProductData);
-
-                setWishlist(normalizedData);
-                emitWishlistUpdate(WISHLIST_EVENTS.UPDATED, { items: normalizedData });
-            }
-        } catch (error) {
-            console.warn('Error loading wishlist (falling back to localStorage):', error.message);
-
             const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
             const localWishlist = stored ? JSON.parse(stored) : [];
             const normalizedData = localWishlist.map(normalizeProductData);
 
             setWishlist(normalizedData);
             emitWishlistUpdate(WISHLIST_EVENTS.UPDATED, { items: normalizedData });
-
-            if (isAuthenticated) {
-                toast.error('Failed to sync wishlist with server');
-            }
+        } catch (error) {
+            console.warn('Error loading wishlist:', error.message);
         } finally {
             setLoading(false);
         }
-    }, [isAuthenticated]);
+    }, []);
 
     const formatProductForLocalStorage = (product) => {
         // Calculate discount price if discount exists
@@ -196,154 +169,79 @@ export const useWishlist = (user = null) => {
             // Generate unique wishlist ID
             const wishlistId = getWishlistItemId(product.id, product.variantId);
 
-            if (isAuthenticated) {
-                const payload = {
-                    productId: product.id,
-                    ...(product.variantId && { variantId: product.variantId })
-                };
+            const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
+            const localWishlist = stored ? JSON.parse(stored) : [];
 
-                const response = await apiClient('/api/wishlist', {
-                    method: 'POST',
-                    body: JSON.stringify(payload)
-                });
-
-                // Handle different API response structures
-                let productData;
-                if (response.data?.product) {
-                    productData = normalizeProductData(response.data.product);
-                } else if (response.data) {
-                    productData = normalizeProductData(response.data);
-                } else {
-                    productData = normalizeProductData(product);
-                }
-
-                setWishlist(prev => {
-                    const exists = prev.some(item => item.wishlistId === wishlistId);
-                    if (exists) {
-                        toast.error('Already in wishlist');
-                        return prev;
-                    }
-                    const newWishlist = [productData, ...prev];
-                    emitWishlistUpdate(WISHLIST_EVENTS.ITEM_ADDED, {
-                        product: productData,
-                        items: newWishlist
-                    });
-                    return newWishlist;
-                });
-                toast.success('Added to wishlist');
-                return true;
-            } else {
-                const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
-                const localWishlist = stored ? JSON.parse(stored) : [];
-
-                const exists = localWishlist.some(item => item.wishlistId === wishlistId);
-                if (exists) {
-                    toast.error('Already in wishlist');
-                    return false;
-                }
-
-                const newItem = formatProductForLocalStorage(product);
-                const updatedWishlist = [newItem, ...localWishlist];
-
-                localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(updatedWishlist));
-                const normalizedData = updatedWishlist.map(normalizeProductData);
-                setWishlist(normalizedData);
-
-                emitWishlistUpdate(WISHLIST_EVENTS.ITEM_ADDED, {
-                    product: newItem,
-                    items: normalizedData
-                });
-                toast.success('Added to wishlist');
-                return true;
+            const exists = localWishlist.some(item => item.wishlistId === wishlistId);
+            if (exists) {
+                toast.error('Already in wishlist');
+                return false;
             }
+
+            const newItem = formatProductForLocalStorage(product);
+            const updatedWishlist = [newItem, ...localWishlist];
+
+            localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(updatedWishlist));
+            const normalizedData = updatedWishlist.map(normalizeProductData);
+            setWishlist(normalizedData);
+
+            emitWishlistUpdate(WISHLIST_EVENTS.ITEM_ADDED, {
+                product: newItem,
+                items: normalizedData
+            });
+            toast.success('Added to wishlist');
+            return true;
         } catch (error) {
             console.error('Error adding to wishlist:', error);
-            const message = error.response?.data?.message || 'Failed to add to wishlist';
+            const message = error.message || 'Failed to add to wishlist';
             toast.error(message);
             return false;
         }
-    }, [isAuthenticated]);
+    }, []);
 
     // hooks/useWishlist.js - Add debugging logs to removeFromWishlist function
     const removeFromWishlist = useCallback(async (productId, variantId = null) => {
         try {
             const wishlistId = getWishlistItemId(productId, variantId)
 
-            if (isAuthenticated) {
-            
-                await apiClient(`/api/wishlist/${productId}`, {
-                    method: 'DELETE',
-                    body: JSON.stringify({ variantId })
-                });
+            const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
+            const localWishlist = stored ? JSON.parse(stored) : [];
+            console.log('Local wishlist before removal:', localWishlist);
 
-                setWishlist(prev => {
-                    console.log('Current wishlist before removal:', prev);
-                    const newWishlist = prev.filter(item => item.wishlistId !== wishlistId);
-                    console.log('New wishlist after removal:', newWishlist);
+            const updatedWishlist = localWishlist.filter(item => item.wishlistId !== wishlistId);
+            console.log('Local wishlist after removal:', updatedWishlist);
 
-                    emitWishlistUpdate(WISHLIST_EVENTS.ITEM_REMOVED, {
-                        productId,
-                        variantId,
-                        items: newWishlist
-                    });
-                    return newWishlist;
-                });
-             
-            } else {
-                const stored = localStorage.getItem(WISHLIST_STORAGE_KEY);
-                const localWishlist = stored ? JSON.parse(stored) : [];
-                console.log('Local wishlist before removal:', localWishlist);
+            localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(updatedWishlist));
+            const normalizedData = updatedWishlist.map(normalizeProductData);
+            setWishlist(normalizedData);
 
-                const updatedWishlist = localWishlist.filter(item => item.wishlistId !== wishlistId);
-                console.log('Local wishlist after removal:', updatedWishlist);
-
-                localStorage.setItem(WISHLIST_STORAGE_KEY, JSON.stringify(updatedWishlist));
-                const normalizedData = updatedWishlist.map(normalizeProductData);
-                setWishlist(normalizedData);
-
-                emitWishlistUpdate(WISHLIST_EVENTS.ITEM_REMOVED, {
-                    productId,
-                    variantId,
-                    items: normalizedData
-                });
-            }
+            emitWishlistUpdate(WISHLIST_EVENTS.ITEM_REMOVED, {
+                productId,
+                variantId,
+                items: normalizedData
+            });
             return true;
         } catch (error) {
             console.error('Error removing from wishlist:', error);
-            console.error('Error details:', {
-                productId,
-                variantId,
-                errorMessage: error.message,
-                errorResponse: error.response?.data
-            });
-            const message = error.response?.data?.message || 'Failed to remove from wishlist';
+            const message = error.message || 'Failed to remove from wishlist';
             toast.error(message);
             return false;
         }
-    }, [isAuthenticated]);
+    }, []);
 
     const clearWishlist = useCallback(async () => {
         try {
-            if (isAuthenticated) {
-                await apiClient('/api/wishlist', {
-                    method: 'DELETE'
-                });
-                setWishlist([]);
-                emitWishlistUpdate(WISHLIST_EVENTS.UPDATED, { items: [] });
-                toast.success('Wishlist cleared');
-            } else {
-                localStorage.removeItem(WISHLIST_STORAGE_KEY);
-                setWishlist([]);
-                emitWishlistUpdate(WISHLIST_EVENTS.UPDATED, { items: [] });
-                toast.success('Wishlist cleared');
-            }
+            localStorage.removeItem(WISHLIST_STORAGE_KEY);
+            setWishlist([]);
+            emitWishlistUpdate(WISHLIST_EVENTS.UPDATED, { items: [] });
+            toast.success('Wishlist cleared');
             return true;
         } catch (error) {
             console.error('Error clearing wishlist:', error);
             toast.error('Failed to clear wishlist');
             return false;
         }
-    }, [isAuthenticated]);
+    }, []);
 
     const isInWishlist = useCallback((productId, variantId = null) => {
         const wishlistId = getWishlistItemId(productId, variantId);

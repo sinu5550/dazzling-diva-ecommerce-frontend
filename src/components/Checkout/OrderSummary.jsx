@@ -798,6 +798,7 @@ const OrderSummary = ({
                             width={400}
                             height={400}
                             className="w-full h-full object-cover rounded"
+                            style={{ width: 'auto', height: 'auto' }}
                           />
                           {item.variantId && (
                             <div className="absolute -top-1 -right-1 bg-sky-500 text-white text-[10px] p-1 rounded-full">
@@ -916,6 +917,7 @@ const OrderSummary = ({
                               width={400}
                               height={400}
                               className="w-full h-full object-cover rounded"
+                              style={{ width: 'auto', height: 'auto' }}
                             />
                             <div className="absolute -top-1 -right-1 bg-secound text-white text-[10px] p-1 rounded-full">
                               <FaBox />

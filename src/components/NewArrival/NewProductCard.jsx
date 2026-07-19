@@ -7,6 +7,7 @@ import { useWishlist } from '@/hooks/useWishlist';
 import { useCart } from '@/hooks/useCart';
 import { CartIcon } from '@/components/svg';
 import { PiShareFatLight } from 'react-icons/pi';
+import { Heart } from 'lucide-react';
 import toast from 'react-hot-toast';
 
 import {
@@ -19,10 +20,13 @@ export default function NewProductCard({ product, user = null, onOpenQuickView }
     const [isHovered, setIsHovered] = useState(false);
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [isCartLoading, setIsCartLoading] = useState(false);
+    const [isWishlistLoading, setIsWishlistLoading] = useState(false);
 
     const { addToCart } = useCart(user);
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist(user);
 
     const isVariantProduct = product.productType === 'variant';
+    const isWishlisted = isInWishlist(product.id, isVariantProduct ? selectedVariant?.id : null);
 
     // Initialize variant selection
     useEffect(() => {
@@ -129,6 +133,52 @@ export default function NewProductCard({ product, user = null, onOpenQuickView }
         }
     };
 
+    const toggleWishlist = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (isWishlistLoading) return;
+        setIsWishlistLoading(true);
+
+        try {
+            if (isWishlisted) {
+                const success = await removeFromWishlist(product.id, selectedVariant?.id);
+                if (success) {
+                    toast.success("Removed from wishlist");
+                }
+            } else {
+                const wishlistProduct = {
+                    id: product.id,
+                    slug: product.slug,
+                    sku: isVariantProduct ? selectedVariant?.sku : product.sku,
+                    productName: product.productName,
+                    price: originalPrice,
+                    discountPrice: discountedPrice,
+                    quantity: availableQuantity,
+                    images: cartImages,
+                    status: product.status,
+                    subCategoryId: product.subCategoryId,
+                    taxType: product.taxType,
+                    tax: product.tax,
+                    discountValue: product.discountValue,
+                    discountType: product.discountType,
+                    createdAt: product.createdAt,
+                    ...(isVariantProduct && selectedVariant && {
+                        variantId: selectedVariant.id,
+                        variantAttributes: selectedVariant.attributes,
+                        productType: "variant",
+                    })
+                };
+                await addToWishlist(wishlistProduct);
+            }
+        } catch (error) {
+            console.error("Error toggling wishlist:", error);
+            toast.error("Failed to update wishlist");
+        } finally {
+            setIsWishlistLoading(false);
+        }
+    };
+
     const handleShare = (e) => {
         e.preventDefault();
         e.stopPropagation();
@@ -155,14 +205,33 @@ export default function NewProductCard({ product, user = null, onOpenQuickView }
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
-                {/* Share Button (top-right) */}
-                <div className="absolute top-3 right-3 z-30">
+                {/* Action Buttons Container (Top Right) */}
+                <div className="absolute top-3 right-3 z-30 flex flex-col gap-2">
+                    {/* Wishlist Heart Button */}
+                    <button
+                        onClick={toggleWishlist}
+                        title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                        className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 active:scale-95 transition-all cursor-pointer"
+                        disabled={isWishlistLoading}
+                    >
+                        {isWishlistLoading ? (
+                            <span className="animate-spin inline-block w-4 h-4 border-2 border-[#5A0C3D] border-t-transparent rounded-full"></span>
+                        ) : (
+                            <Heart 
+                                className={`w-5 h-5 transition-colors duration-300 ${
+                                    isWishlisted ? 'fill-[#5A0C3D] text-[#5A0C3D]' : 'text-black hover:text-[#5A0C3D]'
+                                }`} 
+                            />
+                        )}
+                    </button>
+
+                    {/* Share Button */}
                     <button
                         onClick={handleShare}
                         title="Share product"
-                        className="bg-white p-2 rounded-full shadow-md hover:shadow-lg hover:bg-purple-50 transition-all duration-300 transform hover:scale-110 cursor-pointer opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-2 lg:group-hover/card:translate-y-0 lg:group-hover/card:opacity-100"
+                        className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-purple-50 active:scale-95 hover:scale-110 transition-all cursor-pointer transform opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-2 lg:group-hover/card:translate-y-0 lg:group-hover/card:opacity-100"
                     >
-                        <PiShareFatLight className="text-gray-600 hover:text-purple-600" size={16} />
+                        <PiShareFatLight className="text-black hover:text-purple-600" size={18} />
                     </button>
                 </div>
 

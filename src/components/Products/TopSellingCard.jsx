@@ -4,7 +4,10 @@ import { useState, useEffect, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useCart } from "@/hooks/useCart";
+import { useWishlist } from "@/hooks/useWishlist";
 import { CartIcon } from "@/components/svg";
+import { PiShareFatLight } from "react-icons/pi";
+import { Heart } from "lucide-react";
 import toast from "react-hot-toast";
 
 import {
@@ -21,10 +24,13 @@ export default function TopSellingCard({
   const [isHovered, setIsHovered] = useState(false);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [isCartLoading, setIsCartLoading] = useState(false);
+  const [isWishlistLoading, setIsWishlistLoading] = useState(false);
 
   const { addToCart } = useCart(user);
+  const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist(user);
 
   const isVariantProduct = product.productType === "variant";
+  const isWishlisted = isInWishlist(product.id, isVariantProduct ? selectedVariant?.id : null);
 
   // Initialize variant selection
   useEffect(() => {
@@ -96,6 +102,68 @@ export default function TopSellingCard({
     return `BDT ${formatPrice(minPrice)} - BDT ${formatPrice(maxPrice)}`;
   }, [isVariantProduct, product]);
 
+  const toggleWishlist = async (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isWishlistLoading) return;
+    setIsWishlistLoading(true);
+
+    try {
+      if (isWishlisted) {
+        const success = await removeFromWishlist(product.id, selectedVariant?.id);
+        if (success) {
+          toast.success("Removed from wishlist");
+        }
+      } else {
+        const wishlistProduct = {
+          id: product.id,
+          slug: product.slug,
+          sku: isVariantProduct ? selectedVariant?.sku : product.sku,
+          productName: product.productName,
+          price: originalPrice,
+          discountPrice: discountedPrice,
+          quantity: availableQuantity,
+          images: cartImages,
+          status: product.status,
+          subCategoryId: product.subCategoryId,
+          taxType: product.taxType,
+          tax: product.tax,
+          discountValue: product.discountValue,
+          discountType: product.discountValue > 0 ? "Percentage" : "Fixed",
+          createdAt: product.createdAt,
+          ...(isVariantProduct && selectedVariant && {
+            variantId: selectedVariant.id,
+            variantAttributes: selectedVariant.attributes,
+            productType: "variant",
+          })
+        };
+        await addToWishlist(wishlistProduct);
+      }
+    } catch (error) {
+      console.error("Error toggling wishlist:", error);
+      toast.error("Failed to update wishlist");
+    } finally {
+      setIsWishlistLoading(false);
+    }
+  };
+
+  const handleShare = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (navigator.share) {
+      navigator.share({
+        title: product.productName,
+        text: product.productName,
+        url: `/product/${product.slug}`,
+      });
+    } else {
+      navigator.clipboard.writeText(`${window.location.origin}/product/${product.slug}`);
+      toast.success("Link copied to clipboard!");
+    }
+  };
+
   return (
     <Link href={`/product/${product.slug}`} className="block group/card">
       <div
@@ -103,6 +171,35 @@ export default function TopSellingCard({
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
+        {/* Action Buttons Container (Top Right) */}
+        <div className="absolute top-3 right-3 z-30 flex flex-col gap-2">
+          {/* Wishlist Heart Button */}
+          <button
+            onClick={toggleWishlist}
+            title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+            className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-gray-50 active:scale-95 transition-all cursor-pointer"
+            disabled={isWishlistLoading}
+          >
+            {isWishlistLoading ? (
+              <span className="animate-spin inline-block w-4 h-4 border-2 border-[#5A0C3D] border-t-transparent rounded-full"></span>
+            ) : (
+              <Heart 
+                className={`w-5 h-5 transition-colors duration-300 ${
+                  isWishlisted ? 'fill-[#5A0C3D] text-[#5A0C3D]' : 'text-black hover:text-[#5A0C3D]'
+                }`} 
+              />
+            )}
+          </button>
+
+          {/* Share Button */}
+          <button
+            onClick={handleShare}
+            title="Share product"
+            className="w-8 h-8 md:w-10 md:h-10 bg-white rounded-full shadow-md flex items-center justify-center hover:bg-purple-50 active:scale-95 hover:scale-110 transition-all cursor-pointer transform opacity-100 translate-y-0 lg:opacity-0 lg:translate-y-2 lg:group-hover/card:translate-y-0 lg:group-hover/card:opacity-100"
+          >
+            <PiShareFatLight className="text-black hover:text-purple-600" size={18} />
+          </button>
+        </div>
         {/* Badges Container (top-left) */}
         <div className="absolute top-3 left-3 z-30 flex flex-col gap-1.5 pointer-events-none">
           {(product.newArrival || product.new || product.isNew || product.newProduct) && (
@@ -171,9 +268,9 @@ export default function TopSellingCard({
               e.stopPropagation();
               onOpenQuickView && onOpenQuickView(product);
             }}
-            className="w-8 h-8 md:w-16 md:h-16 bg-white rounded-full border border-gray-200 flex items-center justify-center hover:bg-[#5A0C3D] hover:border-[#5A0C3D] text-black hover:text-white active:scale-95 transition-all flex-shrink-0 cursor-pointer select-none"
+            className="w-10 h-10 md:w-16 md:h-16 bg-white rounded-full border border-gray-200 flex items-center justify-center hover:bg-[#5A0C3D] hover:border-[#5A0C3D] text-black hover:text-white active:scale-95 transition-all flex-shrink-0 cursor-pointer select-none"
           >
-            <CartIcon className="w-8 h-8 text-current" />
+            <CartIcon className="w-5 h-5 md:w-8 md:h-8 text-current" />
           </button>
         </div>
       </div>

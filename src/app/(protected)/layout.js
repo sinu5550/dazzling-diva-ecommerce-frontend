@@ -12,10 +12,10 @@ export default function ProtectedLayout({ children }) {
         <ProtectedRoute
             redirectTo="/login"
             loadingComponent={
-                <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-teal-50 to-cyan-50">
+                <div className="min-h-screen flex items-center justify-center bg-stone-50">
                     <div className="text-center">
-                        <Loader2 className="w-12 h-12 animate-spin text-teal-600 mx-auto mb-4" />
-                        <p className="text-gray-600 text-lg font-medium">Loading...</p>
+                        <Loader2 className="w-12 h-12 animate-spin text-[#5A0C3D] mx-auto mb-4" />
+                        <p className="text-gray-700 text-lg font-medium">Loading...</p>
                         <p className="text-gray-500 text-sm mt-2">Please wait while we verify your session</p>
                     </div>
                 </div>

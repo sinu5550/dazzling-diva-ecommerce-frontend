@@ -80,7 +80,7 @@ const Footer = async () => {
                         </div>
 
                         {/* Columns Grid (Center aligned columns, left aligned text) */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 pt-8 border-t border-white/10 max-w-5xl mx-auto justify-items-start lg:justify-items-center w-full">
+                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 pt-8 border-t border-white/10 max-w-5xl mx-auto justify-items-start lg:justify-items-center w-full">
                             
                             {/* Contact Column */}
                             <div className="w-full max-w-[240px] space-y-4 text-stone-200 text-left">

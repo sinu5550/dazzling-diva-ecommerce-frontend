@@ -100,8 +100,7 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-black"
-      style={{ height: "clamp(480px, 90vh, 820px)" }}
+      className="relative w-full overflow-hidden bg-black h-[250px] sm:h-[380px] md:h-[clamp(480px,90vh,820px)]"
       aria-label="Hero banner"
     >
       {/* ── Slide Images ─────────────────────────────── */}

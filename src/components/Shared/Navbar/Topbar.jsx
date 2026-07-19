@@ -1,6 +1,7 @@
 'use client';
 
 import Link from "next/link";
+import Image from "next/image";
 import { Heart } from 'lucide-react';
 import { Logo, MenuIcon, StoreIcon, TrackIcon, CartIcon, ProfileIcon, FAQIcon } from "@/components/svg";
 import { useHeaderCounts } from "@/hooks/useHeaderCounts";
@@ -23,11 +24,11 @@ const Topbar = ({
             className="bg-[#F8F8F8] text-gray-800 h-[72px] flex items-center border-b border-gray-200/40 w-full"
             style={{ fontFamily: 'var(--font-outfit, Outfit, sans-serif)' }}
         >
-            {/* 3-column CSS grid fills 100% width — guarantees logo is always centered */}
-            <div className="w-full px-[3%] grid grid-cols-3 items-center">
+            {/* Flex row fills 100% width — guarantees logo is always centered and doesn't get clipped on mobile */}
+            <div className="w-full px-[3%] flex items-center justify-between">
 
                 {/* COL 1 — LEFT: Hamburger and Links */}
-                <div className="flex items-center justify-start gap-4">
+                <div className="flex-1 flex items-center justify-start gap-4">
                     <button
                         className="w-10 h-10 flex items-center justify-center !bg-transparent hover:bg-gray-200/50 active:scale-90 transition-all duration-200 cursor-pointer group"
                         onClick={onMobileMenuToggle}
@@ -90,19 +91,26 @@ const Topbar = ({
                 </div>
 
                 {/* COL 2 — CENTER: Logo */}
-                <div className="flex items-center justify-center">
+                <div className="flex-shrink-0 flex items-center justify-center mx-2">
                     <Link href="/" aria-label="Home" className="block hover:opacity-90 transition-opacity">
-                        <Logo className="h-6 md:h-8 w-auto" />
+                        <Image 
+                            src="/assects/dazzling-logo.svg" 
+                            alt="Dazzling Diva" 
+                            width={160} 
+                            height={40} 
+                            priority 
+                            className="h-6 md:h-8 w-auto object-contain"
+                        />
                     </Link>
                 </div>
 
                 {/* COL 3 — RIGHT: Wishlist, Cart, Profile */}
-                <div className="flex items-center justify-end gap-3">
+                <div className="flex-1 flex items-center justify-end gap-3">
 
-                    {/* Wishlist — desktop only */}
+                    {/* Wishlist */}
                     <Link
                         href="/wishlist"
-                        className="hidden lg:flex items-center justify-center relative w-10 h-10 rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] group/wishlist  active:scale-95 transition-all duration-200"
+                        className="flex items-center justify-center relative w-10 h-10 rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] group/wishlist  active:scale-95 transition-all duration-200"
                         aria-label="Wishlist"
                     >
                         <Heart className="w-[18px] h-[18px] text-black group-hover/wishlist:text-white" />
@@ -116,7 +124,7 @@ const Topbar = ({
                     {/* Cart */}
                     <Link
                         href="/cart"
-                        className="relative w-10 h-10 flex items-center justify-center rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] group/cart active:scale-95 transition-all duration-200"
+                        className="hidden lg:flex relative w-10 h-10 items-center justify-center rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] group/cart active:scale-95 transition-all duration-200"
                         aria-label="Cart"
                     >
                         <CartIcon className="w-[18px] h-[18px] text-black group-hover/cart:text-white" />
@@ -132,7 +140,7 @@ const Topbar = ({
                         <div className="relative group/account">
                             <Link
                                 href="/my-account"
-                                className="flex items-center gap-2 px-2.5 py-1 rounded-full border border-[#44444433] bg-white hover:border-[#5A0C3D] hover:bg-gray-50 active:scale-95 transition-all duration-200"
+                                className="w-10 h-10 flex items-center justify-center rounded-full border border-[#44444433] bg-white hover:border-[#5A0C3D] hover:bg-gray-50 active:scale-95 transition-all duration-200 md:w-auto md:h-auto md:px-1.5 md:py-1 md:gap-2"
                                 aria-label="Account Menu"
                             >
                                 <div className="w-8 h-8 rounded-full bg-[#5A0C3D] text-white flex items-center justify-center text-sm font-semibold overflow-hidden flex-shrink-0">
@@ -186,7 +194,7 @@ const Topbar = ({
                     ) : (
                         <Link
                             href="/login"
-                            className="flex items-center gap-2 px-3 py-2 rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] hover:text-white group/login active:scale-95 transition-all duration-200"
+                            className="w-10 h-10 flex items-center justify-center rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] hover:text-white group/login active:scale-95 transition-all duration-200 md:w-auto md:h-auto md:px-3 md:py-2 md:gap-2"
                             aria-label="Login / Sign Up"
                         >
                             <ProfileIcon className="w-[18px] h-[18px] text-black group-hover/login:text-white" />
