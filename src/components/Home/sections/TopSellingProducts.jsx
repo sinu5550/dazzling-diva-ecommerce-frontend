@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import Container from '@/components/Container/Container';
 import TopSellingCard from '@/components/Products/TopSellingCard';
 import QuickViewModal from '@/components/Modal/QuickViewModal';
+import Link from 'next/link';
 
 export const TopSellingProducts = ({ topSellingProductData }) => {
     const [selectedQuickViewProduct, setSelectedQuickViewProduct] = useState(null);
@@ -59,9 +60,11 @@ export const TopSellingProducts = ({ topSellingProductData }) => {
                 {/* View All Button */}
                 {topSellingProducts.length > 3 && (
                     <div className="text-center mt-8 md:mt-12">
-                        <button className="px-8 py-3 bg-[#5A0C3D] hover:bg-[#5A0C3D]/90 text-white font-outfit text-sm font-semibold rounded-[8px] transition-all duration-300 cursor-pointer shadow-md select-none active:scale-95">
-                            View All Top Selling Products
-                        </button>
+                        <Link href="/product">
+                            <button className="px-8 py-3 bg-[#5A0C3D] hover:bg-[#5A0C3D]/90 text-white font-outfit text-sm font-semibold rounded-[8px] transition-all duration-300 cursor-pointer shadow-md select-none active:scale-95">
+                                View All Top Selling Products
+                            </button>
+                        </Link>
                     </div>
                 )}
             </Container>
