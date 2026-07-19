@@ -5,6 +5,7 @@ import NewProductCard from "@/components/NewArrival/NewProductCard";
 import { motion } from "framer-motion";
 import Container from "@/components/Container/Container";
 import QuickViewModal from "@/components/Modal/QuickViewModal";
+import Link from "next/link";
 
 export const NewArrivalProducts = ({ newProductData }) => {
   const [selectedQuickViewProduct, setSelectedQuickViewProduct] = useState(null);
@@ -59,9 +60,11 @@ export const NewArrivalProducts = ({ newProductData }) => {
         {/* View All Button */}
         {newArrivalProductsData?.length > 8 && (
           <div className="text-center mt-8 md:mt-12">
-            <button className="px-8 py-3 bg-[#5A0C3D] hover:bg-[#5A0C3D]/90 text-white font-outfit text-sm font-semibold rounded-[8px] transition-all duration-300 cursor-pointer shadow-md select-none active:scale-95">
-              View All New Products
-            </button>
+            <Link href="/new-arrival">
+              <button className="px-8 py-3 bg-[#5A0C3D] hover:bg-[#5A0C3D]/90 text-white font-outfit text-sm font-semibold rounded-[8px] transition-all duration-300 cursor-pointer shadow-md select-none active:scale-95">
+                View All New Products
+              </button>
+            </Link>
           </div>
         )}
       </Container>

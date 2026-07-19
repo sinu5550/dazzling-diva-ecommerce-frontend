@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Heart } from 'lucide-react';
@@ -18,6 +19,11 @@ const Topbar = ({
 }) => {
     const { wishlistCount, cartCount } = useHeaderCounts(dummyUser);
     const { user, loading, getDisplayName, getAvatarUrl } = useUser();
+    const [isMounted, setIsMounted] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     return (
         <div
@@ -136,7 +142,7 @@ const Topbar = ({
                     </Link>
 
                     {/* Account Section */}
-                    {user ? (
+                    {isMounted && user ? (
                         <div className="relative group/account">
                             <Link
                                 href="/my-account"
