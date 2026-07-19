@@ -475,7 +475,7 @@ const BillingDetails = ({
             {user && customerId && addresses.length > 0 && !isAddingNewAddress ? (
                 <div className="space-y-6">
                     {/* Selected Address Display */}
-                    <div className="bg-white border border-gray-200 hasib-rounded p-5 shadow-sm">
+                    <div className="bg-white border border-gray-200 diva-rounded p-5 shadow-sm">
                         <div className="flex items-start justify-between mb-3">
                             <h3 className="text-md font-bold text-gray-800">Selected Shipping Address</h3>
                             <button
@@ -520,7 +520,7 @@ const BillingDetails = ({
                         <button
                             type="button"
                             onClick={() => setIsAddModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2 text-secound border border-secound hasib-rounded hover:bg-secound/5 transition-colors font-medium cursor-pointer"
+                            className="flex items-center gap-2 px-4 py-2 text-secound border border-secound diva-rounded hover:bg-secound/5 transition-colors font-medium cursor-pointer"
                         >
                             <Plus className="w-4 h-4" />
                             Add New Address
@@ -529,7 +529,7 @@ const BillingDetails = ({
                             <button
                                 type="button"
                                 onClick={() => setShowAllAddresses(true)}
-                                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 border border-stone-300 hasib-rounded hover:bg-gray-200 transition-colors font-medium cursor-pointer"
+                                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 border border-stone-300 diva-rounded hover:bg-gray-200 transition-colors font-medium cursor-pointer"
                             >
                                 View All Addresses <FaLongArrowAltRight />
                             </button>
@@ -709,7 +709,7 @@ const BillingDetails = ({
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full py-3 bg-secound text-white hasib-rounded font-bold hover:bg-secound-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg"
+                            className="w-full py-3 bg-secound text-white diva-rounded font-bold hover:bg-secound-hover transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg"
                         >
                             {loading ? "Processing..." : user ? "Place Order" : "Continue to Payment"}
                         </button>
@@ -790,7 +790,7 @@ const BillingDetails = ({
                                 <button
                                     onClick={() => setShowAllAddresses(false)}
                                     disabled={!selectedAddress}
-                                    className="flex-1 py-3 bg-secound text-white hasib-rounded font-bold hover:bg-secound-hover transition-colors disabled:opacity-50"
+                                    className="flex-1 py-3 bg-secound text-white diva-rounded font-bold hover:bg-secound-hover transition-colors disabled:opacity-50"
                                 >
                                     Use Selected Address
                                 </button>

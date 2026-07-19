@@ -1,7 +1,7 @@
 const SkeletonFilterSidebar = () => {
     return (
         <div className="lg:w-1/4 text-gray-800">
-            <div className="bg-white hasib-rounded border border-gray-200 p-6 sticky top-24 animate-pulse">
+            <div className="bg-white diva-rounded border border-gray-200 p-6 sticky top-24 animate-pulse">
                 <div className="flex items-center justify-between mb-6">
                     <div className="h-6 bg-gray-300 rounded w-16"></div>
                     <div className="h-4 bg-gray-300 rounded w-20"></div>

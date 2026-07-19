@@ -281,7 +281,7 @@ export default function LoyaltyPointsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50 py-8 hasib-rounded">
+    <div className="min-h-screen bg-stone-50 py-8 diva-rounded">
       <div className="max-w-6xl mx-auto px-4 space-y-5">
       <div className="flex items-center gap-2 text-sm text-gray-600 mb-6">
         <Link href="/" className="hover:text-teal-600 flex items-center gap-1">
@@ -304,7 +304,7 @@ export default function LoyaltyPointsPage() {
       {/* Balance Overview Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         {/* Current Balance */}
-        <div className="bg-gradient-to-br from-purple-500 to-purple-700 hasib-rounded p-6 text-white shadow-lg">
+        <div className="bg-gradient-to-br from-purple-500 to-purple-700 diva-rounded p-6 text-white shadow-lg">
           <div className="flex items-center justify-between mb-4">
             <FaTrophy className="text-3xl opacity-80" />
             <span className="text-sm opacity-90 bg-black/10 px-2 py-1 rounded-full">
@@ -334,7 +334,7 @@ export default function LoyaltyPointsPage() {
         </div>
 
         {/* Lifetime Earned */}
-        <div className="bg-white hasib-rounded p-6 shadow border border-gray-200">
+        <div className="bg-white diva-rounded p-6 shadow border border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <FaGift className="text-3xl text-green-600" />
             <span className="text-sm text-gray-600">Lifetime Earned</span>
@@ -348,7 +348,7 @@ export default function LoyaltyPointsPage() {
         </div>
 
         {/* Lifetime Redeemed */}
-        <div className="bg-white hasib-rounded p-6 shadow border border-gray-200">
+        <div className="bg-white diva-rounded p-6 shadow border border-gray-200">
           <div className="flex items-center justify-between mb-4">
             <FaHistory className="text-3xl text-blue-600" />
             <span className="text-sm text-gray-600">Lifetime Redeemed</span>
@@ -363,7 +363,7 @@ export default function LoyaltyPointsPage() {
       </div>
 
       {/* How It Works */}
-      <div className="bg-blue-50 border border-blue-200 hasib-rounded p-6 mb-8">
+      <div className="bg-blue-50 border border-blue-200 diva-rounded p-6 mb-8">
         <div className="flex items-start gap-3">
           <FaInfoCircle className="text-blue-600 text-xl mt-1 flex-shrink-0" />
           <div>
@@ -409,7 +409,7 @@ export default function LoyaltyPointsPage() {
       </div>
 
       {/* Transaction History */}
-      <div className="bg-white hasib-rounded shadow border border-gray-200">
+      <div className="bg-white diva-rounded shadow border border-gray-200">
         <div className="p-6 border-b border-gray-200">
           <div className="flex justify-between items-center">
             <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">

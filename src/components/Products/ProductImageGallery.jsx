@@ -1,7 +1,7 @@
 // components/products/ProductImageGallery.jsx
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { FaSearchPlus } from 'react-icons/fa';
 
@@ -10,6 +10,11 @@ export default function ProductImageGallery({ images, productName }) {
     const [selectedImage, setSelectedImage] = useState(0);
     const [isZoomed, setIsZoomed] = useState(false);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+
+    // Reset selected image to 0 when images list changes (e.g., variant selected)
+    useEffect(() => {
+        setSelectedImage(0);
+    }, [images]);
 
     const handleMouseMove = (e) => {
         const { left, top, width, height } = e.currentTarget.getBoundingClientRect();

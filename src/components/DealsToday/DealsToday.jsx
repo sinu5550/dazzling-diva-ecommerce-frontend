@@ -222,7 +222,7 @@ const DealsToday = () => {
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {Array.from({ length: 8 }).map((_, index) => (
                                 <div key={index} className="animate-pulse">
-                                    <div className="bg-gray-200 h-60 hasib-rounded"></div>
+                                    <div className="bg-gray-200 h-60 diva-rounded"></div>
                                     <div className="mt-4 space-y-2">
                                         <div className="h-4 bg-gray-200 rounded"></div>
                                         <div className="h-4 bg-gray-200 rounded w-3/4"></div>
@@ -250,7 +250,7 @@ const DealsToday = () => {
                             {filteredProducts.map((product) => (
                                 <div
                                     key={product.id}
-                                    className="overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col relative group border border-gray-100 hasib-rounded bg-white"
+                                    className="overflow-hidden shadow-xs hover:shadow-md transition-all duration-300 flex flex-col relative group border border-gray-100 diva-rounded bg-white"
                                 >
                                     {/* Hover Icons */}
                                     <div className="absolute top-4 right-4 z-10 flex flex-col gap-2">
@@ -301,7 +301,7 @@ const DealsToday = () => {
                                             {product.name}
                                         </h3>
                                         <div className="flex items-center gap-3 mb-2">
-                                            <span className="text-rose-600 font-bold text-lg flex items-center">
+                                            <span className="text-primary font-bold text-lg flex items-center">
                                                 <FaBangladeshiTakaSign className="inline mr-1" size={16} />
                                                 {product.price.toLocaleString()}
                                             </span>

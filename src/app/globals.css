@@ -156,3 +156,8 @@ h3 {
 .hide-scrollbar::-webkit-scrollbar {
   display: none; /* Chrome/Safari/Opera */
 }
+
+/* Custom rounded style for consistent UI button and container borders */
+.diva-rounded {
+  border-radius: 8px !important;
+}

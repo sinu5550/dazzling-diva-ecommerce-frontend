@@ -36,7 +36,21 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
     const [buyNowLoading, setBuyNowLoading] = useState(false);
     const [isClient, setIsClient] = useState(false);
     const [isInCart, setIsInCart] = useState(false);
-    const [displayImages, setDisplayImages] = useState(product.images || []);
+    const getAllProductImages = () => {
+        const baseImages = product?.images || [];
+        const variantImages = product?.productVariants
+            ? product.productVariants.map(v => v.image).filter(Boolean)
+            : [];
+        const combined = [...baseImages, ...variantImages];
+        const filtered = combined.filter(img => 
+            img && 
+            img !== 'https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png' &&
+            !img.includes('ju2uf9y33y1bncwufrl7.png')
+        );
+        return Array.from(new Set(filtered));
+    };
+
+    const [displayImages, setDisplayImages] = useState(getAllProductImages());
 
     const isVariantProduct = product.productType === 'variant';
 
@@ -122,10 +136,12 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
 
     // Update display images when variant changes
     const updateDisplayImages = (variant) => {
+        const allImages = getAllProductImages();
         if (variant?.image) {
-            setDisplayImages([variant.image, ...(product.images || [])]);
+            const filtered = allImages.filter(img => img !== variant.image);
+            setDisplayImages([variant.image, ...filtered]);
         } else {
-            setDisplayImages(product.images || []);
+            setDisplayImages(allImages);
         }
     };
 
@@ -389,7 +405,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                         {/* Price Section */}
                         <div className="py-4 border-t border-b border-gray-200 text-gray-700">
                             <div className="flex items-center gap-4 flex-wrap">
-                                <span className="text-2xl md:text-3xl font-bold text-rose-600 flex items-center">
+                                <span className="text-2xl md:text-3xl font-bold text-primary flex items-center">
                                     BDT {formatPrice(discountedPrice)}
                                 </span>
                                 {product.discountValue > 0 && (
@@ -476,7 +492,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                         <div className="flex flex-col md:flex-row items-start md:items-center gap-4 pt-4">
                             {/* Quantity Selector - Only show if combination is valid and in stock */}
                             {(!isVariantProduct || (variantStatus.exists && variantStatus.inStock)) && (
-                                <div className="flex items-center border border-stone-300 ">
+                                <div className="flex items-center border border-stone-300 diva-rounded overflow-hidden">
                                     <button
                                         onClick={() => handleQuantityChange('decrement')}
                                         className="px-4 py-2.5 hover:bg-gray-50 text-black transition-colors text-xl cursor-pointer"
@@ -503,7 +519,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                                     <button
                                         onClick={handleAddToCart}
                                         disabled={!canAddToCart || isInCart}
-                                        className={`bg-transparent hover:bg-primary border border-primary text-primary hover:text-white py-3 px-6  font-semibold flex items-center justify-center gap-2 transition-all duration-500 uppercase w-full 
+                                        className={`bg-transparent hover:bg-primary border border-primary text-primary hover:text-white py-3 px-6 font-semibold flex items-center justify-center gap-2 transition-all duration-500 uppercase w-full diva-rounded
                                             ${isInCart ? 'bg-green-100 text-green-600 border-green-600 hover:bg-green-200' : ''} 
                                             ${!canAddToCart ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                                         `}
@@ -522,7 +538,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                                     <button
                                         onClick={handleBuyNow}
                                         disabled={!canAddToCart || buyNowLoading}
-                                        className={`bg-primary hover:bg-primary-hover text-white py-3 px-8  font-semibold transition-all duration-500 uppercase w-full 
+                                        className={`bg-primary hover:bg-primary-hover text-white py-3 px-8 font-semibold transition-all duration-500 uppercase w-full diva-rounded
                                             ${!canAddToCart || buyNowLoading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                                         `}
                                     >

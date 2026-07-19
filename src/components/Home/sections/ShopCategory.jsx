@@ -14,6 +14,33 @@ const Category = ({ data }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(null);
 
+  // Touch scroll state for mobile gestures
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+    if (isLeftSwipe) {
+      nextSlide();
+    }
+    if (isRightSwipe) {
+      prevSlide();
+    }
+  };
+
   // Encode Category Name
   const encodeCategory = (name) => encodeURIComponent(name);
 
@@ -140,7 +167,12 @@ const Category = ({ data }) => {
           )}
 
           {/* Slider */}
-          <div className="overflow-hidden">
+          <div 
+            className="overflow-hidden"
+            onTouchStart={onTouchStart}
+            onTouchMove={onTouchMove}
+            onTouchEnd={onTouchEnd}
+          >
             <div
               className="flex transition-transform duration-700 ease-out"
               style={{
@@ -199,6 +231,26 @@ const Category = ({ data }) => {
               ))}
             </div>
           </div>
+
+          {/* Mobile Navigation Arrows (Bottom of section) */}
+          {maxIndex > 0 && (
+            <div className="flex md:hidden justify-center items-center gap-6 mt-6">
+              <button
+                onClick={prevSlide}
+                aria-label="Previous categories"
+                className="w-10 h-10 rounded-full bg-white shadow-md border border-gray-200 flex items-center justify-center text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white transition-all cursor-pointer"
+              >
+                <ChevronLeft size={20} />
+              </button>
+              <button
+                onClick={nextSlide}
+                aria-label="Next categories"
+                className="w-10 h-10 rounded-full bg-white shadow-md border border-gray-200 flex items-center justify-center text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white transition-all cursor-pointer"
+              >
+                <ChevronRight size={20} />
+              </button>
+            </div>
+          )}
         </div>
       </Container>
     </section>

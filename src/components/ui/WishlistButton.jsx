@@ -95,7 +95,7 @@ const WishlistButton = ({
             inactive: "text-gray-500 hover:bg-gray-100"
         },
         withLabel: {
-            base: "flex items-center gap-2 px-4 py-2  transition-all duration-200",
+            base: "flex items-center gap-2 px-4 py-2 diva-rounded transition-all duration-200",
             active: "text-rose-600 hover:bg-rose-50 border border-rose-200",
             inactive: "text-gray-700 hover:text-rose-600 hover:bg-gray-50 border border-gray-100"
         }

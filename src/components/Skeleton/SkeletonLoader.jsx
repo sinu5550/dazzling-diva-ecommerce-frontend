@@ -5,7 +5,7 @@ import SkeletonProductCard from "./SkeletonProductCard";
 
 const SkeletonMobileFilterToggle = () => (
     <div className="lg:hidden">
-        <div className="w-full p-4 bg-gray-100 border border-gray-200 hasib-rounded mb-4 animate-pulse">
+        <div className="w-full p-4 bg-gray-100 border border-gray-200 diva-rounded mb-4 animate-pulse">
             <div className="h-5 bg-gray-300 rounded w-20"></div>
         </div>
     </div>

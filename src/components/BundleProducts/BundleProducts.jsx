@@ -141,7 +141,7 @@ const BundleProductsClient = ({ initialProductData }) => {
             <section className="py-12 bg-white">
                 <Container>
                     {/* Banner Skeleton */}
-                    <div className="w-full h-[200px] bg-gray-300 hasib-rounded mb-8 animate-pulse"></div>
+                    <div className="w-full h-[200px] bg-gray-300 diva-rounded mb-8 animate-pulse"></div>
                     <div className="py-8">
                         <SkeletonLoader
                             type="productGridWithFilters"
@@ -165,7 +165,7 @@ const BundleProductsClient = ({ initialProductData }) => {
                 <Image
                     src={banner}
                     alt="bundle products"
-                    className="w-full h-[200px] object-cover hasib-rounded mb-8"
+                    className="w-full h-[200px] object-cover diva-rounded mb-8"
                     priority
                 />
 
@@ -185,7 +185,7 @@ const BundleProductsClient = ({ initialProductData }) => {
                         Currently there are no bundle products available.
                     </p>
                     <Link href="/">
-                        <button className="bg-primary hover:bg-primary-hover text-gray-900 hover:text-white px-6 py-2 hasib-rounded transition-colors">
+                        <button className="bg-primary hover:bg-primary-hover text-gray-900 hover:text-white px-6 py-2 diva-rounded transition-colors">
                             Back to Home
                         </button>
                     </Link>
@@ -200,7 +200,7 @@ const BundleProductsClient = ({ initialProductData }) => {
             <Image
                 src={banner}
                 alt="bundle products"
-                className="w-full h-[200px] object-cover hasib-rounded mb-8"
+                className="w-full h-[200px] object-cover diva-rounded mb-8"
                 priority
             />
 
@@ -215,7 +215,7 @@ const BundleProductsClient = ({ initialProductData }) => {
 
             <div className="mt-10 flex gap-10 flex-col lg:flex-row">
                 {/* Sidebar Filters */}
-                <div className="w-full lg:w-1/5 space-y-6 font-poppins bg-white hasib-rounded border border-gray-200 p-6 lg:sticky top-24">
+                <div className="w-full lg:w-1/5 space-y-6 font-poppins bg-white diva-rounded border border-gray-200 p-6 lg:sticky top-24">
                     <div className="flex items-center justify-between mb-6">
                         <h2 className="text-lg font-semibold flex items-center gap-2">
                             <SlidersHorizontal size={18} />
@@ -442,7 +442,7 @@ const BundleProductsClient = ({ initialProductData }) => {
                                 </p>
                                 <button
                                     onClick={resetFilters}
-                                    className="bg-secound hover:bg-secound-hover text-white px-6 py-2 hasib-rounded transition-colors"
+                                    className="bg-secound hover:bg-secound-hover text-white px-6 py-2 diva-rounded transition-colors"
                                 >
                                     Clear Filters
                                 </button>

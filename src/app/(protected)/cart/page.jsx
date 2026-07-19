@@ -202,7 +202,7 @@ const CartPage = () => {
 
                 {/* Cart Type Indicator */}
                 {cartType === 'mixed' && (
-                    <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 hasib-rounded">
+                    <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-pink-50 border-l-4 border-purple-500 diva-rounded">
                         <p className="text-purple-800 font-medium">
                             🧺 <strong>Mixed Cart:</strong> Your cart contains both regular products and bundles.
                         </p>
@@ -210,7 +210,7 @@ const CartPage = () => {
                 )}
 
                 {cartType === 'bundle' && (
-                    <div className="mb-6 p-4 bg-gradient-to-r from-teal-50 to-cyan-50 border-l-4 border-teal-500 hasib-rounded">
+                    <div className="mb-6 p-4 bg-gradient-to-r from-teal-50 to-cyan-50 border-l-4 border-teal-500 diva-rounded">
                         <p className="text-teal-800 font-medium">
                             📦 <strong>Bundle Cart:</strong> Your cart contains bundle products only.
                         </p>
@@ -241,7 +241,7 @@ const CartPage = () => {
                                                         alt={item.productName || item.name}
                                                         width={500}
                                                         height={500}
-                                                        className="w-32 h-32 object-cover hasib-rounded border border-gray-100"
+                                                        className="w-32 h-32 object-cover diva-rounded border border-gray-100"
                                                         style={{ width: 'auto', height: 'auto' }}
                                                     />
                                             </div>
@@ -293,7 +293,7 @@ const CartPage = () => {
                                                     {/* Remove Button */}
                                                     <button
                                                         onClick={() => handleRemoveItem(item.id, item.type, item.variantId)}
-                                                        className="flex-shrink-0 p-2 text-gray-400 hover:text-rose-700 hover:bg-rose-50 hasib-rounded cursor-pointer transition-colors"
+                                                        className="flex-shrink-0 p-2 text-gray-400 hover:text-rose-700 hover:bg-rose-50 diva-rounded cursor-pointer transition-colors"
                                                         disabled={loading}
                                                         title="Remove item"
                                                     >
@@ -361,7 +361,7 @@ const CartPage = () => {
 
                         {/* Clear Cart Button */}
                         {cartItems.length > 0 && (
-                            <div className="mt-6 flex items-center justify-between p-4 bg-rose-50 hasib-rounded border border-rose-100">
+                            <div className="mt-6 flex items-center justify-between p-4 bg-rose-50 diva-rounded border border-rose-100">
                                 <p className="text-md text-rose-600">
                                     Remove all items from your cart
                                 </p>
