@@ -9,6 +9,24 @@ import { FiCheck, FiX } from "react-icons/fi";
 import { SiVala } from "react-icons/si";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
+const getItemImage = (item) => {
+  const DEFAULT_IMG = 'https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png';
+  if (!item) return DEFAULT_IMG;
+
+  const rawImg = (Array.isArray(item.images) && item.images.length > 0) ? item.images[0] : item.image;
+  if (!rawImg) return DEFAULT_IMG;
+
+  if (typeof rawImg === 'string') {
+    return rawImg.trim() !== '' ? rawImg : DEFAULT_IMG;
+  }
+
+  if (typeof rawImg === 'object') {
+    return rawImg.url || rawImg.image || rawImg.src || DEFAULT_IMG;
+  }
+
+  return DEFAULT_IMG;
+};
+
 const OrderSummary = ({
   cart,
   getCartTotal,
@@ -28,6 +46,7 @@ const OrderSummary = ({
   pointsToRedeem: externalPointsToRedeem,
   pointsDiscount: externalPointsDiscount,
   userEmail, // Pass user email to fetch correct customer ID
+  placeOrderRef,
 }) => {
   const regularItems = cart.filter((item) => !item.isBundle);
   const bundleItems = cart.filter((item) => item.isBundle);
@@ -697,10 +716,12 @@ const OrderSummary = ({
     }
   };
 
-  // Initialize loyalty points on mount
+  // Initialize loyalty points on mount (Disabled per requirements)
+  /*
   useEffect(() => {
     fetchLoyaltyBalance();
   }, [fetchLoyaltyBalance]);
+  */
 
   useEffect(() => {
     if (couponCode && couponError) {
@@ -793,8 +814,8 @@ const OrderSummary = ({
                       <td className="p-3 border border-stone-200">
                         <div className="relative w-16 h-16">
                           <Image
-                            src={item.images?.[0]}
-                            alt={item.productName}
+                            src={getItemImage(item)}
+                            alt={item.productName || 'Product'}
                             width={400}
                             height={400}
                             className="w-full h-full object-cover rounded"
@@ -912,8 +933,8 @@ const OrderSummary = ({
                         <td className="p-3 border border-secound/20">
                           <div className="relative w-16 h-16">
                             <Image
-                              src={item.image}
-                              alt={item.name}
+                              src={getItemImage(item)}
+                              alt={item.name || 'Bundle'}
                               width={400}
                               height={400}
                               className="w-full h-full object-cover rounded"
@@ -982,280 +1003,25 @@ const OrderSummary = ({
           )}
         </div>
 
-        {/* Loyalty Points Section */}
+        {/* Loyalty Points Section - Disabled per requirements */}
+        {/*
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <FaTrophy className="text-purple-600" />
             <h3 className="font-medium">Loyalty Points</h3>
-            {loyaltyBalance?.balance > 0 && (
-              <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded-full">
-                {loyaltyBalance.balance} points available
-              </span>
-            )}
           </div>
-
-          {loadingLoyalty ? (
-            <div className="bg-gray-50 border border-gray-200 rounded p-4">
-              <div className="flex items-center justify-center gap-2">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-purple-600"></div>
-                <span className="text-gray-600">Loading loyalty points...</span>
-              </div>
-            </div>
-          ) : loyaltyBalance ? (
-            <>
-              {loyaltyBalance.balance > 0 ? (
-                <>
-                  <div className="bg-gradient-to-r from-purple-50 to-purple-100 border border-purple-200 diva-rounded p-4 mb-3">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <FaCoins className="w-4 h-4 text-purple-600" />
-                          <span className="text-sm font-medium text-gray-700">
-                            Available Balance
-                          </span>
-                        </div>
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-2xl font-bold text-purple-700">
-                            {loyaltyBalance.balance.toLocaleString()}
-                          </span>
-                          <span className="text-sm text-gray-600">points</span>
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          ≈{" "}
-                          {formatPrice(
-                            loyaltyBalance.balanceInBDT ||
-                            loyaltyBalance.balance
-                          )}
-                        </div>
-                      </div>
-
-                      <div>
-                        <div className="text-sm font-medium text-gray-700 mb-1">
-                          Redemption Status
-                        </div>
-                        {loyaltyBalance.canRedeem ? (
-                          <div className="text-green-600 font-medium text-sm">
-                            ✓ Ready to redeem!
-                          </div>
-                        ) : (
-                          <div className="text-amber-600 text-sm">
-                            Need{" "}
-                            {loyaltyBalance.minRedemption -
-                              loyaltyBalance.balance}{" "}
-                            more points
-                          </div>
-                        )}
-                        <div className="text-xs text-gray-500 mt-1">
-                          Minimum: {loyaltyBalance.minRedemption} points
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Only show input if user has minimum points */}
-                  {loyaltyBalance.balance >= loyaltyBalance.minRedemption && (
-                    <div className="space-y-3">
-                      {pointsToRedeem > 0 ? (
-                        <div className="bg-green-50 border border-green-200 rounded p-4">
-                          <div className="flex justify-between items-center">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 text-green-700">
-                                <FiCheck className="w-5 h-5" />
-                                <span className="font-medium">
-                                  Points Applied: {pointsToRedeem} points
-                                </span>
-                              </div>
-                              <p className="text-sm text-green-600 mt-1">
-                                Savings: {formatPrice(pointsDiscount)}
-                              </p>
-                            </div>
-                            <button
-                              onClick={handleRemovePoints}
-                              className="text-red-500 hover:text-red-700"
-                              disabled={loading}
-                            >
-                              <FiX className="w-5 h-5" />
-                            </button>
-                          </div>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex gap-2">
-                            <input
-                              type="number"
-                              min={loyaltyBalance.minRedemption}
-                              max={Math.min(
-                                loyaltyBalance.balance,
-                                Math.floor(
-                                  totals.subtotalAfterDiscount -
-                                  totals.couponDiscount
-                                )
-                              )}
-                              value={pointsInput}
-                              onChange={(e) => {
-                                const value = parseInt(e.target.value) || "";
-                                const maxAllowed = Math.min(
-                                  loyaltyBalance.balance,
-                                  Math.floor(
-                                    totals.subtotalAfterDiscount -
-                                    totals.couponDiscount
-                                  )
-                                );
-
-                                if (
-                                  value === "" ||
-                                  (value <= maxAllowed &&
-                                    value >= loyaltyBalance.minRedemption)
-                                ) {
-                                  setPointsInput(value);
-                                  setPointsError("");
-                                } else if (value > maxAllowed) {
-                                  setPointsInput(maxAllowed);
-                                  setPointsError(
-                                    `Maximum ${maxAllowed} points allowed for this order`
-                                  );
-                                }
-                              }}
-                              onKeyPress={handlePointsKeyPress}
-                              placeholder={`Enter points (min ${loyaltyBalance.minRedemption})`}
-                              className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all"
-                              disabled={validatingPoints || loading}
-                            />
-                            <button
-                              onClick={handleApplyPoints}
-                              disabled={
-                                validatingPoints ||
-                                loading ||
-                                !pointsInput ||
-                                parseInt(pointsInput) <
-                                loyaltyBalance.minRedemption ||
-                                parseInt(pointsInput) > loyaltyBalance.balance
-                              }
-                              className="bg-purple-600 text-white px-6 py-3 rounded font-medium hover:bg-purple-700 disabled:bg-gray-300 disabled:cursor-not-allowed whitespace-nowrap"
-                            >
-                              {validatingPoints ? (
-                                <span className="flex items-center gap-2">
-                                  <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></div>
-                                  Checking...
-                                </span>
-                              ) : (
-                                "Apply"
-                              )}
-                            </button>
-                          </div>
-
-                          {pointsError && (
-                            <div className="bg-red-50 border border-red-200 rounded p-3">
-                              <p className="text-red-600 text-sm">
-                                {pointsError}
-                              </p>
-                            </div>
-                          )}
-
-                          {pointsSuccess && (
-                            <div className="bg-green-50 border border-green-200 rounded p-3">
-                              <p className="text-green-600 text-sm">
-                                {pointsSuccess}
-                              </p>
-                            </div>
-                          )}
-
-                          <p className="text-xs text-gray-600">
-                            💡 1 point = ৳1. Maximum redeemable:{" "}
-                            {Math.min(
-                              loyaltyBalance.balance,
-                              Math.floor(
-                                totals.subtotalAfterDiscount -
-                                totals.couponDiscount
-                              )
-                            )}{" "}
-                            points
-                          </p>
-                        </>
-                      )}
-                    </div>
-                  )}
-                </>
-              ) : (
-                <div className="bg-gray-50 border border-gray-200 rounded p-4">
-                  <p className="text-gray-600 text-center">
-                    You don't have any loyalty points yet
-                  </p>
-                  <p className="text-xs text-gray-500 mt-1 text-center">
-                    Earn points on orders ≥ ৳10,000 (1 point per ৳1,000 spent)
-                  </p>
-                </div>
-              )}
-            </>
-          ) : (
-            <div className="bg-gray-50 border border-gray-200 rounded p-4">
-              <p className="text-gray-600">Loyalty points not available</p>
-            </div>
-          )}
         </div>
+        */}
 
-        {/* Coupon Section */}
+        {/* Coupon Section - Disabled per requirements */}
+        {/*
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <FaTag className="text-purple-600" />
             <h3 className="font-medium">Apply Coupon</h3>
           </div>
-          {appliedCoupon ? (
-            <div className="bg-green-50 border border-green-200 rounded p-4">
-              <div className="flex justify-between items-center">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 text-green-700">
-                    <FiCheck className="w-5 h-5" />
-                    <span className="font-medium">
-                      Coupon Applied: {appliedCoupon.code}
-                    </span>
-                  </div>
-                  <p className="text-sm text-green-600 mt-1">
-                    Savings: {formatPrice(totals.couponDiscount)}
-                  </p>
-                </div>
-                <button
-                  onClick={handleRemoveCoupon}
-                  className="text-red-500 hover:text-red-700"
-                  disabled={loading}
-                >
-                  <FiX className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={couponCode}
-                  onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                  onKeyPress={handleCouponKeyPress}
-                  placeholder="Enter coupon code"
-                  className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
-                  disabled={validatingCoupon || loading}
-                />
-                <button
-                  onClick={handleApplyCoupon}
-                  disabled={validatingCoupon || loading || !couponCode.trim()}
-                  className="bg-primary text-black px-6 py-3 rounded font-medium hover:bg-primary-hover disabled:bg-gray-300 disabled:cursor-not-allowed"
-                >
-                  {validatingCoupon ? "Checking..." : "Apply"}
-                </button>
-              </div>
-              {couponError && (
-                <div className="bg-red-50 border border-red-200 rounded p-3">
-                  <p className="text-red-600 text-sm">{couponError}</p>
-                </div>
-              )}
-              {couponSuccess && (
-                <div className="bg-green-50 border border-green-200 rounded p-3">
-                  <p className="text-green-600 text-sm">{couponSuccess}</p>
-                </div>
-              )}
-            </div>
-          )}
         </div>
+        */}
 
         {/* Summary Section */}
         <div className="bg-white p-4 rounded space-y-3 border border-gray-200 shadow">
@@ -1319,6 +1085,16 @@ const OrderSummary = ({
           </div>
         </div>
       </div>
+
+      {/* Place Order Button - outside of Your Order card container */}
+      <button
+        type="button"
+        onClick={() => placeOrderRef?.current && placeOrderRef.current()}
+        disabled={loading}
+        className="w-full mt-6 py-3.5 bg-[#5A0C3D] hover:bg-[#450322] text-white rounded-[8px] font-bold text-base md:text-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer uppercase tracking-wider"
+      >
+        {loading ? "Processing..." : "Place Order"}
+      </button>
     </div>
   );
 };

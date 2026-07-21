@@ -67,59 +67,51 @@ const CountdownTimer = ({ endDate }) => {
                     <React.Fragment key={unit.label}>
 
                         {/* Tile + Label */}
-                        <div className="flex flex-col items-center gap-0.5 sm:gap-1">
+                        <div className="flex flex-col items-center gap-0.5">
 
-                            {/* Flip card tile */}
+                            {/* Flip card tile in brand plum #5A0C3D */}
                             <div
                                 className="
                                     relative overflow-hidden
-                                    w-[36px] h-[44px]
-                                    sm:w-[42px] sm:h-[50px]
-                                    md:w-[48px] md:h-[56px]
-                                    bg-[#3a3a3a]
+                                    w-[26px] h-[30px]
+                                    sm:w-[32px] sm:h-[36px]
+                                    md:w-[36px] md:h-[40px]
+                                    bg-[#5A0C3D]
                                     rounded-md
                                     flex items-center justify-center
+                                    shadow-2xs
                                 "
-                                style={{
-                                    boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.5), inset 0 -1px 2px rgba(0,0,0,0.3), 0 2px 6px rgba(0,0,0,0.4)'
-                                }}
                             >
-                                {/* Top half sheen */}
-                                <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/[0.3] z-10 pointer-events-none" />
+                                {/* Top half subtle sheen */}
+                                <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/10 z-10 pointer-events-none" />
 
                                 {/* Center divider line */}
-                                <div className="absolute left-0 right-0 top-1/2 h-[1px] bg-black/60 z-20 pointer-events-none" />
+                                <div className="absolute left-0 right-0 top-1/2 h-[1px] bg-black/20 z-20 pointer-events-none" />
 
                                 {/* Number */}
                                 <span
                                     className="
                                         relative z-10
-                                        text-[16px] sm:text-[20px] md:text-[24px]
+                                        text-[12px] sm:text-[15px] md:text-[17px]
                                         font-bold leading-none
-                                        text-[#e8e8e8]
-                                        tracking-tighter
+                                        text-white
+                                        font-outfit
+                                        tracking-tight
                                     "
-                                    style={{
-                                        fontFamily: "'Georgia', 'Times New Roman', serif",
-                                        textShadow: '0 1px 2px rgba(0,0,0,0.6)'
-                                    }}
                                 >
                                     {formatNumber(unit.value)}
                                 </span>
                             </div>
 
                             {/* Label */}
-                            <span className="text-[6px] sm:text-[7px] md:text-[8px] font-semibold tracking-[0.1em] text-[#c8a04a] uppercase">
+                            <span className="text-[6.5px] sm:text-[7.5px] font-bold tracking-widest text-[#5A0C3D] uppercase font-outfit">
                                 {unit.label}
                             </span>
                         </div>
 
-                        {/* Separator colon — hidden on smallest screens */}
+                        {/* Separator colon */}
                         {index < timeUnits.length - 1 && (
-                            <span
-                                className="hidden sm:block text-[14px] md:text-[18px] font-bold text-white/20 mb-2 sm:mb-3 select-none"
-                                style={{ fontFamily: "'Georgia', serif" }}
-                            >
+                            <span className="text-[12px] md:text-[14px] font-bold text-[#5A0C3D]/40 mb-2 select-none font-outfit">
                                 :
                             </span>
                         )}

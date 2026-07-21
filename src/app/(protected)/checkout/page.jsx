@@ -4,7 +4,7 @@
 
 import Container from "@/components/Container/Container";
 import Link from "next/link";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { IoIosArrowForward } from "react-icons/io";
@@ -44,6 +44,9 @@ export default function Checkout() {
   const [pointsToRedeem, setPointsToRedeem] = useState(0);
   const [pointsDiscount, setPointsDiscount] = useState(0);
   const [customerData, setCustomerData] = useState(null);
+
+  // Place Order handler ref to prevent re-render state loops
+  const placeOrderRef = useRef(null);
 
   const {
     register,
@@ -256,12 +259,14 @@ export default function Checkout() {
     getAllCartItems,
   ]);
 
-  // Fetch customer data on load
+  // Fetch customer data on load (Disabled loyalty points fetching per requirements)
+  /*
   useEffect(() => {
     if (user?.email) {
       fetchCustomerData();
     }
   }, [user, fetchCustomerData]);
+  */
 
   const handleCouponApplied = useCallback((coupon, discount) => {
     setAppliedCoupon(coupon);
@@ -825,6 +830,7 @@ export default function Checkout() {
           handleSubmit={handleSubmit}
           onCheckoutSubmit={onCheckoutSubmit}
           loading={loading}
+          placeOrderRef={placeOrderRef}
         />
 
         <OrderSummary
@@ -846,6 +852,7 @@ export default function Checkout() {
           pointsToRedeem={pointsToRedeem}
           pointsDiscount={pointsDiscount}
           userEmail={user?.email} // Pass email to fetch correct customer ID
+          placeOrderRef={placeOrderRef}
         />
       </div>
     </Container>

@@ -20,7 +20,8 @@ const BillingDetails = ({
     handleSubmit,
     onCheckoutSubmit,
     loading,
-    totalAmount = 0
+    totalAmount = 0,
+    placeOrderRef
 }) => {
     const [customerId, setCustomerId] = useState(null);
     const [addresses, setAddresses] = useState([]);
@@ -335,6 +336,17 @@ const BillingDetails = ({
         }
     };
 
+    // Assign placeOrderRef handler for OrderSummary's Place Order button
+    if (placeOrderRef) {
+        placeOrderRef.current = () => {
+            if (user && customerId && addresses.length > 0 && selectedAddress && !isAddingNewAddress) {
+                handlePlaceOrder();
+            } else {
+                handleSubmit(handleSaveAndCheckout)();
+            }
+        };
+    }
+
     const formatPrice = (price) => {
         return new Intl.NumberFormat('en-BD', {
             style: 'currency',
@@ -539,7 +551,8 @@ const BillingDetails = ({
                     {/* Shipping and Payment Options */}
                     {renderShippingAndPayment()}
 
-                    {/* Place Order Button */}
+                    {/* Place Order Button - Moved to OrderSummary section */}
+                    {/*
                     <div className="space-y-3">
                         <button
                             type="button"
@@ -550,6 +563,7 @@ const BillingDetails = ({
                             {loading ? "Processing..." : "Place Order"}
                         </button>
                     </div>
+                    */}
                 </div>
             ) : (
                 /* Manual Address Form - For guest users or users without addresses */
@@ -704,7 +718,8 @@ const BillingDetails = ({
                     {/* Shipping and Payment Options in Form */}
                     {renderShippingAndPayment()}
 
-                    {/* Submit Button */}
+                    {/* Submit Button - Moved to OrderSummary section */}
+                    {/*
                     <div className="space-y-3">
                         <button
                             type="submit"
@@ -714,6 +729,7 @@ const BillingDetails = ({
                             {loading ? "Processing..." : user ? "Place Order" : "Continue to Payment"}
                         </button>
                     </div>
+                    */}
                 </form>
             )}
 

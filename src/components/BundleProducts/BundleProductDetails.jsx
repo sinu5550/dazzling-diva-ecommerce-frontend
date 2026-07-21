@@ -150,9 +150,9 @@ const BundleProductDetails = ({ bundle }) => {
 
     return (
         <Container>
-            <div className="px-4 sm:px-6 lg:px-8 py-6 sm:py-10 text-gray-800">
+            <div className="px-4 sm:px-6 lg:px-8 py-2 sm:py-4 text-gray-800">
                 {/* Breadcrumb - Mobile optimized */}
-                <nav className="flex flex-wrap items-center gap-1 sm:gap-2 text-lg sm:text-sm text-gray-600 mb-6 sm:mb-8">
+                <nav className="flex flex-wrap items-center gap-1 sm:gap-2 text-lg sm:text-sm text-gray-600 mb-2 sm:mb-4">
                     <Link href="/" className="hover:text-teal-600 truncate">Home</Link>
                     <span>/</span>
                     <Link href="/bundle-products" className="hover:text-teal-600 truncate">Bundle Products</Link>
@@ -389,14 +389,17 @@ const BundleProductDetails = ({ bundle }) => {
                             </div>
                         </div>
 
-                        {/* Delivery Info - Mobile optimized */}
+                        {/* Delivery Info - Removed per request */}
+                        {/*
                         <div className="bg-sky-50 border border-sky-200 diva-rounded p-3">
                             <p className="text-lg sm:text-sm text-sky-500">
                                 <strong>Est. Delivery between</strong> 3-7 Business days
                             </p>
                         </div>
+                        */}
 
-                        {/* Service Cards - Mobile optimized */}
+                        {/* Service Cards - Removed per request */}
+                        {/*
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 bg-yellow-50 diva-rounded p-4 sm:p-6 mt-4">
                             <div className="text-center">
                                 <MdOutlineAssignmentReturn className="text-2xl sm:text-3xl mx-auto mb-2 text-gray-700" />
@@ -417,9 +420,10 @@ const BundleProductDetails = ({ bundle }) => {
                                 </h5>
                             </div>
                         </div>
+                        */}
 
-                        {/* Payment logo */}
-                        <PaymentLogo />
+                        {/* Payment logo - Removed per request */}
+                        {/* <PaymentLogo /> */}
                     </div>
                 </div>
 
