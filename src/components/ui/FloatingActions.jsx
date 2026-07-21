@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { FaWhatsapp, FaFacebookF, FaFacebookMessenger, FaComments } from 'react-icons/fa';
+import { FaWhatsapp, FaFacebookF, FaPhoneAlt, FaComments } from 'react-icons/fa';
 import { TbArrowBadgeUpFilled } from "react-icons/tb";
 import { apiClient } from "@/lib/apiClient";
 import { useCart } from '@/hooks/useCart';
@@ -71,40 +71,27 @@ export default function FloatingActions() {
     const whatsappUrl = `https://wa.me/${cleanPhone}`;
     
     const facebookUrl = contactData?.facebook || "https://www.facebook.com/dazzlingdivabd";
-    
-    // Resolve messenger username from Facebook page URL
-    const getMessengerUrl = (fbUrl) => {
-        if (!fbUrl) return "https://m.me/dazzlingdivabd";
-        try {
-            const parsed = new URL(fbUrl);
-            const username = parsed.pathname.split('/').filter(Boolean).pop();
-            return username ? `https://m.me/${username}` : "https://m.me/dazzlingdivabd";
-        } catch (e) {
-            return "https://m.me/dazzlingdivabd";
-        }
-    };
-    const messengerUrl = getMessengerUrl(facebookUrl);
 
     return (
         <>
-            {/* Sticky Cart Widget (Right Center) */}
+            {/* Sticky Cart Widget (Right Center - Responsive) */}
             <Link 
                 href="/cart"
-                className="fixed right-0 top-[45%] z-[998] flex flex-col items-center bg-[#5A0C3D] md:bg-white shadow-[0_0_20px_rgba(0,0,0,0.15)] rounded-l-xl overflow-hidden border border-[#5A0C3D]/10 md:border-gray-200 border-r-0 hover:translate-x-[-4px] transition-transform duration-300 select-none group/sticky-cart"
+                className="fixed right-0 top-[45%] z-[998] flex flex-col items-center bg-[#5A0C3D] md:bg-white shadow-[0_4px_20px_rgba(90,12,61,0.25)] rounded-l-2xl overflow-hidden border border-[#5A0C3D]/20 md:border-gray-200 border-r-0 hover:translate-x-[-2px] transition-transform duration-300 select-none group/sticky-cart"
             >
-                {/* Top Section: Brand maroon color background */}
-                <div className="bg-[#5A0C3D] text-white p-2.5 md:p-3.5 flex flex-col items-center justify-center w-12 h-12 md:w-20 md:min-h-[75px] group-hover/sticky-cart:bg-[#4a0a32] transition-colors relative">
-                    <div className="relative">
-                        <CartIcon className="w-5 h-5 md:w-6 md:h-6 text-white mb-0 md:mb-1" />
-                        <span className="md:hidden absolute -top-2.5 -right-2.5 bg-white text-[#5A0C3D] text-[9px] font-bold font-outfit w-4.5 h-4.5 rounded-full flex items-center justify-center border border-[#5A0C3D]/20 shadow-sm">
+                {/* Top Section: Brand maroon background */}
+                <div className="bg-[#5A0C3D] text-white p-2.5 md:p-3.5 flex flex-col items-center justify-center w-11 h-11 md:w-20 md:min-h-[75px] group-hover/sticky-cart:bg-[#4a0a32] transition-colors relative">
+                    <div className="relative flex items-center justify-center">
+                        <CartIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                        <span className="md:hidden absolute -top-2.5 -right-2.5 bg-white text-[#5A0C3D] text-[9px] font-bold font-outfit w-4 h-4 rounded-full flex items-center justify-center border border-[#5A0C3D]/20 shadow-xs">
                             {cartCount}
                         </span>
                     </div>
-                    <span className="hidden md:block text-[11px] font-semibold font-outfit whitespace-nowrap">
+                    <span className="hidden md:block text-[11px] font-semibold font-outfit whitespace-nowrap mt-1">
                         {cartCount} {cartCount === 1 ? 'Item' : 'Items'}
                     </span>
                 </div>
-                {/* Bottom Section: White background with price */}
+                {/* Bottom Section: White background with price (Desktop Only) */}
                 <div className="hidden md:flex bg-white text-gray-800 py-2.5 px-3 items-center justify-center w-20 border-t border-gray-150">
                     <span className="text-[13px] font-bold font-outfit text-gray-900">
                         ৳{cartTotal.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
@@ -144,23 +131,6 @@ export default function FloatingActions() {
                             </span>
                         </div>
 
-                        {/* Messenger Button */}
-                        <div className="group relative">
-                            <a
-                                href={messengerUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex h-11 w-11 items-center justify-center rounded-full bg-gradient-to-tr from-[#006AFF] to-[#00B2FF] text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
-                                aria-label="Messenger Chat"
-                                onClick={() => setIsOpen(false)}
-                            >
-                                <FaFacebookMessenger size={20} />
-                            </a>
-                            <span className="pointer-events-none absolute right-14 top-1/2 -translate-y-1/2 whitespace-nowrap rounded bg-stone-900 px-2.5 py-1 text-xs text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 shadow-md">
-                                Chat on Messenger
-                            </span>
-                        </div>
-
                         {/* WhatsApp Button */}
                         <div className="group relative">
                             <a
@@ -175,6 +145,21 @@ export default function FloatingActions() {
                             </a>
                             <span className="pointer-events-none absolute right-14 top-1/2 -translate-y-1/2 whitespace-nowrap rounded bg-stone-900 px-2.5 py-1 text-xs text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 shadow-md">
                                 WhatsApp Chat
+                            </span>
+                        </div>
+
+                        {/* Direct Call Button (Mobile Only) */}
+                        <div className="group relative flex md:hidden">
+                            <a
+                                href={`tel:${cleanPhone}`}
+                                className="flex h-11 w-11 items-center justify-center rounded-full bg-[#00B050] text-white shadow-lg transition-all duration-300 hover:scale-110 hover:shadow-xl"
+                                aria-label="Call Us"
+                                onClick={() => setIsOpen(false)}
+                            >
+                                <FaPhoneAlt size={18} />
+                            </a>
+                            <span className="pointer-events-none absolute right-14 top-1/2 -translate-y-1/2 whitespace-nowrap rounded bg-stone-900 px-2.5 py-1 text-xs text-white opacity-0 transition-opacity duration-200 group-hover:opacity-100 shadow-md">
+                                Call Us
                             </span>
                         </div>
 

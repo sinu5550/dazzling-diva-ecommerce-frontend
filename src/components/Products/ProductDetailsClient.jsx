@@ -356,11 +356,11 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
     }
 
     return (
-        <div className="bg-white my-8 lg:py-16  max-w-7xl mx-auto">
+        <div className="bg-white my-2 lg:py-4 max-w-7xl mx-auto">
             <Container>
                 {/* Breadcrumb */}
                 <div className="hidden lg:flex">
-                    <nav className="text-sm text-gray-600 mb-6 flex items-center gap-2 ">
+                    <nav className="text-sm text-gray-600 mb-2 flex items-center gap-2 ">
                         <Link href="/" className="hover:text-primary">
                             Home
                         </Link>
@@ -581,14 +581,17 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                             />
                         </div>
 
-                        {/* Delivery Info */}
+                        {/* Delivery Info - Removed per request */}
+                        {/*
                         <div className="bg-gray-50  p-4 mt-6">
                             <p className="text-sm text-gray-700">
                                 <span className="font-semibold">Est. Delivery between</span> 3 - 7 days
                             </p>
                         </div>
+                        */}
 
-                        {/* Service Cards */}
+                        {/* Service Cards - Removed per request */}
+                        {/*
                         <div className="grid grid-cols-3 gap-4 bg-yellow-50  p-6 mt-4">
                             <div className="text-center">
                                 <MdOutlineAssignmentReturn className="text-3xl mx-auto mb-2 text-gray-700" />
@@ -609,9 +612,19 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                                 </h5>
                             </div>
                         </div>
+                        */}
 
-                        {/* Product Meta */}
-                        <div className="border-t border-gray-200 pt-4 space-y-2">
+                        {/* Short Description (2-3 lines snippet) */}
+                        {product.description && (
+                            <div className="text-sm text-gray-600 line-clamp-3 leading-relaxed mt-4">
+                                {typeof product.description === 'string'
+                                    ? product.description.replace(/<[^>]*>?/gm, '')
+                                    : product.description}
+                            </div>
+                        )}
+
+                        {/* Product Meta / Categories */}
+                        <div className="border-t border-gray-200 pt-4 space-y-2 mt-4">
                             <p className="text-sm text-gray-600">
                                 <span className="font-semibold">Categories:</span>{' '}
                                 <Link href={`/category/${product.subCategory?.category?.mainCategory?.id}`} className="text-secound hover:underline">
@@ -628,7 +641,8 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                             </p>
                         </div>
 
-                        <PaymentLogo />
+                        {/* Payment Logo - Removed per request */}
+                        {/* <PaymentLogo /> */}
                     </div>
                 </div>
 

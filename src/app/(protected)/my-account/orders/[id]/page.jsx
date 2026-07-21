@@ -231,8 +231,8 @@ const OrderDetailsContent = ({ orderId }) => {
   const statusConfig = getStatusConfig(order.status);
 
   return (
-    <div className="w-full bg-white rounded-[12px] shadow-[0_4px_20px_rgba(0,0,0,0.05)] p-6 text-gray-800 font-outfit border border-gray-100 print-area">
-      <div className="space-y-6">
+    <div className="w-full bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.04)] p-3.5 sm:p-6 text-gray-800 font-outfit border border-gray-100 print-area">
+      <div className="space-y-4 sm:space-y-6">
         {/* Breadcrumbs */}
         <div className="flex items-center gap-2 text-sm text-gray-600 no-print">
           <Link href="/" className="hover:text-[#5A0C3D] flex items-center gap-1 transition-colors duration-200">
@@ -302,10 +302,10 @@ const OrderDetailsContent = ({ orderId }) => {
         </div>
 
         {/* Details Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:gap-8">
           {/* Left Columns - Order Items */}
-          <div className="lg:col-span-2 space-y-6">
-            <div className="bg-white rounded-[12px] border border-gray-150 p-5 space-y-4">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            <div className="bg-white rounded-2xl border border-gray-200 p-3.5 sm:p-5 space-y-4">
               <h2 className="text-base font-bold text-gray-950 flex items-center gap-2 border-b border-gray-50 pb-3">
                 <Package className="w-4.5 h-4.5 text-[#5A0C3D]" />
                 Order Items ({order.orderItems?.length || 0})
@@ -357,9 +357,9 @@ const OrderDetailsContent = ({ orderId }) => {
           </div>
 
           {/* Right Column - Summary & Addresses */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Order Summary */}
-            <div className="bg-white rounded-[12px] border border-gray-150 p-5 space-y-4">
+            <div className="bg-white rounded-2xl border border-gray-200 p-3.5 sm:p-5 space-y-4">
               <h2 className="text-base font-bold text-gray-950 border-b border-gray-50 pb-3">
                 Order Summary
               </h2>
@@ -425,7 +425,7 @@ const OrderDetailsContent = ({ orderId }) => {
 
             {/* Shipping Address */}
             {order.shippingAddress && (
-              <div className="bg-white rounded-[12px] border border-gray-150 p-5 space-y-4">
+              <div className="bg-white rounded-2xl border border-gray-200 p-3.5 sm:p-5 space-y-4">
                 <h2 className="text-base font-bold text-gray-950 flex items-center gap-1.5 border-b border-gray-50 pb-3">
                   <Truck className="w-4.5 h-4.5 text-gray-500" />
                   Shipping Address

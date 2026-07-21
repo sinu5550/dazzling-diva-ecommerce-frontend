@@ -10,12 +10,14 @@ import {
   ArrowRight,
   ChevronRight,
   ChevronLeft,
+  Menu,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import logo from "../../../../public/assects/Logo.png";
 import SearchComponent from "@/components/Search/SearchComponent";
 import { DropdownIcon } from "@/components/svg";
+import { FaFacebookF, FaInstagram, FaYoutube, FaTiktok, FaWhatsapp } from "react-icons/fa6";
 
 const encodeName = (name) => encodeURIComponent(name);
 
@@ -479,8 +481,46 @@ export default function NavbarClient({ data, contactData, config }) {
 
           {/* Mobile Nav Row (Simplified search & horizontal categories) */}
           <div className="flex flex-col lg:hidden gap-2 w-full">
-            <div className="w-full">
-              <SearchComponent />
+            <div className="w-full flex items-center gap-2">
+              {/* Show exact same hamburger button beside search when sticky & scrolled */}
+              {isSticky && (
+                <button
+                  onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+                  className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200 transition-all duration-200 active:scale-90 cursor-pointer group"
+                  aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+                  title="Toggle menu"
+                >
+                  <div className="relative w-5 h-4 flex flex-col justify-between items-start">
+                    {/* Line 1 */}
+                    <span
+                      className={`h-[2px] bg-black rounded-full transition-all duration-300 ease-in-out ${
+                        isMobileMenuOpen
+                          ? "w-5 rotate-45 translate-y-[7px]"
+                          : "w-5"
+                      }`}
+                    />
+                    {/* Line 2 */}
+                    <span
+                      className={`h-[2px] bg-black rounded-full transition-all duration-300 ease-in-out ${
+                        isMobileMenuOpen
+                          ? "w-0 opacity-0"
+                          : "w-[70%]"
+                      }`}
+                    />
+                    {/* Line 3 */}
+                    <span
+                      className={`h-[2px] bg-black rounded-full transition-all duration-300 ease-in-out ${
+                        isMobileMenuOpen
+                          ? "w-5 -rotate-45 -translate-y-[7px]"
+                          : "w-[45%]"
+                      }`}
+                    />
+                  </div>
+                </button>
+              )}
+              <div className="flex-1 min-w-0">
+                <SearchComponent />
+              </div>
             </div>
             <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-0.5">
               <Link
@@ -701,6 +741,7 @@ export default function NavbarClient({ data, contactData, config }) {
         onToggleL1={toggleMobileL1}
         onToggleL2={toggleMobileL2}
         onLinkClick={closeMobileMenu}
+        contactData={contactData}
       />
 
       <style jsx global>{`
@@ -804,6 +845,7 @@ function MobileDrawer({
   onToggleL1,
   onToggleL2,
   onLinkClick,
+  contactData,
 }) {
   const encodeName = (name) => encodeURIComponent(name);
 
@@ -963,42 +1005,102 @@ function MobileDrawer({
         {/* Quick Links Section */}
         <div className="mt-3">
           <div className="px-5 py-2.5 bg-gray-50 border-y border-gray-200">
-            <span className="text-[10px] font-medium tracking-wide text-gray-500 uppercase">
+            <span className="text-[10px] font-medium tracking-wide text-gray-500 uppercase font-outfit">
               Quick links
             </span>
           </div>
 
           <div className="divide-y divide-gray-200">
-            {topbarLinks?.map((item) => (
-              <Link
-                key={item.label}
-                href={item.link}
-                className="flex items-center justify-between px-5 py-3.5 text-xs font-medium text-gray-700 hover:text-primary hover:bg-gray-50 transition-colors"
-                onClick={onLinkClick}
-              >
-                {item.label}
-                <ArrowRight size={12} className="text-gray-300" />
-              </Link>
-            ))}
+            {[...(topbarLinks || []), ...(navItems || [])]
+              .filter((item) => !['About Us', 'Find a Store', 'Corpora', 'Blogs', 'Combo Products'].includes(item.label))
+              .map((item) => (
+                <Link
+                  key={item.label}
+                  href={item.link}
+                  className="flex items-center justify-between px-5 py-3.5 text-xs font-medium text-gray-700 hover:text-[#5A0C3D] hover:bg-gray-50 transition-colors font-outfit"
+                  onClick={onLinkClick}
+                >
+                  {item.label}
+                  <ArrowRight size={12} className="text-gray-300" />
+                </Link>
+              ))}
+          </div>
+        </div>
 
-            {navItems.map((item) => (
-              <Link
-                key={item.label}
-                href={item.link}
-                className="flex items-center justify-between px-5 py-3.5 text-xs font-medium text-gray-700 hover:text-primary hover:bg-gray-50 transition-colors"
-                onClick={onLinkClick}
+        {/* Short Description */}
+        <div className="px-5 py-4 mt-3 bg-[#5A0C3D]/5 border-y border-[#5A0C3D]/10 font-outfit">
+          <span className="text-[10px] font-bold tracking-widest text-[#5A0C3D] uppercase block mb-1">
+            About Dazzling Diva
+          </span>
+          <p className="text-xs text-gray-600 leading-relaxed font-light">
+            Dazzling Diva is your premier destination for modern fashion & lifestyle collections. Elevating your style with quality craftsmanship, trendsetting outfits, and fast delivery.
+          </p>
+        </div>
+
+        {/* Social Links */}
+        <div className="px-5 py-4 font-outfit">
+          <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase block mb-3">
+            Follow Us
+          </span>
+          <div className="flex items-center gap-2.5">
+            <a
+              href={contactData?.data?.facebook || contactData?.facebook || "https://www.facebook.com/dazzlingdivabd"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full bg-[#5A0C3D]/10 text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white flex items-center justify-center transition-all duration-300 shadow-2xs"
+              aria-label="Facebook"
+            >
+              <FaFacebookF size={14} />
+            </a>
+            <a
+              href={contactData?.data?.instagram || contactData?.instagram || "https://www.instagram.com/dazzlingdivabd"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-9 h-9 rounded-full bg-[#5A0C3D]/10 text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white flex items-center justify-center transition-all duration-300 shadow-2xs"
+              aria-label="Instagram"
+            >
+              <FaInstagram size={14} />
+            </a>
+            {(contactData?.data?.youtube || contactData?.youtube) && (
+              <a
+                href={contactData?.data?.youtube || contactData?.youtube}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-[#5A0C3D]/10 text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white flex items-center justify-center transition-all duration-300 shadow-2xs"
+                aria-label="YouTube"
               >
-                {item.label}
-                <ArrowRight size={12} className="text-gray-300" />
-              </Link>
-            ))}
+                <FaYoutube size={14} />
+              </a>
+            )}
+            {(contactData?.data?.tiktok || contactData?.tiktok) && (
+              <a
+                href={contactData?.data?.tiktok || contactData?.tiktok}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-[#5A0C3D]/10 text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white flex items-center justify-center transition-all duration-300 shadow-2xs"
+                aria-label="TikTok"
+              >
+                <FaTiktok size={14} />
+              </a>
+            )}
+            {(contactData?.data?.phone || contactData?.phone) && (
+              <a
+                href={`https://wa.me/${(contactData?.data?.phone || contactData?.phone || '').replace(/[^0-9]/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-[#5A0C3D]/10 text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white flex items-center justify-center transition-all duration-300 shadow-2xs"
+                aria-label="WhatsApp"
+              >
+                <FaWhatsapp size={14} />
+              </a>
+            )}
           </div>
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-5 mt-4 border-t border-gray-200">
-          <div className="h-[2px] w-8 bg-[#FDDA06] mb-3" />
-          <p className="text-[9px] font-medium tracking-wide text-gray-400 uppercase">
+        <div className="px-5 py-4 border-t border-gray-200 font-outfit">
+          <div className="h-[2px] w-8 bg-[#5A0C3D] mb-2.5" />
+          <p className="text-[10px] font-medium tracking-wide text-gray-400 uppercase">
             Premium quality · Fast delivery
           </p>
         </div>

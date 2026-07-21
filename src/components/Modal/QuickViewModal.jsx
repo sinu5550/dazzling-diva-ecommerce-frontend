@@ -6,8 +6,10 @@ import Link from 'next/link';
 import { X, Heart, ShoppingBag, ArrowRight, Minus, Plus } from 'lucide-react';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
+import { useRouter } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/hooks/useWishlist';
+import { useCheckoutSession } from '@/hooks/useCheckoutSession';
 import {
     extractVariantOptions,
     findMatchingVariant,
@@ -26,14 +28,17 @@ const getImageUrl = (img) => {
 };
 
 const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
+    const router = useRouter();
     const { addToCart } = useCart(user);
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist(user);
+    const { createBuyNowSession } = useCheckoutSession();
 
     const [selectedAttributes, setSelectedAttributes] = useState({});
     const [selectedVariant, setSelectedVariant] = useState(null);
     const [quantity, setQuantity] = useState(1);
     const [activeImage, setActiveImage] = useState('');
     const [isCartLoading, setIsCartLoading] = useState(false);
+    const [isBuyNowLoading, setIsBuyNowLoading] = useState(false);
     const [isWishlistLoading, setIsWishlistLoading] = useState(false);
 
     const isVariantProduct = product?.productType === 'variant';
@@ -42,6 +47,22 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
     const variantOptions = useMemo(() => {
         if (!product) return [];
         return extractVariantOptions(product);
+    }, [product]);
+
+    // Extract all product & variant images combined
+    const allGalleryImages = useMemo(() => {
+        if (!product) return [];
+        const baseImages = (product.images || []).map(img => getImageUrl(img));
+        const variantImages = (product.productVariants || [])
+            .map(v => getImageUrl(v.image))
+            .filter(Boolean);
+        const combined = [...baseImages, ...variantImages];
+        const filtered = combined.filter(img =>
+            img &&
+            img !== 'https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png' &&
+            !img.includes('ju2uf9y33y1bncwufrl7.png')
+        );
+        return Array.from(new Set(filtered));
     }, [product]);
 
     // Initialize state when modal opens
@@ -165,6 +186,22 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
         if (!isAvailable || isCartLoading) return;
         setIsCartLoading(true);
         try {
+            const resolvedImages = [];
+            if (activeImage) resolvedImages.push(activeImage);
+            if (selectedVariant?.image) {
+                const varImg = getImageUrl(selectedVariant.image);
+                if (varImg && !resolvedImages.includes(varImg)) resolvedImages.push(varImg);
+            }
+            if (Array.isArray(product.images)) {
+                product.images.forEach(img => {
+                    const imgUrl = getImageUrl(img);
+                    if (imgUrl && !resolvedImages.includes(imgUrl)) resolvedImages.push(imgUrl);
+                });
+            }
+            if (resolvedImages.length === 0) {
+                resolvedImages.push('https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png');
+            }
+
             const cartProduct = {
                 id: product.id,
                 productId: product.id,
@@ -172,7 +209,7 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                 productName: product.productName,
                 price: discountedPrice,
                 originalPrice: originalPrice,
-                images: product.images || [],
+                images: resolvedImages,
                 quantity: quantity,
                 status: product.status,
                 taxType: product.taxType,
@@ -199,6 +236,65 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
             toast.error('Error adding to cart');
         } finally {
             setIsCartLoading(false);
+        }
+    };
+
+    // Buy Now Action
+    const handleBuyNow = async () => {
+        if (!isAvailable || isBuyNowLoading) return;
+        setIsBuyNowLoading(true);
+        try {
+            const resolvedImages = [];
+            if (activeImage) resolvedImages.push(activeImage);
+            if (selectedVariant?.image) {
+                const varImg = getImageUrl(selectedVariant.image);
+                if (varImg && !resolvedImages.includes(varImg)) resolvedImages.push(varImg);
+            }
+            if (Array.isArray(product.images)) {
+                product.images.forEach(img => {
+                    const imgUrl = getImageUrl(img);
+                    if (imgUrl && !resolvedImages.includes(imgUrl)) resolvedImages.push(imgUrl);
+                });
+            }
+            if (resolvedImages.length === 0) {
+                resolvedImages.push('https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png');
+            }
+
+            const checkoutItem = {
+                id: product.id,
+                productId: product.id,
+                slug: product.slug,
+                productName: product.productName,
+                name: product.productName,
+                price: discountedPrice,
+                originalPrice: originalPrice,
+                images: resolvedImages,
+                quantity: quantity,
+                status: product.status,
+                taxType: product.taxType,
+                tax: product.tax,
+                sku: sku,
+                discountValue: discountValue,
+                discountAmount: discountAmount,
+                discountType: product.campaignInfo?.discountType || 'Percentage',
+                type: product.campaignInfo ? 'discount' : 'regular',
+                ...(product.campaignInfo && { campaignInfo: product.campaignInfo }),
+                ...(isVariantProduct && selectedVariant && {
+                    variantId: selectedVariant.id,
+                    variantAttributes: selectedVariant.attributes,
+                    productType: 'variant'
+                })
+            };
+
+            createBuyNowSession(checkoutItem, product.campaignInfo ? 'discount' : 'regular');
+            toast.success('Proceeding to checkout...', { icon: '🛒', duration: 1500 });
+            onClose();
+            router.push('/checkout');
+        } catch (error) {
+            console.error('Error in Buy Now:', error);
+            toast.error('Failed to proceed with Buy Now');
+        } finally {
+            setIsBuyNowLoading(false);
         }
     };
 
@@ -247,23 +343,24 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                         />
                     </div>
 
-                    {/* Thumbnail selection row */}
-                    {product.images && product.images.length > 1 && (
+                    {/* Thumbnail selection row - showing base & variant images */}
+                    {allGalleryImages.length > 1 && (
                         <div className="flex gap-2.5 mt-3 overflow-x-auto pb-1 max-w-full hide-scrollbar">
-                            {product.images.map((img, idx) => {
-                                const resolvedImg = getImageUrl(img);
+                            {allGalleryImages.map((resolvedImg, idx) => {
                                 const resolvedActive = getImageUrl(activeImage);
+                                const isSelected = resolvedActive === resolvedImg;
                                 return (
                                     <button
                                         key={idx}
+                                        type="button"
                                         onClick={() => setActiveImage(resolvedImg)}
                                         className={`relative w-14 h-16 rounded-lg overflow-hidden bg-gray-50 flex-shrink-0 border transition-all cursor-pointer ${
-                                            resolvedActive === resolvedImg ? 'border-[#5A0C3D] ring-2 ring-[#5A0C3D]/25' : 'border-gray-200 hover:border-gray-400'
+                                            isSelected ? 'border-[#5A0C3D] ring-2 ring-[#5A0C3D]/25 scale-105' : 'border-gray-200 hover:border-gray-400 opacity-85 hover:opacity-100'
                                         }`}
                                     >
                                         <Image
                                             src={resolvedImg}
-                                            alt=""
+                                            alt={`Gallery image ${idx + 1}`}
                                             fill
                                             sizes="56px"
                                             className="object-cover"
@@ -289,7 +386,7 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
 
                         {/* Prices */}
                         <div className="flex items-center gap-3 mt-3">
-                            <span className="text-xl md:text-2xl font-bold font-outfit text-[#FF0055]">
+                            <span className="text-xl md:text-2xl font-bold font-outfit text-[#5A0C3D]">
                                 BDT {formatPrice(discountedPrice)}
                             </span>
                             {discountValue > 0 && originalPrice !== discountedPrice && (
@@ -408,10 +505,11 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                                 {isCartLoading ? 'Adding...' : 'Add to Cart'}
                             </button>
                             <button
-                                disabled={!isAvailable}
+                                onClick={handleBuyNow}
+                                disabled={!isAvailable || isBuyNowLoading}
                                 className="flex-1 py-3.5 px-4 text-center bg-[#5A0C3D] text-white hover:bg-[#450322] shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer rounded-[8px] font-outfit font-semibold text-xs md:text-sm uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed"
                             >
-                                Buy Now
+                                {isBuyNowLoading ? 'Processing...' : 'Buy Now'}
                             </button>
                         </div>
 

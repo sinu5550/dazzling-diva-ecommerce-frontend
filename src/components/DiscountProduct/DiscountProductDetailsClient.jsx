@@ -323,10 +323,10 @@ export default function DiscountProductDetailsClient({ product }) {
     }
 
     return (
-        <div className="bg-white py-16">
+        <div className="bg-white py-4">
             <Container>
                 {/* Breadcrumb */}
-                <nav className="text-sm text-gray-600 mb-6 flex items-center gap-2">
+                <nav className="text-sm text-gray-600 mb-2 flex items-center gap-2">
                     <Link href="/" className="hover:text-teal-600">Home</Link>
                     <span>/</span>
                     <Link href="/discount-campaigns" className="hover:text-teal-600">Discount Campaigns</Link>
@@ -334,17 +334,17 @@ export default function DiscountProductDetailsClient({ product }) {
                     <span className="text-gray-900 font-medium">{product.productName}</span>
                 </nav>
 
-                {/* Campaign Banner */}
+                {/* Campaign Banner - Brand plum styling */}
                 {hasCampaignDiscount && campaignInfo && (
-                    <div className="mb-6 p-4 diva-rounded bg-gradient-to-r from-red-50 to-orange-50 border border-red-200">
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div className="mb-3 py-2 px-3.5 md:py-2.5 md:px-4 rounded-[12px] bg-[#5A0C3D]/5 border border-[#5A0C3D]/15 font-outfit shadow-xs">
+                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5 md:gap-4">
                             <div className="flex items-center gap-3">
-                                <div className="text-white text-sm font-bold px-3 py-1.5 rounded shadow" style={getCampaignBadgeStyle()}>
+                                <div className="text-white text-xs md:text-sm font-bold px-3 py-1.5 rounded-lg shadow-xs bg-[#5A0C3D] uppercase tracking-wider">
                                     {getBadgeText()}
                                 </div>
                                 <div>
-                                    <h3 className="font-bold text-gray-900">{campaignInfo.campaignName}</h3>
-                                    <p className="text-sm text-gray-600">
+                                    <h3 className="font-bold text-gray-900 text-base md:text-lg leading-tight">{campaignInfo.campaignName}</h3>
+                                    <p className="text-xs md:text-sm text-gray-600 font-light mt-0.5">
                                         {campaignInfo.discountType === 'Fixed'
                                             ? `৳${formatPrice(campaignInfo.discountValue)} discount applied`
                                             : `${campaignInfo.discountValue}% discount applied`}
@@ -353,8 +353,8 @@ export default function DiscountProductDetailsClient({ product }) {
                                 </div>
                             </div>
                             {campaignInfo.endAt && campaignInfo.showCountdown && (
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm text-gray-600">Offer ends in:</span>
+                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 md:gap-2.5 bg-white/80 backdrop-blur-xs px-2.5 py-1 md:py-1.5 rounded-lg border border-[#5A0C3D]/10 shadow-2xs">
+                                    <span className="text-[10px] md:text-[11px] font-bold text-[#5A0C3D] uppercase tracking-widest">Offer ends in:</span>
                                     <CountdownTimer endDate={new Date(campaignInfo.endAt)} />
                                 </div>
                             )}
@@ -383,7 +383,8 @@ export default function DiscountProductDetailsClient({ product }) {
                             {product.productName}
                         </h1>
 
-                        {/* Rating & Reviews */}
+                        {/* Rating & Reviews - Removed per request */}
+                        {/*
                         <div className="flex items-center gap-3">
                             {renderStars(4)}
                             <span className="text-sm text-gray-600">(0)</span>
@@ -391,6 +392,7 @@ export default function DiscountProductDetailsClient({ product }) {
                                 Write a review
                             </Link>
                         </div>
+                        */}
                         {/* loyal point Info */}
                         <div className="bg-amber-50 border border-amber-200 diva-rounded p-3">
                             <p className="text-sm text-amber-800">
@@ -489,47 +491,45 @@ export default function DiscountProductDetailsClient({ product }) {
                             </div>
                         </div>
 
-                        {/* Campaign Savings Info */}
+                        {/* Campaign Savings Info Banner - Brand plum styling */}
                         {hasCampaignDiscount && campaignInfo && (
-                            <div className="bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-4 shadow-sm">
+                            <div className="bg-[#5A0C3D]/5 border border-[#5A0C3D]/15 rounded-[12px] py-2 px-3.5 md:py-2.5 md:px-4 font-outfit shadow-xs mt-3">
                                 <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                                     <div className="flex items-start space-x-3">
                                         <div className="flex-shrink-0 mt-0.5">
-                                            <div className="w-8 h-8 bg-gradient-to-br from-sky-500 to-purple-500 rounded-full flex items-center justify-center shadow-sm">
-                                                <span className="text-white text-sm">🎉</span>
+                                            <div className="w-9 h-9 bg-[#5A0C3D] text-white rounded-xl flex items-center justify-center shadow-xs">
+                                                <span className="text-sm">🎉</span>
                                             </div>
                                         </div>
                                         <div className="flex-1">
-                                            <p className="text-md font-medium text-purple-700 mb-1">
+                                            <p className="text-xs md:text-sm font-medium text-gray-800 leading-snug">
                                                 This product is part of{" "}
-                                                <span className="font-medium text-purple-900 bg-purple-100 px-1.5 py-0.5 rounded">
+                                                <span className="font-bold text-[#5A0C3D] bg-[#5A0C3D]/10 px-2 py-0.5 rounded-md">
                                                     "{campaignInfo.campaignName}"
                                                 </span>{" "}
                                                 campaign
                                             </p>
                                             {campaignInfo.endAt && (
-                                                <div className="inline-flex items-center space-x-1.5 bg-yellow-50 border border-yellow-200 diva-rounded px-3 py-1.5 mt-2">
-                                                    <span className="text-yellow-600">⏰</span>
-                                                    <span className="text-sm font-medium text-yellow-800">Limited time offer!</span>
-                                                    <span className="text-xs text-yellow-600">
+                                                <div className="flex items-center space-x-1.5 mt-1.5 text-xs">
+                                                    <span>⏰</span>
+                                                    <span className="font-semibold text-[#5A0C3D]">Limited time offer!</span>
+                                                    <span className="text-gray-500 font-light">
                                                         Ends {new Date(campaignInfo.endAt).toLocaleDateString()}
                                                     </span>
                                                 </div>
                                             )}
                                         </div>
                                     </div>
-                                    <div className="md:border-l md:border-blue-200 md:pl-4">
-                                        <div className="bg-white diva-rounded p-3 border border-green-200 shadow-xs">
-                                            <div className="text-center">
-                                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wider mb-1">You Save</p>
-                                                <div className="flex items-center justify-center space-x-2">
-                                                    <span className="text-2xl font-bold text-green-600">
-                                                        {formatPriceWithIcon(discountAmount)}
-                                                    </span>
-                                                    <span className="bg-green-100 text-green-800 text-sm font-bold px-2 py-1 rounded-full">
-                                                        {discountPercentage}% OFF
-                                                    </span>
-                                                </div>
+                                    <div className="md:border-l md:border-[#5A0C3D]/15 md:pl-4">
+                                        <div className="bg-white rounded-lg py-1.5 px-3 border border-[#5A0C3D]/15 shadow-xs text-center min-w-[130px]">
+                                            <p className="text-[9px] font-bold text-gray-400 uppercase tracking-widest mb-0.5">You Save</p>
+                                            <div className="flex items-center justify-center space-x-1.5">
+                                                <span className="text-lg md:text-xl font-bold text-[#5A0C3D]">
+                                                    {formatPriceWithIcon(discountAmount)}
+                                                </span>
+                                                <span className="bg-[#5A0C3D] text-white text-[10px] md:text-xs font-bold px-1.5 py-0.5 rounded-md">
+                                                    {discountPercentage}% OFF
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -557,14 +557,17 @@ export default function DiscountProductDetailsClient({ product }) {
                             />
                         </div>
 
-                        {/* Delivery Info */}
+                        {/* Delivery Info - Removed per request */}
+                        {/*
                         <div className="bg-gray-50 diva-rounded p-4 mt-6">
                             <p className="text-sm text-gray-700">
                                 <span className="font-semibold">Est. Delivery between</span> 10 - 14 days
                             </p>
                         </div>
+                        */}
 
-                        {/* Service Cards */}
+                        {/* Service Cards - Removed per request */}
+                        {/*
                         <div className="grid grid-cols-3 gap-4 bg-yellow-50 diva-rounded p-6 mt-4">
                             <div className="text-center">
                                 <MdOutlineAssignmentReturn className="text-3xl mx-auto mb-2 text-gray-700" />
@@ -579,9 +582,19 @@ export default function DiscountProductDetailsClient({ product }) {
                                 <h5 className="text-xs font-semibold text-gray-900 mb-1">Have Questions? Call Us</h5>
                             </div>
                         </div>
+                        */}
 
-                        {/* Product Meta */}
-                        <div className="border-t border-gray-200 pt-4 space-y-2">
+                        {/* Short Description (2-3 lines snippet) */}
+                        {product.description && (
+                            <div className="text-sm text-gray-600 line-clamp-3 leading-relaxed mt-4">
+                                {typeof product.description === 'string'
+                                    ? product.description.replace(/<[^>]*>?/gm, '')
+                                    : product.description}
+                            </div>
+                        )}
+
+                        {/* Product Meta / Categories */}
+                        <div className="border-t border-gray-200 pt-4 space-y-2 mt-4">
                             {product.subCategory && (
                                 <p className="text-sm text-gray-600">
                                     <span className="font-semibold">Categories:</span>{' '}
@@ -608,7 +621,8 @@ export default function DiscountProductDetailsClient({ product }) {
                             )}
                         </div>
 
-                        <PaymentLogo />
+                        {/* Payment Logo - Removed per request */}
+                        {/* <PaymentLogo /> */}
                     </div>
                 </div>
 
