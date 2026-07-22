@@ -81,7 +81,7 @@ const Promotional = ({ promoData }) => {
                   src={leftCard.image}
                   alt={leftCard.title}
                   fill
-                  sizes="(max-w-768px) 100vw, 25vw"
+                  sizes="(max-width: 768px) 100vw, 25vw"
                   className="object-cover brightness-[0.85] transition-all duration-500 group-hover:brightness-[0.75] group-hover:scale-105"
                   priority
                 />
@@ -128,7 +128,7 @@ const Promotional = ({ promoData }) => {
                   src={middleCard.image}
                   alt={middleCard.title}
                   fill
-                  sizes="(max-w-768px) 100vw, 50vw"
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover brightness-[0.8] transition-all duration-500 group-hover:brightness-[0.7]"
                   priority
                 />
@@ -179,7 +179,7 @@ const Promotional = ({ promoData }) => {
                   src={rightCard.image}
                   alt={rightCard.title}
                   fill
-                  sizes="(max-w-768px) 100vw, 25vw"
+                  sizes="(max-width: 768px) 100vw, 25vw"
                   className="object-cover brightness-[0.85] transition-all duration-500 group-hover:brightness-[0.75]  group-hover:scale-105"
                 />
               </motion.div>

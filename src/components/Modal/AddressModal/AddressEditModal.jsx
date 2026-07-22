@@ -230,8 +230,8 @@ const AddressEditModal = ({ isOpen, onClose, address, onSuccess }) => {
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                <div className="p-6">
+            <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+                <div className="p-6 overflow-y-auto max-h-[90vh]">
                     {/* Modal Header */}
                     <div className="flex justify-between items-center mb-6 pb-4 border-b">
                         <div>

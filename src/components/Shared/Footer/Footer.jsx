@@ -71,6 +71,7 @@ const Footer = async () => {
                                     alt="Dazzling Diva"
                                     fill
                                     priority
+                                    sizes="250px"
                                     className="object-contain"
                                 />
                             </div>
