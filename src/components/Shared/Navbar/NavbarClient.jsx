@@ -17,7 +17,13 @@ import Image from "next/image";
 import logo from "../../../../public/assects/Logo.png";
 import SearchComponent from "@/components/Search/SearchComponent";
 import { DropdownIcon } from "@/components/svg";
-import { FaFacebookF, FaInstagram, FaYoutube, FaTiktok, FaWhatsapp } from "react-icons/fa6";
+import {
+  FaFacebookF,
+  FaInstagram,
+  FaYoutube,
+  FaTiktok,
+  FaWhatsapp,
+} from "react-icons/fa6";
 
 const encodeName = (name) => encodeURIComponent(name);
 
@@ -502,9 +508,7 @@ export default function NavbarClient({ data, contactData, config }) {
                     {/* Line 2 */}
                     <span
                       className={`h-[2px] bg-black rounded-full transition-all duration-300 ease-in-out ${
-                        isMobileMenuOpen
-                          ? "w-0 opacity-0"
-                          : "w-[70%]"
+                        isMobileMenuOpen ? "w-0 opacity-0" : "w-[70%]"
                       }`}
                     />
                     {/* Line 3 */}
@@ -1012,7 +1016,16 @@ function MobileDrawer({
 
           <div className="divide-y divide-gray-200">
             {[...(topbarLinks || []), ...(navItems || [])]
-              .filter((item) => !['About Us', 'Find a Store', 'Corpora', 'Blogs', 'Combo Products'].includes(item.label))
+              .filter(
+                (item) =>
+                  ![
+                    "About Us",
+                    "Find a Store",
+                    "Corpora",
+                    "Blogs",
+                    "Combo Products",
+                  ].includes(item.label),
+              )
               .map((item) => (
                 <Link
                   key={item.label}
@@ -1033,7 +1046,9 @@ function MobileDrawer({
             About Dazzling Diva
           </span>
           <p className="text-xs text-gray-600 leading-relaxed font-light">
-            Dazzling Diva is your premier destination for modern fashion & lifestyle collections. Elevating your style with quality craftsmanship, trendsetting outfits, and fast delivery.
+            Dazzling Diva is your premier destination for modern fashion &
+            lifestyle collections. Elevating your style with quality
+            craftsmanship, trendsetting outfits, and fast delivery.
           </p>
         </div>
 
@@ -1044,7 +1059,11 @@ function MobileDrawer({
           </span>
           <div className="flex items-center gap-2.5">
             <a
-              href={contactData?.data?.facebook || contactData?.facebook || "https://www.facebook.com/dazzlingdivabd"}
+              href={
+                contactData?.data?.facebook ||
+                contactData?.facebook ||
+                "https://www.facebook.com/dazzlingdivabd"
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="w-9 h-9 rounded-full bg-[#5A0C3D]/10 text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white flex items-center justify-center transition-all duration-300 shadow-2xs"
@@ -1053,7 +1072,11 @@ function MobileDrawer({
               <FaFacebookF size={14} />
             </a>
             <a
-              href={contactData?.data?.instagram || contactData?.instagram || "https://www.instagram.com/dazzlingdivabd"}
+              href={
+                contactData?.data?.instagram ||
+                contactData?.instagram ||
+                "https://www.instagram.com/dazzlingdivabd"
+              }
               target="_blank"
               rel="noopener noreferrer"
               className="w-9 h-9 rounded-full bg-[#5A0C3D]/10 text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white flex items-center justify-center transition-all duration-300 shadow-2xs"
@@ -1085,7 +1108,7 @@ function MobileDrawer({
             )}
             {(contactData?.data?.phone || contactData?.phone) && (
               <a
-                href={`https://wa.me/${(contactData?.data?.phone || contactData?.phone || '').replace(/[^0-9]/g, '')}`}
+                href={`https://wa.me/${(contactData?.data?.phone || contactData?.phone || "").replace(/[^0-9]/g, "")}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-9 h-9 rounded-full bg-[#5A0C3D]/10 text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white flex items-center justify-center transition-all duration-300 shadow-2xs"

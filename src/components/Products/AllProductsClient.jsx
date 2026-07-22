@@ -371,6 +371,7 @@ export default function AllProductsClient({
                             alt={title}
                             fill
                             priority
+                            sizes="100vw"
                             className="object-cover opacity-80"
                         />
                         <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
@@ -502,6 +503,7 @@ export default function AllProductsClient({
                                             src={product.images?.[0] || 'https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png'}
                                             alt={product.productName}
                                             fill
+                                            sizes="(max-width: 640px) 100vw, 200px"
                                             className="object-cover"
                                         />
                                         {product.discountValue > 0 && (

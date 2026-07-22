@@ -313,7 +313,7 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                 initial={{ opacity: 0, scale: 0.95, y: 15 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 transition={{ type: 'spring', duration: 0.45 }}
-                className="relative bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] max-w-[940px] w-full max-h-[90vh] overflow-y-auto flex flex-col md:flex-row p-5 md:p-7 gap-6 md:gap-8 border border-gray-100 z-10 scrollbar-thin"
+                className="relative bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] max-w-[940px] w-full max-h-[90vh] overflow-hidden border border-gray-100 z-10 font-outfit flex flex-col"
             >
                 {/* Close Button */}
                 <button 
@@ -322,6 +322,9 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                 >
                     <X size={18} />
                 </button>
+
+                {/* Scrollable Content Container */}
+                <div className="overflow-y-auto max-h-[90vh] p-5 md:p-7 flex flex-col md:flex-row gap-6 md:gap-8 scrollbar-thin">
 
                 {/* Left Section: Gallery */}
                 <div className="md:w-1/2 flex flex-col">
@@ -535,7 +538,8 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                         </div>
                     </div>
                 </div>
-            </motion.div>
+            </div>
+        </motion.div>
         </div>
     );
 };

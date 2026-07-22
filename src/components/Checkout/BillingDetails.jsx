@@ -362,25 +362,25 @@ const BillingDetails = ({
             <div className="mb-6">
                 <p className="font-medium mb-3">Shipping Method</p>
                 <div className="space-y-2">
-                    <label className="flex items-center gap-3 p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+                    {/* <label className="flex items-center gap-3 p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors">
                         <input
                             type="radio"
                             value="local"
                             {...register("shipping")}
                             className="h-4 w-4 text-secound"
-                            defaultChecked
                         />
                         <div className="flex-1">
                             <p className="font-medium">Local Pickup</p>
                         </div>
                         <p className="font-semibold">{formatPrice(0)}</p>
-                    </label>
+                    </label> */}
                     <label className="flex items-center gap-3 p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors">
                         <input
                             type="radio"
                             value="dhaka-city"
                             {...register("shipping")}
                             className="h-4 w-4 text-secound"
+                            defaultChecked
                         />
                         <div className="flex-1">
                             <p className="font-medium">Dhaka City</p>
@@ -418,7 +418,7 @@ const BillingDetails = ({
                             <p className="font-medium">Cash on Delivery</p>
                         </div>
                     </label>
-                    <label className="flex items-center gap-3 p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+                    {/* <label className="flex items-center gap-3 p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors">
                         <input
                             type="radio"
                             value="online"
@@ -428,7 +428,7 @@ const BillingDetails = ({
                         <div>
                             <p className="font-medium">Online Payment</p>
                         </div>
-                    </label>
+                    </label> */}
                 </div>
             </div>
 

@@ -118,7 +118,7 @@ const PaymentMethodModal = ({ isOpen, onClose, onSelectPayment, totalAmount }) =
 
     return (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto animate-in fade-in zoom-in duration-200">
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-hidden flex flex-col animate-in fade-in zoom-in duration-200">
                 <div className="sticky top-0 bg-white border-b border-stone-300 p-5 rounded-t-2xl">
                     <div className="flex justify-between items-center">
                         <div>

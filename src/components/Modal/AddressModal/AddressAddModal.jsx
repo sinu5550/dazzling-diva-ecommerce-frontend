@@ -246,7 +246,7 @@ const AddressAddModal = ({ isOpen, onClose, onSuccess, customerId }) => {
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     exit={{ opacity: 0, scale: 0.95, y: 15 }}
                     transition={{ type: 'spring', duration: 0.4 }}
-                    className="relative bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-gray-100 z-10 p-6 md:p-8 font-outfit"
+                    className="relative bg-white rounded-[24px] shadow-[0_20px_50px_rgba(0,0,0,0.15)] max-w-2xl w-full max-h-[90vh] overflow-hidden border border-gray-100 z-10 font-outfit flex flex-col"
                 >
                     {/* Close Button */}
                     <button
@@ -257,8 +257,10 @@ const AddressAddModal = ({ isOpen, onClose, onSuccess, customerId }) => {
                         <X size={18} />
                     </button>
 
-                    {/* Header */}
-                    <div className="mb-6 pb-4 border-b border-gray-100">
+                    {/* Scrollable Container */}
+                    <div className="overflow-y-auto max-h-[90vh] p-6 md:p-8">
+                        {/* Header */}
+                        <div className="mb-6 pb-4 border-b border-gray-100">
                         <span className="text-[10px] uppercase tracking-widest text-[#5A0C3D] font-bold opacity-90">
                             Shipping Details
                         </span>
@@ -550,7 +552,8 @@ const AddressAddModal = ({ isOpen, onClose, onSuccess, customerId }) => {
                             </button>
                         </div>
                     </form>
-                </motion.div>
+                </div>
+            </motion.div>
             </div>
         </AnimatePresence>
     );

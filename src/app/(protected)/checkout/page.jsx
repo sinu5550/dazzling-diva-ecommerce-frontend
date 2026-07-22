@@ -30,7 +30,8 @@ export default function Checkout() {
     clearBundleCart,
   } = useCartManager(user);
 
-  const { checkoutSession, clearSession, isBuyNow, isLoaded } =useCheckoutSession();
+  const { checkoutSession, clearSession, isBuyNow, isLoaded } =
+    useCheckoutSession();
 
   const [loading, setLoading] = useState(false);
   const [checkoutItems, setCheckoutItems] = useState([]);
@@ -56,7 +57,7 @@ export default function Checkout() {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      shipping: "local",
+      shipping: "dhaka-city",
       payment: "cod",
     },
   });
@@ -90,7 +91,7 @@ export default function Checkout() {
       const finalBundlePrice = parseFloat(bundleItem.price || 0);
       const originalBundlePrice = parseFloat(
         bundleItem.totalOriginalPrice ||
-          parseFloat(bundleItem.originalPrice || 0)
+          parseFloat(bundleItem.originalPrice || 0),
       );
       const discountRatio =
         originalBundlePrice > 0 ? finalBundlePrice / originalBundlePrice : 1;
@@ -101,25 +102,27 @@ export default function Checkout() {
     return 0;
   }, []);
 
-  // Fetch customer data for loyalty points
+  // Fetch customer data for loyalty points & order placement
   const fetchCustomerData = useCallback(async () => {
     if (!user?.email) return null;
 
     try {
       const customerResult = await apiClient(
-        `/api/customer/email/${encodeURIComponent(user.email)}`
+        `/api/customer/email/${encodeURIComponent(user.email)}`,
       );
 
-      let customerData = null;
+      let data = null;
       if (customerResult && customerResult.success !== undefined) {
-        customerData = customerResult.data;
+        data = customerResult.data;
       } else if (customerResult && customerResult.id) {
-        customerData = customerResult;
+        data = customerResult;
+      } else if (customerResult && customerResult.customer) {
+        data = customerResult.customer;
       }
 
-      if (customerData && customerData.id) {
-        setCustomerData(customerData);
-        return customerData;
+      if (data && data.id) {
+        setCustomerData(data);
+        return data;
       }
       return null;
     } catch (error) {
@@ -209,7 +212,7 @@ export default function Checkout() {
         discountAmount: parseFloat(item.discountAmount || 0),
         price: parseFloat(item.price || 0),
         originalPrice: parseFloat(
-          item.totalOriginalPrice || parseFloat(item.originalPrice || 0)
+          item.totalOriginalPrice || parseFloat(item.originalPrice || 0),
         ),
         tax: item.tax || 0,
         taxType: item.taxType || "inclusive",
@@ -259,14 +262,12 @@ export default function Checkout() {
     getAllCartItems,
   ]);
 
-  // Fetch customer data on load (Disabled loyalty points fetching per requirements)
-  /*
+  // Fetch customer data on load
   useEffect(() => {
     if (user?.email) {
       fetchCustomerData();
     }
   }, [user, fetchCustomerData]);
-  */
 
   const handleCouponApplied = useCallback((coupon, discount) => {
     setAppliedCoupon(coupon);
@@ -291,11 +292,20 @@ export default function Checkout() {
   }, []);
 
   // Validate points before order submission
-  const validatePointsRedemption = async (pointsToRedeem, orderSubtotal, couponDiscount) => {
+  const validatePointsRedemption = async (
+    pointsToRedeem,
+    orderSubtotal,
+    couponDiscount,
+  ) => {
     if (pointsToRedeem === 0) return { success: true };
 
     try {
-      if (!customerData || !customerData.id) {
+      let currentCustomer = customerData;
+      if (!currentCustomer || !currentCustomer.id) {
+        currentCustomer = await fetchCustomerData();
+      }
+
+      if (!currentCustomer || !currentCustomer.id) {
         return {
           success: false,
           message: "Customer profile not found. Please complete your profile.",
@@ -306,7 +316,7 @@ export default function Checkout() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          customerId: customerData.id,
+          customerId: currentCustomer.id,
           pointsToRedeem: pointsToRedeem,
           orderSubtotal: orderSubtotal,
           existingDiscounts: couponDiscount,
@@ -335,8 +345,15 @@ export default function Checkout() {
         return;
       }
 
-      if (!customerData || !customerData.id) {
-        toast.error("Customer information is required. Please complete your profile.");
+      let currentCustomer = customerData;
+      if (!currentCustomer || !currentCustomer.id) {
+        currentCustomer = await fetchCustomerData();
+      }
+
+      if (!currentCustomer || !currentCustomer.id) {
+        toast.error(
+          "Customer information is required. Please complete your profile.",
+        );
         return;
       }
 
@@ -355,7 +372,7 @@ export default function Checkout() {
       items.forEach((item) => {
         if (item.isBundle) {
           const bundlePrice = parseFloat(
-            item.originalPrice || item.totalOriginalPrice || 0
+            item.originalPrice || item.totalOriginalPrice || 0,
           );
           const quantity = parseInt(item.quantity || 1);
           subtotalBeforeDiscount += bundlePrice * quantity;
@@ -369,7 +386,7 @@ export default function Checkout() {
         } else {
           const quantity = parseInt(item.quantity || 1);
           const originalPrice = parseFloat(
-            item.originalPrice || item.price || 0
+            item.originalPrice || item.price || 0,
           );
           const currentPrice = parseFloat(item.price || 0);
 
@@ -410,7 +427,7 @@ export default function Checkout() {
         const validation = await validatePointsRedemption(
           pointsToRedeem,
           subtotalAfterDiscount,
-          couponDiscountAmount
+          couponDiscountAmount,
         );
 
         console.log("Validation Result:", validation);
@@ -506,7 +523,7 @@ export default function Checkout() {
           sku: item.sku || null,
           name: item.name || item.productName,
           originalPrice: parseFloat(
-            item.originalPrice || item.totalOriginalPrice || 0
+            item.originalPrice || item.totalOriginalPrice || 0,
           ),
           bundleItems: bundleItemDetails,
         };
@@ -516,7 +533,7 @@ export default function Checkout() {
       let dueAmount = grandTotal; // Since paidAmount is 0 initially
 
       const orderPayload = {
-        customerId: customerData.id,
+        customerId: currentCustomer.id,
         shippingAddressId: parseInt(data.customerAddressId),
         paymentMethod: watch("payment") === "cod" ? "COD" : "OnlinePayment",
         totalAmount: parseFloat(subtotalBeforeDiscount.toFixed(2)),
@@ -541,7 +558,7 @@ export default function Checkout() {
           name: item.name,
           totalVAT: item.totalVAT || calculateBundleVAT(item),
           originalPrice: parseFloat(
-            item.originalPrice || item.totalOriginalPrice || 0
+            item.originalPrice || item.totalOriginalPrice || 0,
           ),
           finalPrice: parseFloat(item.price || 0),
         })),
@@ -570,7 +587,7 @@ export default function Checkout() {
         successMessage = response.message || successMessage;
       } else {
         throw new Error(
-          response?.message || "Invalid response format from server"
+          response?.message || "Invalid response format from server",
         );
       }
 
@@ -606,7 +623,7 @@ export default function Checkout() {
                             <p class="flex justify-between">
                                 <strong>Original Price:</strong> 
                                 <span class="text-md">৳${subtotalBeforeDiscount.toFixed(
-                                  2
+                                  2,
                                 )}</span>
                             </p>
                             ${
@@ -615,7 +632,7 @@ export default function Checkout() {
                                 <p class="flex justify-between">
                                     <strong>Product Discount:</strong> 
                                     <span class="text-md">-৳${totalProductDiscount.toFixed(
-                                      2
+                                      2,
                                     )}</span>
                                 </p>
                             `
@@ -629,7 +646,7 @@ export default function Checkout() {
                                       appliedCoupon?.code
                                     }):</strong> 
                                     <span class="text-md">-৳${couponDiscountAmount.toFixed(
-                                      2
+                                      2,
                                     )}</span>
                                 </p>
                             `
@@ -641,7 +658,7 @@ export default function Checkout() {
                                 <p class="flex justify-between text-purple-600">
                                     <strong>Loyalty Points (${pointsToRedeem} pts):</strong> 
                                     <span class="text-md">-৳${pointsDiscountAmount.toFixed(
-                                      2
+                                      2,
                                     )}</span>
                                 </p>
                             `
@@ -653,7 +670,7 @@ export default function Checkout() {
                                 <p class="flex justify-between text-gray-600">
                                     <strong>VAT:</strong> 
                                     <span class="text-md">+৳${totalVAT.toFixed(
-                                      2
+                                      2,
                                     )}</span>
                                 </p>
                             `
@@ -665,7 +682,7 @@ export default function Checkout() {
                                 <p class="flex justify-between text-gray-600">
                                     <strong>Shipping:</strong> 
                                     <span class="text-md">+৳${shippingCost.toFixed(
-                                      2
+                                      2,
                                     )}</span>
                                 </p>
                             `
@@ -674,7 +691,7 @@ export default function Checkout() {
                             <p class="flex justify-between border-t-2 pt-2">
                                 <strong class="text-lg">Grand Total:</strong> 
                                 <span class="text-lg font-bold text-gray-800">৳${grandTotal.toFixed(
-                                  2
+                                  2,
                                 )}</span>
                             </p>
                             <p class="flex justify-between">
@@ -739,7 +756,7 @@ export default function Checkout() {
         toast.error("Please check your information and try again.");
       } else {
         toast.error(
-          error.message || "Failed to place order. Please try again."
+          error.message || "Failed to place order. Please try again.",
         );
       }
     } finally {
