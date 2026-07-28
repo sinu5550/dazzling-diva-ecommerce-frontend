@@ -1,18 +1,19 @@
 // utils/apiClient.js
 export async function apiClient(endpoint, { revalidate, ...options } = {}) {
-    const baseURL = process.env.NEXT_PUBLIC_API_URL;
+    const baseURL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
+    const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    const url = `${baseURL}${cleanEndpoint}`;
     const token = typeof window !== 'undefined' ? localStorage.getItem('supabase_access_token') : null;
 
     try {
-        const res = await fetch(`${baseURL}${endpoint}`, {
+        const res = await fetch(url, {
             ...options,
             headers: {
                 "Content-Type": "application/json",
                 ...(token ? { Authorization: `Bearer ${token}` } : {}),
                 ...(options.headers || {}),
             },
-            // cache: "no-store",
-            next: { revalidate },
+            ...(revalidate !== undefined ? { next: { revalidate } } : {}),
         });
 
         if (!res.ok) {

@@ -40,7 +40,7 @@ export default function FloatingActions() {
                     setContactData(res.data);
                 }
             })
-            .catch(err => console.error("[FloatingActions] Error fetching contact details:", err));
+            .catch(err => console.warn("[FloatingActions] Error fetching contact details:", err?.message || err));
 
         // Click outside listener to close speed dial
         const handleClickOutside = (event) => {

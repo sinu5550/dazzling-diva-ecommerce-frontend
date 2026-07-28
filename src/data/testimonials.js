@@ -1,4 +1,5 @@
 // data/testimonials.js
+/*
 export const testimonials = [
   {
     id: 1,
@@ -37,3 +38,6 @@ export const testimonials = [
     avatar: "MS"
   }
 ];
+*/
+
+export const testimonials = [];

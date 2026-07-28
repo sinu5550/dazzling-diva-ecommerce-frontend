@@ -37,11 +37,11 @@ const outfitFont = Outfit({
 
 export const metadata = {
   title: "Dazzling Diva",
-  description: "Dazzling Diva  is a future-focused fashion and lifestyle brand delivering premium collections, modern design, creativity, and elevated customer experiences.",
+  description: "Dazzling Diva is a future-focused fashion and lifestyle brand delivering premium collections, modern design, creativity, and elevated customer experiences.",
   icons: {
-    icon: "/icon.svg",
-    shortcut: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/assects/dazzling-favicon.svg",
+    shortcut: "/assects/dazzling-favicon.svg",
+    apple: "/assects/dazzling-favicon.svg",
   },
 };
 

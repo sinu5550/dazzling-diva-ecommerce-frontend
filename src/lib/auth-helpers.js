@@ -1,7 +1,7 @@
 import { createClient } from '@/utils/supabase/client.js';
 import axios from 'axios';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
 
 // Sign Up
 export async function signUp(email, password, phone, fullName) {
