@@ -64,7 +64,8 @@ const Home = async () => {
     midBannerRes,
     bentoGalleryRes,
     mainCategoriesRes,
-    activeCampaignsRes
+    activeCampaignsRes,
+    testimonialsRes
   ] = await Promise.allSettled([
     apiClient("/api/hero-sliders"),
     apiClient("/api/product/new"),
@@ -72,7 +73,8 @@ const Home = async () => {
     apiClient("/api/mid-banner"),
     apiClient("/api/bento-gallery"),
     getMainCategories(),
-    fetchActiveCampaigns()
+    fetchActiveCampaigns(),
+    apiClient("/api/testimonials")
   ]);
 
   const heroSliderData = heroSliderRes.status === "fulfilled" ? heroSliderRes.value : [];
@@ -82,6 +84,7 @@ const Home = async () => {
   const bentoImageGalleryData = bentoGalleryRes.status === "fulfilled" ? bentoGalleryRes.value : [];
   const mainCategoriesData = mainCategoriesRes.status === "fulfilled" ? mainCategoriesRes.value : [];
   const campaignsData = activeCampaignsRes.status === "fulfilled" ? activeCampaignsRes.value : [];
+  const testimonialsData = testimonialsRes.status === "fulfilled" ? testimonialsRes.value : null;
 
   // Extract all categories into a flat array
   const allCategories = getAllCategories(mainCategoriesData);
@@ -120,7 +123,7 @@ const Home = async () => {
       {/* <Promotional promoData={promoData} /> */}
       <BentoImageGalleryOne bentoImageGalleryData={bentoImageGalleryData} />
       <TopSellingProducts topSellingProductData={topSellingProductData} />
-      <Testimonials />
+      <Testimonials testimonialsData={testimonialsData} />
       <MidBannerTwo midBannerData={midBannerData} />
       {/* <BentoImageGalleryTwo bentoImageGalleryData={bentoImageGalleryData} /> */}
       {/* <TopPickSeason topPickData={topPickData} /> */}

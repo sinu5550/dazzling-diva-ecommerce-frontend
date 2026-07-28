@@ -1,6 +1,6 @@
 import useSWR from 'swr';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_URL = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
 
 // Enhanced fetcher
 const fetcher = async (url) => {
