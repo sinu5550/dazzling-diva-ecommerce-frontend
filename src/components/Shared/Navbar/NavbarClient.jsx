@@ -270,10 +270,10 @@ export default function NavbarClient({ data, contactData, config }) {
         }`}
       >
         <div className="w-full px-[3%]">
-          {/* Desktop Nav Row — 3-column grid */}
-          <div className="hidden lg:grid grid-cols-3 items-center w-full gap-3">
+          {/* Desktop Nav Row — Responsive flex layout */}
+          <div className="hidden lg:flex items-center justify-between w-full gap-3">
             {/* COL 1 — LEFT: Select Category + New In + Offers */}
-            <div className="flex items-center gap-5 justify-start">
+            <div className="flex items-center gap-2 xl:gap-4 flex-shrink-0">
               {/* Select Category Dropdown */}
               <div
                 className="relative flex-shrink-0 group"
@@ -282,10 +282,10 @@ export default function NavbarClient({ data, contactData, config }) {
                   setFlyoutL2(null);
                 }}
               >
-                <button className="flex items-center gap-6 px-2 pl-5 py-1 bg-gray-50 hover:bg-gray-100 !text-black text-[16px] font-normal rounded-full transition-all duration-200 border border-[#44444433] cursor-pointer whitespace-nowrap">
+                <button className="flex items-center gap-3 xl:gap-6 px-3 xl:px-4 pl-4 xl:pl-5 py-1 bg-gray-50 hover:bg-gray-100 !text-black text-[14px] xl:text-[16px] font-normal rounded-full transition-all duration-200 border border-[#44444433] cursor-pointer whitespace-nowrap">
                   <span className="font-normal">Select Category</span>
-                  <div className="rounded-full border border-[#4444441A] w-8 h-8 flex items-center justify-center">
-                    <DropdownIcon className=" w-6 h-6 text-gray-500 " />
+                  <div className="rounded-full border border-[#4444441A] w-7 h-7 xl:w-8 xl:h-8 flex items-center justify-center">
+                    <DropdownIcon className=" w-5 h-5 xl:w-6 xl:h-6 text-gray-500 " />
                   </div>
                 </button>
 
@@ -398,14 +398,14 @@ export default function NavbarClient({ data, contactData, config }) {
               {/* New In */}
               <Link
                 href="/new-arrival"
-                className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-gray-800 text-[16px] font-normal rounded-full border border-[#44444433] transition-all duration-200 flex-shrink-0 whitespace-nowrap shiny-button"
+                className="flex items-center gap-1.5 xl:gap-2 px-3 xl:px-4 py-2 bg-white hover:bg-gray-50 text-gray-800 text-[14px] xl:text-[16px] font-normal rounded-full border border-[#44444433] transition-all duration-200 flex-shrink-0 whitespace-nowrap shiny-button"
               >
                 <Image
                   src="/assects/new-icon.svg"
                   alt="New In"
                   width={16}
                   height={16}
-                  className="w-5 h-5"
+                  className="w-4 h-4 xl:w-5 xl:h-5"
                 />
                 <span>New In</span>
               </Link>
@@ -413,28 +413,28 @@ export default function NavbarClient({ data, contactData, config }) {
               {/* Offers */}
               <Link
                 href="/discount-campaigns"
-                className="flex items-center gap-2 px-4 py-2 bg-white hover:bg-gray-50 text-gray-800 text-[16px] font-normal rounded-full border border-[#44444433] transition-all duration-200 flex-shrink-0 whitespace-nowrap shiny-button"
+                className="flex items-center gap-1.5 xl:gap-2 px-3 xl:px-4 py-2 bg-white hover:bg-gray-50 text-gray-800 text-[14px] xl:text-[16px] font-normal rounded-full border border-[#44444433] transition-all duration-200 flex-shrink-0 whitespace-nowrap shiny-button"
               >
                 <Image
                   src="/assects/offer-icon.svg"
                   alt="Offers"
                   width={16}
                   height={16}
-                  className="w-5 h-5"
+                  className="w-4 h-4 xl:w-5 xl:h-5"
                 />
                 <span>Offers</span>
               </Link>
             </div>
 
-            {/* COL 2 — CENTER: Search bar — full column width */}
-            <div className="flex items-center justify-center">
+            {/* COL 2 — CENTER: Search bar — flexible width that shrinks cleanly */}
+            <div className="flex items-center justify-center flex-1 min-w-[140px] max-w-[340px] xl:max-w-[420px]">
               <div className="w-full">
                 <SearchComponent />
               </div>
             </div>
 
             {/* COL 3 — RIGHT: Scrollable category pills (scrolls within col, no scrollbar) */}
-            <div className="min-w-0 overflow-hidden relative group/scroll-container">
+            <div className="flex-1 min-w-0 overflow-hidden relative group/scroll-container">
               {/* Left Arrow Button */}
               {canScrollLeft && (
                 <button

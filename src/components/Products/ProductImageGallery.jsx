@@ -36,6 +36,7 @@ export default function ProductImageGallery({ images, productName }) {
                     alt={`${productName} - Image ${selectedImage + 1}`}
                     fill
                     priority
+                    sizes="(max-width: 768px) 100vw, 50vw"
                     className=" object-cover transition-transform duration-300 ease-out "
                     style={{
                         transform: isZoomed ? 'scale(1.6)' : 'scale(1)',
@@ -70,6 +71,7 @@ export default function ProductImageGallery({ images, productName }) {
                             src={image}
                             alt={`${productName} thumbnail ${index + 1}`}
                             fill
+                            sizes="(max-width: 768px) 56px, 80px"
                             className="object-contain p-1"
                             loading="lazy"
                         />

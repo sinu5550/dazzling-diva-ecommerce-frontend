@@ -27,7 +27,7 @@ const HomeBento = () => {
                             fill
                             priority
                             sizes="(max-width: 768px) 100vw, 50vw"
-                            className="object-cover transition-transform duration-1000 group-hover:scale-103"
+                            className="object-cover object-top transition-transform duration-1000 group-hover:scale-103"
                         />
 
                         {/* Dark Gradient Overlay */}
@@ -65,7 +65,7 @@ const HomeBento = () => {
                             fill
                             priority
                             sizes="(max-width: 768px) 100vw, 50vw"
-                            className="object-cover transition-transform duration-1000 group-hover:scale-103"
+                            className="object-cover object-top transition-transform duration-1000 group-hover:scale-103"
                         />
 
                         {/* Dark Gradient Overlay */}
