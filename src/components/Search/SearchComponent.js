@@ -157,7 +157,7 @@ const SearchComponent = () => {
                         onBlur={() => setIsFocused(false)}
                         onKeyDown={(e) => e.key === 'Enter' && handleSearchSubmit(e)}
                         className="
-                            flex-1 py-2.5 pr-2 bg-transparent text-[13px] font-medium
+                            flex-1 min-w-0 w-full py-2.5 pr-2 bg-transparent text-[13px] font-medium
                             !text-black placeholder-gray-400 focus:outline-none tracking-wide
                         "
                         placeholder="search..."

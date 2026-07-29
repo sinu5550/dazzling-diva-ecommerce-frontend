@@ -85,7 +85,7 @@ const BentoImageGalleryTwo = ({ bentoImageGalleryData }) => {
                                     src={item.image}
                                     alt={item.title || 'Gallery Image'}
                                     fill
-                                    className="object-cover transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100"
+                                    className="object-cover object-top transition-transform duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100"
                                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 />
                             </div>
