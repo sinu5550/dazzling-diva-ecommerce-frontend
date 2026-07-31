@@ -213,6 +213,7 @@ export default function DiscountProductDetailsClient({ product }) {
                 ...(isVariantProduct && selectedVariant && {
                     variantId: selectedVariant.id,
                     variantAttributes: selectedAttributes,
+                    variantType: Object.entries(selectedAttributes || {}).map(([k, v]) => `${k}: ${v}`).join(', '),
                     productType: 'variant'
                 })
             };
@@ -255,6 +256,7 @@ export default function DiscountProductDetailsClient({ product }) {
             ...(isVariantProduct && selectedVariant && {
                 variantId: selectedVariant.id,
                 variantAttributes: selectedAttributes,
+                variantType: Object.entries(selectedAttributes || {}).map(([k, v]) => `${k}: ${v}`).join(', '),
                 productType: 'variant'
             })
         };

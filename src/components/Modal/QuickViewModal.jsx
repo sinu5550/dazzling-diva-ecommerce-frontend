@@ -221,6 +221,7 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                 ...(isVariantProduct && selectedVariant && {
                     variantId: selectedVariant.id,
                     variantAttributes: selectedVariant.attributes,
+                    variantType: Object.entries(selectedVariant.attributes || {}).map(([k, v]) => `${k}: ${v}`).join(', '),
                     productType: 'variant'
                 })
             };
@@ -282,6 +283,7 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                 ...(isVariantProduct && selectedVariant && {
                     variantId: selectedVariant.id,
                     variantAttributes: selectedVariant.attributes,
+                    variantType: Object.entries(selectedVariant.attributes || {}).map(([k, v]) => `${k}: ${v}`).join(', '),
                     productType: 'variant'
                 })
             };

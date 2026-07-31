@@ -250,6 +250,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                 ...(isVariantProduct && selectedVariant && {
                     variantId: selectedVariant.id,
                     variantAttributes: selectedAttributes,
+                    variantType: Object.entries(selectedAttributes || {}).map(([k, v]) => `${k}: ${v}`).join(', '),
                     productType: 'variant'
                 })
             };
@@ -302,6 +303,7 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
             ...(isVariantProduct && selectedVariant && {
                 variantId: selectedVariant.id,
                 variantAttributes: selectedAttributes,
+                variantType: Object.entries(selectedAttributes || {}).map(([k, v]) => `${k}: ${v}`).join(', '),
                 productType: 'variant'
             })
         };
