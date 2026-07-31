@@ -2,8 +2,8 @@
 
 import Container from "@/components/Container/Container";
 import Link from "next/link";
-import { useState } from "react";
-import { apiClient } from "@/lib/apiClient";
+import { useState, useEffect, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import {
     Package,
     Truck,
@@ -27,7 +27,8 @@ import {
     CheckCheck
 } from "lucide-react";
 
-const TrackOrder = () => {
+function TrackOrderContent() {
+    const searchParams = useSearchParams();
     const [orderNumber, setOrderNumber] = useState('');
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -39,12 +40,11 @@ const TrackOrder = () => {
         return `৳${Number(price).toLocaleString('en-BD')}`;
     };
 
-    const handleTrackOrder = async (e) => {
-        e.preventDefault();
+    const fetchOrderByInput = async (inputStr) => {
         setError('');
         setOrder(null);
 
-        const cleanInput = orderNumber.trim().replace(/^#/, '');
+        const cleanInput = inputStr.trim().replace(/^#/, '');
 
         if (!cleanInput) {
             setError('Please enter your Order ID');
@@ -54,74 +54,35 @@ const TrackOrder = () => {
         try {
             setLoading(true);
             let foundOrder = null;
+            const apiUrl = (process.env.NEXT_PUBLIC_API_URL || 'https://dazzling-diva-server.vercel.app').replace(/\/+$/, '');
 
-            // Strategy 1: Try track endpoint by order number
+            // Strategy 1: Primary public endpoint /api/order/track-status/:orderNumber
             try {
-                const trackRes = await apiClient(`/api/order/track/${encodeURIComponent(cleanInput)}`);
-                if (trackRes && (trackRes.data || trackRes.order || trackRes.orderNumber)) {
-                    foundOrder = trackRes.data || trackRes.order || trackRes;
-                }
-            } catch (err) {
-                console.log("[TrackOrder] Direct track endpoint failed, trying fallback list endpoints...");
-            }
-
-            // Strategy 2: Try order search endpoint by query
-            if (!foundOrder) {
-                try {
-                    const queryRes = await apiClient(`/api/order?orderNumber=${encodeURIComponent(cleanInput)}`);
-                    let list = [];
-                    if (Array.isArray(queryRes)) list = queryRes;
-                    else if (Array.isArray(queryRes?.data)) list = queryRes.data;
-                    else if (Array.isArray(queryRes?.data?.items)) list = queryRes.data.items;
-                    else if (Array.isArray(queryRes?.data?.orders)) list = queryRes.data.orders;
-                    else if (queryRes?.data && typeof queryRes.data === 'object' && queryRes.data.orderNumber) {
-                        foundOrder = queryRes.data;
+                const res = await fetch(`${apiUrl}/api/order/track-status/${encodeURIComponent(cleanInput)}`);
+                if (res.ok) {
+                    const trackRes = await res.json();
+                    const resolved = trackRes.data || trackRes.order || trackRes;
+                    if (resolved && (resolved.id || resolved.orderNumber)) {
+                        foundOrder = resolved;
                     }
-
-                    if (!foundOrder && list.length > 0) {
-                        foundOrder = list.find(
-                            o => o.orderNumber?.toLowerCase() === cleanInput.toLowerCase() ||
-                                 o.id?.toString() === cleanInput ||
-                                 o.orderNumber?.toLowerCase() === `ord-${cleanInput.toLowerCase()}`
-                        );
-                    }
-                } catch (err) {
-                    console.log("[TrackOrder] Query endpoint failed, trying full list...");
                 }
-            }
+            } catch (err) {}
 
-            // Strategy 3: Try general /api/order list
-            if (!foundOrder) {
+            // Strategy 1b: Try adding ORD- prefix if omitted
+            if (!foundOrder && !cleanInput.toUpperCase().startsWith('ORD-') && !cleanInput.includes('@')) {
                 try {
-                    const listRes = await apiClient('/api/order');
-                    let allOrders = [];
-                    if (Array.isArray(listRes)) {
-                        allOrders = listRes;
-                    } else if (listRes?.data) {
-                        if (Array.isArray(listRes.data)) {
-                            allOrders = listRes.data;
-                        } else if (Array.isArray(listRes.data.items)) {
-                            allOrders = listRes.data.items;
-                        } else if (Array.isArray(listRes.data.orders)) {
-                            allOrders = listRes.data.orders;
-                        } else if (typeof listRes.data === 'object' && listRes.data.orderNumber) {
-                            foundOrder = listRes.data;
+                    const res = await fetch(`${apiUrl}/api/order/track-status/${encodeURIComponent(`ORD-${cleanInput}`)}`);
+                    if (res.ok) {
+                        const trackRes = await res.json();
+                        const resolved = trackRes.data || trackRes.order || trackRes;
+                        if (resolved && (resolved.id || resolved.orderNumber)) {
+                            foundOrder = resolved;
                         }
                     }
-
-                    if (!foundOrder && allOrders.length > 0) {
-                        foundOrder = allOrders.find(
-                            o => o.orderNumber?.toLowerCase() === cleanInput.toLowerCase() ||
-                                 o.orderNumber?.toLowerCase() === `ord-${cleanInput.toLowerCase()}` ||
-                                 o.id?.toString() === cleanInput
-                        );
-                    }
-                } catch (err) {
-                    console.log("[TrackOrder] General order list failed...");
-                }
+                } catch (err) {}
             }
 
-            // Strategy 4: Try last_order from localStorage
+            // Strategy 2: Check localStorage / sessionStorage for orders placed on this device
             if (!foundOrder && typeof window !== 'undefined') {
                 try {
                     const lastOrderStr = localStorage.getItem('last_order') || sessionStorage.getItem('last_order');
@@ -129,26 +90,111 @@ const TrackOrder = () => {
                         const lastOrder = JSON.parse(lastOrderStr);
                         if (lastOrder && (
                             lastOrder.orderNumber?.toLowerCase() === cleanInput.toLowerCase() ||
+                            lastOrder.orderNumber?.toLowerCase() === `ord-${cleanInput.toLowerCase()}` ||
                             lastOrder.id?.toString() === cleanInput
                         )) {
                             foundOrder = lastOrder;
                         }
                     }
+
+                    if (!foundOrder) {
+                        const guestOrdersStr = localStorage.getItem('guest_orders');
+                        if (guestOrdersStr) {
+                            const guestOrders = JSON.parse(guestOrdersStr);
+                            if (Array.isArray(guestOrders)) {
+                                foundOrder = guestOrders.find(
+                                    o => o.orderNumber?.toLowerCase() === cleanInput.toLowerCase() ||
+                                         o.orderNumber?.toLowerCase() === `ord-${cleanInput.toLowerCase()}` ||
+                                         o.id?.toString() === cleanInput
+                                );
+                            }
+                        }
+                    }
                 } catch (e) {}
             }
 
+            // Strategy 3: If input is email, search by customer email
+            if (!foundOrder && cleanInput.includes('@')) {
+                try {
+                    const res = await fetch(`${apiUrl}/api/order/customer/email/${encodeURIComponent(cleanInput)}`);
+                    if (res.ok) {
+                        const emailRes = await res.json();
+                        let ordersList = [];
+                        if (Array.isArray(emailRes)) ordersList = emailRes;
+                        else if (Array.isArray(emailRes?.data)) ordersList = emailRes.data;
+
+                        if (ordersList.length > 0) {
+                            foundOrder = ordersList[0];
+                        }
+                    }
+                } catch (err) {}
+            }
+
+            // Strategy 4: Parse numeric ID (e.g. ORD-202607-000005 -> 5)
             if (!foundOrder) {
-                setError('Order not found. Please check your Order ID (e.g., ORD-202607-000007) and try again.');
+                let numericId = null;
+                if (/^\d+$/.test(cleanInput)) {
+                    numericId = parseInt(cleanInput, 10);
+                } else {
+                    const match = cleanInput.match(/\d+$/);
+                    if (match) {
+                        numericId = parseInt(match[0], 10);
+                    }
+                }
+
+                if (numericId && !isNaN(numericId)) {
+                    try {
+                        const res = await fetch(`${apiUrl}/api/order/${numericId}`);
+                        if (res.ok) {
+                            const idRes = await res.json();
+                            const resolved = idRes.data || idRes;
+                            if (resolved && (resolved.id || resolved.orderNumber)) {
+                                foundOrder = resolved;
+                            }
+                        }
+                    } catch (err) {}
+                }
+            }
+
+            // Strategy 4: Try order track endpoint
+            if (!foundOrder) {
+                try {
+                    const res = await fetch(`${apiUrl}/api/order/track/${encodeURIComponent(cleanInput)}`);
+                    if (res.ok) {
+                        const trackRes = await res.json();
+                        if (trackRes && (trackRes.data || trackRes.orderNumber)) {
+                            foundOrder = trackRes.data || trackRes;
+                        }
+                    }
+                } catch (err) {}
+            }
+
+            if (!foundOrder) {
+                setError('Order not found. Please check your Order ID (e.g., ORD-202607-000005) and try again.');
                 return;
             }
 
             setOrder(foundOrder);
         } catch (error) {
             console.error('Error tracking order:', error);
-            setError('Failed to track order. Please check your Order ID and try again.');
+            setError('Order not found. Please check your Order ID and try again.');
         } finally {
             setLoading(false);
         }
+    };
+
+    // Auto-fetch if orderId or orderNumber parameter is present in URL
+    useEffect(() => {
+        const paramId = searchParams.get('orderId') || searchParams.get('orderNumber');
+        if (paramId) {
+            setOrderNumber(paramId);
+            fetchOrderByInput(paramId);
+        }
+    }, [searchParams]);
+
+    const handleTrackOrder = (e) => {
+        e.preventDefault();
+        fetchOrderByInput(orderNumber);
     };
 
     const handleCopy = (text) => {
@@ -258,7 +304,7 @@ const TrackOrder = () => {
                             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
                             <input
                                 type="text"
-                                placeholder="e.g. ORD-202607-000007"
+                                placeholder="e.g. ORD-202607-000005"
                                 value={orderNumber}
                                 onChange={(e) => setOrderNumber(e.target.value)}
                                 className="w-full h-12 sm:h-14 pl-11 pr-4 bg-transparent text-gray-800 placeholder:text-gray-400 focus:outline-none text-sm sm:text-base"
@@ -425,7 +471,7 @@ const TrackOrder = () => {
                                                         {(item.product?.images?.[0] || item.image || item.images?.[0]) ? (
                                                             <img src={item.product?.images?.[0] || item.image || item.images?.[0]} alt="" className="w-full h-full object-cover" />
                                                         ) : (
-                                                            <ShoppingBag className="w-4 h-4 text-gray-300" />
+                                                            <ShoppingBag className="w-4 h-4 text-[#5A0C3D]/40" />
                                                         )}
                                                     </div>
                                                     <div className="flex-1 min-w-0">
@@ -482,6 +528,16 @@ const TrackOrder = () => {
             `}</style>
         </Container>
     );
-};
+}
 
-export default TrackOrder;
+export default function TrackOrder() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-[50vh] flex items-center justify-center">
+                <Loader2 className="w-8 h-8 animate-spin text-[#5A0C3D]" />
+            </div>
+        }>
+            <TrackOrderContent />
+        </Suspense>
+    );
+}

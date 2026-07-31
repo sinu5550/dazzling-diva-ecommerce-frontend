@@ -41,8 +41,7 @@ const SignUp = () => {
     // Function to create customer in database
     const createCustomerInDatabase = async (userData, authUserId) => {
         try {
-
-            const formattedPhone = userData.phone.replace(/\D/g, '');
+            const formattedPhone = userData.phone ? userData.phone.replace(/\D/g, '') : '';
 
             // Format data for API
             const customerData = {
@@ -53,21 +52,44 @@ const SignUp = () => {
                 authUserId: authUserId || null
             };
 
-            const response = await apiClient("/api/customer", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(customerData),
-            });
+            let response = null;
+            try {
+                response = await apiClient("/api/customer", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(customerData),
+                });
+            } catch (apiErr) {
+                // If customer profile already exists from a guest order, link authUserId if available
+                if (apiErr.status === 409 || apiErr.message?.includes('already exists')) {
+                    console.log('Customer profile already exists in DB (from guest order), linking profile...');
+                    
+                    let existingId = apiErr.responseData?.data?.id || apiErr.responseData?.id || apiErr.responseData?.customer?.id;
+                    if (existingId && authUserId) {
+                        try {
+                            await apiClient(`/api/customer/${existingId}`, {
+                                method: "PUT",
+                                headers: { "Content-Type": "application/json" },
+                                body: JSON.stringify({ authUserId }),
+                            });
+                        } catch (updateErr) {}
+                    }
+                    
+                    reset();
+                    return;
+                }
+                throw apiErr;
+            }
 
-            if (response.success) {
-                toast.success(response.message || "Customer added successfully!");
+            if (response && (response.success || response.data || response.id)) {
+                toast.success(response.message || "Customer profile linked successfully!");
                 reset();
             } else {
-                throw new Error(response.message || "Failed to add customer");
+                throw new Error(response?.message || "Failed to add customer");
             }
         } catch (error) {
             console.error("Error adding customer:", error);
-            toast.error(error.message || "Failed to add customer");
+            // Non-blocking for auth user creation
         }
     };
 

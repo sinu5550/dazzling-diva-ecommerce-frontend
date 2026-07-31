@@ -216,115 +216,107 @@ const BillingDetails = ({
         }
     };
 
-    // Handle save new address and checkout
+    // Handle save new address and checkout (Matching Multivendor-Frontend integration pattern)
     const handleSaveAndCheckout = async (formData) => {
         try {
-            if (user && !customerId) {
-                Swal.fire({ icon: 'error', title: 'Error', text: 'Customer info missing. Refresh page.', confirmButtonColor: '#14b8a6' });
+            const emailToUse = (user?.email || formData.email || '').trim();
+            const phoneNumber = (formData.phoneNumber || user?.phone || '').trim();
+            const recipientName = (formData.recipientName || user?.fullName || '').trim();
+
+            if (!emailToUse) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Please enter your email address', confirmButtonColor: '#14b8a6' });
                 return;
             }
 
-            if (user && customerId) {
-                const addressData = {
-                    recipientName: formData.recipientName.trim(),
-                    phoneNumber: formData.phoneNumber.trim(),
-                    address: formData.address.trim(),
-                    upazila: formData.upazila,
-                    postalCode: formData.postalCode?.trim(),
-                    district: formData.district,
-                    division: formData.division,
-                    city: formData.city?.trim() || formData.division,
-                    country: formData.country || 'Bangladesh',
-                    type: formData.type || 'Home',
-                    isDefault: formData.isDefault || false
-                };
+            const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
 
-                const addResult = await apiClient(`/api/customer/${customerId}/addresses`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(addressData),
-                });
+            // Step 1: Check if Customer already exists by email (matching Multivendor-Frontend)
+            let targetCustomerId = customerId;
 
-                if (addResult && (addResult.success || addResult.data)) {
-                    const newAddress = addResult.data || addResult;
-                    const checkoutData = {
-                        customerId: customerId,
-                        customerAddressId: newAddress.id,
-                        note: formData.note || '',
-                        shippingMethod: formData.shipping,
-                        paymentMethod: formData.payment
-                    };
+            if (!targetCustomerId) {
+                try {
+                    const customerRes = await fetch(`${apiUrl}/api/customer/email/${encodeURIComponent(emailToUse)}`);
+                    const customerData = await customerRes.json();
 
-                    // If online payment is selected, show payment modal
-                    if (formData.payment === 'online') {
-                        setTempCheckoutData(checkoutData);
-                        setIsPaymentModalOpen(true);
-                    } else {
-                        await onCheckoutSubmit(checkoutData);
+                    if (customerRes.ok && customerData && customerData.success && customerData.data) {
+                        targetCustomerId = customerData.data.id;
+                    } else if (customerRes.ok && customerData && customerData.id) {
+                        targetCustomerId = customerData.id;
                     }
-                } else {
-                    throw new Error('Failed to save address');
-                }
-            } else {
-                // Guest checkout
-                const guestCustomerData = {
-                    fullName: formData.recipientName.trim(),
-                    email: formData.email.trim(),
-                    phone: formData.phoneNumber.trim(),
-                };
-
-                const customerResult = await apiClient('/api/customer', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(guestCustomerData),
-                });
-
-                if (!customerResult || !customerResult.data?.id) {
-                    throw new Error('Failed to create customer profile');
-                }
-
-                const newCustomerId = customerResult.data.id;
-                const addressData = {
-                    recipientName: formData.recipientName.trim(),
-                    phoneNumber: formData.phoneNumber.trim(),
-                    address: formData.address.trim(),
-                    upazila: formData.upazila,
-                    postalCode: formData.postalCode?.trim(),
-                    district: formData.district,
-                    division: formData.division,
-                    city: formData.city?.trim() || formData.division,
-                    country: 'Bangladesh',
-                    type: 'Home',
-                    isDefault: true
-                };
-
-                const addResult = await apiClient(`/api/customer/${newCustomerId}/addresses`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(addressData),
-                });
-
-                if (addResult && (addResult.success || addResult.data)) {
-                    const newAddress = addResult.data || addResult;
-                    const checkoutData = {
-                        customerId: newCustomerId,
-                        customerAddressId: newAddress.id,
-                        note: formData.note || '',
-                        shippingMethod: formData.shipping,
-                        paymentMethod: formData.payment
-                    };
-
-                    // If online payment is selected, show payment modal
-                    if (formData.payment === 'online') {
-                        setTempCheckoutData(checkoutData);
-                        setIsPaymentModalOpen(true);
-                    } else {
-                        await onCheckoutSubmit(checkoutData);
-                    }
-                } else {
-                    throw new Error('Failed to save address');
+                } catch (e) {
+                    console.log('Customer lookup by email failed, creating new record');
                 }
             }
+
+            // Step 2: Create a new Customer record if not found (matching Multivendor-Frontend)
+            if (!targetCustomerId) {
+                const createCustomerRes = await fetch(`${apiUrl}/api/customer`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        fullName: recipientName,
+                        email: emailToUse,
+                        phone: phoneNumber.replace(/\D/g, ''),
+                        status: true
+                    }),
+                });
+
+                const createCustomerData = await createCustomerRes.json();
+
+                if (createCustomerRes.ok && (createCustomerData.data?.id || createCustomerData.id)) {
+                    targetCustomerId = createCustomerData.data?.id || createCustomerData.id;
+                } else if (createCustomerData.message?.includes('already exists') || createCustomerRes.status === 409) {
+                    targetCustomerId = createCustomerData.data?.id || createCustomerData.id || createCustomerData.customer?.id;
+                }
+
+                if (!targetCustomerId) {
+                    throw new Error(createCustomerData.message || "Failed to create customer record");
+                }
+            }
+
+            // Step 3: Add or resolve the customer address (matching Multivendor-Frontend)
+            const addressPayload = {
+                recipientName: recipientName,
+                phoneNumber: phoneNumber,
+                address: formData.address.trim(),
+                upazila: formData.upazila,
+                district: formData.district,
+                division: formData.division,
+                city: formData.city?.trim() || formData.division,
+                postalCode: formData.postalCode?.trim() || '1200',
+                country: "Bangladesh",
+                isDefault: formData.isDefault !== undefined ? formData.isDefault : true,
+                type: formData.type || "Home"
+            };
+
+            const createAddressRes = await fetch(`${apiUrl}/api/customer/${targetCustomerId}/addresses`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(addressPayload),
+            });
+
+            const createAddressData = await createAddressRes.json();
+            if (!createAddressRes.ok && !createAddressData.data && !createAddressData.id) {
+                throw new Error(createAddressData.message || "Failed to create shipping address");
+            }
+
+            const newAddressId = createAddressData.data?.id || createAddressData.id || createAddressData.addressId;
+
+            const checkoutData = {
+                customerId: targetCustomerId,
+                customerAddressId: newAddressId,
+                note: formData.note || '',
+                shippingMethod: formData.shipping,
+                paymentMethod: formData.payment
+            };
+
+            if (formData.payment === 'online') {
+                setTempCheckoutData(checkoutData);
+                setIsPaymentModalOpen(true);
+            } else {
+                await onCheckoutSubmit(checkoutData);
+            }
+
         } catch (error) {
             console.error('Checkout error:', error);
             Swal.fire({
@@ -659,13 +651,13 @@ const BillingDetails = ({
                                 {errors.district && <p className="text-red-500 text-sm mt-1">{errors.district.message}</p>}
                             </div>
                             <div>
-                                <label className="block mb-1 font-medium">Upazila <span className="text-red-500">*</span></label>
-                                <select {...register("upazila", { required: "Upazila is required" })} className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all disabled:bg-gray-100" disabled={!watchDistrict}>
-                                    <option value="">{watchDistrict ? "Select Upazila" : "Select District First"}</option>
-                                    {filteredUpazilas.map((upazila) => (
-                                        <option key={upazila.id} value={upazila.name}>{upazila.name}</option>
-                                    ))}
-                                </select>
+                                <label className="block mb-1 font-medium">Upazila / Thana <span className="text-red-500">*</span></label>
+                                <input
+                                    {...register("upazila", { required: "Upazila is required" })}
+                                    type="text"
+                                    placeholder="e.g. Mirpur"
+                                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
+                                />
                                 {errors.upazila && <p className="text-red-500 text-sm mt-1">{errors.upazila.message}</p>}
                             </div>
                             <div>

@@ -1,5 +1,4 @@
-// app/checkout/page.tsx - PRODUCTION READY
-
+// app/checkout/page.jsx - PUBLIC ACCESSIBLE CHECKOUT WITH GUEST SUPPORT & VARIANT DATA
 "use client";
 
 import Container from "@/components/Container/Container";
@@ -102,7 +101,7 @@ export default function Checkout() {
     return 0;
   }, []);
 
-  // Fetch customer data for loyalty points & order placement
+  // Fetch customer data for loyalty points & order placement (if user is logged in)
   const fetchCustomerData = useCallback(async () => {
     if (!user?.email) return null;
 
@@ -141,6 +140,7 @@ export default function Checkout() {
           ...item,
           variantId: item.variantId,
           variantAttributes: item.variantAttributes,
+          variantType: item.variantType,
           productType: item.productType,
           discountAmount: parseFloat(item.discountAmount || 0),
           campaignId: item.campaignId,
@@ -158,6 +158,7 @@ export default function Checkout() {
         ...item,
         variantId: item.variantId,
         variantAttributes: item.variantAttributes,
+        variantType: item.variantType,
         productType: item.productType,
         discountAmount: parseFloat(item.discountAmount || 0),
         campaignId: item.campaignId,
@@ -188,6 +189,7 @@ export default function Checkout() {
       productName: item.productName || item.name,
       variantId: item.variantId,
       variantAttributes: item.variantAttributes,
+      variantType: item.variantType,
       productType: item.productType,
       discountAmount: parseFloat(item.discountAmount || 0),
       discountValue: parseFloat(item.discountValue || 0),
@@ -262,7 +264,7 @@ export default function Checkout() {
     getAllCartItems,
   ]);
 
-  // Fetch customer data on load
+  // Fetch customer data on load if logged in
   useEffect(() => {
     if (user?.email) {
       fetchCustomerData();
@@ -308,7 +310,7 @@ export default function Checkout() {
       if (!currentCustomer || !currentCustomer.id) {
         return {
           success: false,
-          message: "Customer profile not found. Please complete your profile.",
+          message: "Customer profile not found. Points redemption requires a registered account.",
         };
       }
 
@@ -323,7 +325,6 @@ export default function Checkout() {
         }),
       });
 
-      console.log("Checkout Points Validation:", response);
       return response;
     } catch (error) {
       console.error("Points validation error:", error);
@@ -345,15 +346,18 @@ export default function Checkout() {
         return;
       }
 
-      let currentCustomer = customerData;
-      if (!currentCustomer || !currentCustomer.id) {
-        currentCustomer = await fetchCustomerData();
+      // Allow customerId from guest submission or logged-in user
+      let customerId = data.customerId;
+      if (!customerId) {
+        let currentCustomer = customerData;
+        if (!currentCustomer || !currentCustomer.id) {
+          currentCustomer = await fetchCustomerData();
+        }
+        customerId = currentCustomer?.id;
       }
 
-      if (!currentCustomer || !currentCustomer.id) {
-        toast.error(
-          "Customer information is required. Please complete your profile.",
-        );
+      if (!customerId) {
+        toast.error("Customer information is required.");
         return;
       }
 
@@ -362,8 +366,8 @@ export default function Checkout() {
         return;
       }
 
-      const shippingMethod = watch("shipping") || "local";
-      const shippingCost = shippingMethod === "local" ? 0 : 0;
+      const shippingMethod = watch("shipping") || "dhaka-city";
+      const shippingCost = 0; // Or calculate based on shippingMethod if applicable
 
       let subtotalBeforeDiscount = 0;
       let totalProductDiscount = 0;
@@ -413,7 +417,6 @@ export default function Checkout() {
       const couponDiscountAmount = couponDiscount || 0;
       const pointsDiscountAmount = pointsDiscount || 0;
 
-      // Calculate grand total (ensure it's not negative)
       let grandTotal =
         subtotalAfterDiscount +
         totalVAT +
@@ -430,8 +433,6 @@ export default function Checkout() {
           couponDiscountAmount,
         );
 
-        console.log("Validation Result:", validation);
-
         if (!validation || validation.success !== true) {
           toast.error(validation?.message || "Invalid points redemption");
           handlePointsRemoved();
@@ -447,7 +448,8 @@ export default function Checkout() {
         const quantity = parseInt(item.quantity || 1);
         const originalPrice = parseFloat(item.originalPrice || item.price || 0);
         const unitPrice = parseFloat(item.price);
-        const isVariant = item.productType === "variant" || item.variantId;
+        const isVariant =
+          item.productType === "variant" || item.variantId || item.variantAttributes;
 
         const productDiscount = originalPrice - unitPrice;
         const campaignDiscount = parseFloat(item.discountAmount || 0);
@@ -464,9 +466,19 @@ export default function Checkout() {
         const finalPrice = unitPrice - campaignDiscount;
         const lineTotal = finalPrice * quantity + itemVAT;
 
+        // Build variant attributes object & variantType string
+        const variantAttrs = item.variantAttributes || item.attributes || null;
+        let variantTypeStr =
+          item.variantType || item.variantTitle || item.variantName || null;
+        if (!variantTypeStr && variantAttrs && typeof variantAttrs === "object") {
+          variantTypeStr = Object.entries(variantAttrs)
+            .map(([k, v]) => `${k}: ${v}`)
+            .join(", ");
+        }
+
         const baseItem = {
           productId: productId,
-          sku: item.sku || null,
+          sku: item.sku || item.variantSku || null,
           quantity: quantity,
           unitPrice: unitPrice,
           discount: totalDiscount,
@@ -481,9 +493,10 @@ export default function Checkout() {
           }),
         };
 
-        if (isVariant && item.variantId) {
-          baseItem.variantId = parseInt(item.variantId);
-          baseItem.variantAttributes = item.variantAttributes || {};
+        if (isVariant || item.variantId || variantAttrs) {
+          if (item.variantId) baseItem.variantId = parseInt(item.variantId);
+          baseItem.variantAttributes = variantAttrs || {};
+          baseItem.variantType = variantTypeStr || "";
           baseItem.productType = "variant";
         }
 
@@ -529,11 +542,10 @@ export default function Checkout() {
         };
       });
 
-      // IMPORTANT: Ensure dueAmount is not negative after points discount
-      let dueAmount = grandTotal; // Since paidAmount is 0 initially
+      let dueAmount = grandTotal;
 
       const orderPayload = {
-        customerId: currentCustomer.id,
+        customerId: parseInt(customerId),
         shippingAddressId: parseInt(data.customerAddressId),
         paymentMethod: watch("payment") === "cod" ? "COD" : "OnlinePayment",
         totalAmount: parseFloat(subtotalBeforeDiscount.toFixed(2)),
@@ -566,7 +578,9 @@ export default function Checkout() {
 
       console.log("Order Payload:", JSON.stringify(orderPayload, null, 2));
 
-      const response = await apiClient("/api/order", {
+      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "https://dazzling-diva-server.vercel.app").replace(/\/+$/, "");
+
+      const orderRes = await fetch(`${apiUrl}/api/order`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -574,191 +588,81 @@ export default function Checkout() {
         body: JSON.stringify(orderPayload),
       });
 
+      const response = await orderRes.json();
+
+      if (!orderRes.ok) {
+        throw new Error(response.message || "Failed to submit order");
+      }
+
       let orderData = null;
       let successMessage = "Order placed successfully";
 
       if (response && response.id && response.orderNumber) {
         orderData = response;
       } else if (response && response.success === true) {
-        orderData = response.data;
+        orderData = response.data || response;
         successMessage = response.message || successMessage;
-      } else if (response && response.data && response.data.id) {
+      } else if (response && response.data && (response.data.id || response.data.orderNumber)) {
         orderData = response.data;
         successMessage = response.message || successMessage;
       } else {
-        throw new Error(
-          response?.message || "Invalid response format from server",
-        );
+        orderData = response;
       }
 
       if (!orderData || !orderData.id) {
         throw new Error("Order created but missing order ID");
       }
 
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('last_order', JSON.stringify(orderData));
+          sessionStorage.setItem('last_order', JSON.stringify(orderData));
+
+          const existingOrders = JSON.parse(localStorage.getItem('guest_orders') || '[]');
+          existingOrders.unshift(orderData);
+          localStorage.setItem('guest_orders', JSON.stringify(existingOrders));
+        } catch (e) {}
+      }
+
       clearSession();
 
       if (!isBuyNow) {
-        await clearRegularCart();
-        clearBundleCart();
-      }
+        const regularItemsInOrder = regularItems.map((item) => ({
+          id: item.productId || item.id,
+          variantId: item.variantId,
+        }));
 
-      const totalSavings =
-        totalProductDiscount + couponDiscountAmount + pointsDiscountAmount;
+        if (regularItemsInOrder.length > 0) {
+          try {
+            for (const item of regularItemsInOrder) {
+              await clearRegularCart(item.id, item.variantId);
+            }
+          } catch (e) {
+            console.error("Failed to clear regular cart items:", e);
+          }
+        }
+
+        const bundleItemsInOrder = bundleItems.map((item) => item.id);
+        if (bundleItemsInOrder.length > 0) {
+          try {
+            clearBundleCart();
+          } catch (e) {
+            console.error("Failed to clear bundle cart:", e);
+          }
+        }
+      }
 
       await Swal.fire({
         icon: "success",
-        title: "Order Placed Successfully!",
-        html: `
-                    <div class="text-left space-y-3 text-black">
-                        <div class="space-y-2">
-                            <h1 class="flex justify-center items-center font-philosopher text-center text-2xl font-medium text-gray-800">
-                                Thank you for your purchase!
-                            </h1>
-                            <p class="flex justify-between">
-                                <strong>Order Number:</strong> 
-                                <span class="text-[#5A062F] font-mono text-xl">#${
-                                  orderData.orderNumber || "N/A"
-                                }</span>
-                            </p>
-                            <p class="flex justify-between">
-                                <strong>Original Price:</strong> 
-                                <span class="text-md">৳${subtotalBeforeDiscount.toFixed(
-                                  2,
-                                )}</span>
-                            </p>
-                            ${
-                              totalProductDiscount > 0
-                                ? `
-                                <p class="flex justify-between">
-                                    <strong>Product Discount:</strong> 
-                                    <span class="text-md">-৳${totalProductDiscount.toFixed(
-                                      2,
-                                    )}</span>
-                                </p>
-                            `
-                                : ""
-                            }
-                            ${
-                              couponDiscountAmount > 0
-                                ? `
-                                <p class="flex justify-between text-green-600">
-                                    <strong>Coupon (${
-                                      appliedCoupon?.code
-                                    }):</strong> 
-                                    <span class="text-md">-৳${couponDiscountAmount.toFixed(
-                                      2,
-                                    )}</span>
-                                </p>
-                            `
-                                : ""
-                            }
-                            ${
-                              pointsDiscountAmount > 0
-                                ? `
-                                <p class="flex justify-between text-purple-600">
-                                    <strong>Loyalty Points (${pointsToRedeem} pts):</strong> 
-                                    <span class="text-md">-৳${pointsDiscountAmount.toFixed(
-                                      2,
-                                    )}</span>
-                                </p>
-                            `
-                                : ""
-                            }
-                            ${
-                              totalVAT > 0
-                                ? `
-                                <p class="flex justify-between text-gray-600">
-                                    <strong>VAT:</strong> 
-                                    <span class="text-md">+৳${totalVAT.toFixed(
-                                      2,
-                                    )}</span>
-                                </p>
-                            `
-                                : ""
-                            }
-                            ${
-                              shippingCost > 0
-                                ? `
-                                <p class="flex justify-between text-gray-600">
-                                    <strong>Shipping:</strong> 
-                                    <span class="text-md">+৳${shippingCost.toFixed(
-                                      2,
-                                    )}</span>
-                                </p>
-                            `
-                                : ""
-                            }
-                            <p class="flex justify-between border-t-2 pt-2">
-                                <strong class="text-lg">Grand Total:</strong> 
-                                <span class="text-lg font-bold text-gray-800">৳${grandTotal.toFixed(
-                                  2,
-                                )}</span>
-                            </p>
-                            <p class="flex justify-between">
-                                <strong>Payment:</strong> 
-                                <span>${orderData.paymentMethod || "COD"}</span>
-                            </p>
-                        </div>
-                        ${
-                          totalSavings > 0
-                            ? `
-                            <div class="mt-3 px-3 py-1 bg-gradient-to-r from-green-50 to-emerald-50 rounded border border-green-200">
-                                <p class="text-green-700 font-medium text-center">
-                                    🎉 You saved ৳${totalSavings.toFixed(2)}!
-                                </p>
-                            </div>
-                        `
-                            : ""
-                        }
-                        ${
-                          pointsToRedeem > 0
-                            ? `
-                            <div class="mt-3 px-3 py-1 bg-gradient-to-r from-purple-50 to-purple-100 rounded border border-purple-200">
-                                <p class="text-purple-700 font-medium text-center">
-                                    💎 ${pointsToRedeem} loyalty points redeemed
-                                </p>
-                            </div>
-                        `
-                            : ""
-                        }
-                    </div>
-                `,
-        confirmButtonColor: "#5A0C3D",
-        confirmButtonText: "Continue Shopping",
-        width: "550px",
+        title: "Success!",
+        text: `${successMessage}. Order #${orderData.orderNumber || orderData.id}`,
+        confirmButtonColor: "#14b8a6",
       });
 
-      router.push(`/`);
+      router.push(`/track-order?orderId=${orderData.id}`);
     } catch (error) {
-      console.error("Checkout Error:", error);
-
-      // Handle specific loyalty errors
-      if (
-        error.message.includes("points") ||
-        error.message.includes("loyalty") ||
-        error.message.includes("balance") ||
-        error.message.includes("Minimum") ||
-        error.message.includes("Cannot redeem")
-      ) {
-        toast.error(error.message);
-        handlePointsRemoved();
-      } else if (error.message.includes("coupon")) {
-        toast.error(error.message);
-        handleCouponRemoved();
-      } else if (error.message.includes("variant")) {
-        toast.error("Variant product error. Please refresh and try again.");
-      } else if (
-        error.message.includes("stock") ||
-        error.message.includes("quantity")
-      ) {
-        toast.error("Some items are out of stock. Please update your cart.");
-      } else if (error.response?.status === 422) {
-        toast.error("Please check your information and try again.");
-      } else {
-        toast.error(
-          error.message || "Failed to place order. Please try again.",
-        );
-      }
+      console.error("Checkout error:", error);
+      toast.error(error.message || "Failed to place order");
     } finally {
       setLoading(false);
     }
@@ -766,9 +670,9 @@ export default function Checkout() {
 
   if (!isLoaded) {
     return (
-      <Container className="text-gray-800 py-10">
+      <Container className="py-10">
         <div className="flex items-center justify-center min-h-[400px]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secound"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#5A0C3D]"></div>
         </div>
       </Container>
     );
@@ -776,28 +680,20 @@ export default function Checkout() {
 
   if (checkoutItems.length === 0) {
     return (
-      <Container>
-        <div className="flex items-center gap-2 text-gray-700 mt-10 text-sm md:text-base">
+      <Container className="py-10 font-outfit">
+        <div className="flex items-center gap-2 text-gray-700 mb-6 text-sm">
           <Link
             href="/"
-            className="hover:underline hover:text-secound flex items-center gap-1"
+            className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1 transition"
           >
             Home <IoIosArrowForward />
           </Link>
-          <Link
-            href="/cart"
-            className="hover:underline hover:text-secound flex items-center gap-1"
-          >
-            Cart <IoIosArrowForward />
-          </Link>
-          <p className="font-semibold">Checkout</p>
+          <p className="font-semibold text-gray-900">Checkout</p>
         </div>
 
-        <div className="text-center min-h-[70vh] items-center justify-center flex flex-col">
-          <div className="mb-6">
-            <FaShoppingBag className="text-7xl text-gray-300 mx-auto" />
-          </div>
-          <h2 className="text-2xl lg:text-3xl font-semibold text-gray-700 mb-4 font-philosopher">
+        <div className="text-center min-h-[50vh] flex flex-col items-center justify-center">
+          <FaShoppingBag className="text-7xl text-gray-300 mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">
             No items to checkout
           </h2>
           <p className="text-gray-600 mb-6">
@@ -805,9 +701,8 @@ export default function Checkout() {
           </p>
           <Link
             href="/"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-secound hover:bg-secound-hover text-white rounded font-bold hover:secound-hover transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer"
+            className="px-6 py-3 bg-[#5A0C3D] text-white rounded-lg font-bold hover:bg-[#450322] transition-colors"
           >
-            <FaShoppingBag />
             Start Shopping
           </Link>
         </div>
@@ -816,61 +711,67 @@ export default function Checkout() {
   }
 
   return (
-    <Container className="text-gray-800">
-      <div className="flex items-center gap-2 text-gray-700 mt-10 text-sm md:text-base">
+    <Container className="py-5 sm:py-8 md:py-10 font-outfit">
+      {/* Breadcrumb */}
+      <div className="flex items-center gap-2 text-gray-600 text-xs md:text-sm mb-6">
         <Link
           href="/"
-          className="hover:underline hover:text-secound flex items-center gap-1"
+          className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1 transition"
         >
-          Home <IoIosArrowForward />
+          Home <IoIosArrowForward size={12} />
         </Link>
         <Link
           href="/cart"
-          className="hover:underline hover:text-secound flex items-center gap-1"
+          className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1 transition"
         >
-          Cart <IoIosArrowForward />
+          Cart <IoIosArrowForward size={12} />
         </Link>
-        <p className="font-semibold">Checkout</p>
+        <p className="font-semibold text-gray-900">Checkout</p>
       </div>
 
-      <h2 className="text-center text-2xl lg:text-[40px] font-philosopher text-black mt-4">
-        Checkout
-      </h2>
+      <div className="max-w-7xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          {/* Billing Form Column */}
+          <div className="lg:col-span-7">
+            <BillingDetails
+              user={user}
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+              handleSubmit={handleSubmit}
+              onCheckoutSubmit={onCheckoutSubmit}
+              loading={loading}
+              totalAmount={getCheckoutTotal()}
+              placeOrderRef={placeOrderRef}
+            />
+          </div>
 
-      <div className="py-10 grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-5 xl:gap-10 2xl:gap-20">
-        <BillingDetails
-          user={user}
-          register={register}
-          errors={errors}
-          watch={watch}
-          setValue={setValue}
-          handleSubmit={handleSubmit}
-          onCheckoutSubmit={onCheckoutSubmit}
-          loading={loading}
-          placeOrderRef={placeOrderRef}
-        />
-
-        <OrderSummary
-          cart={checkoutItems}
-          getCartTotal={isBuyNow ? getCheckoutTotal : getCombinedTotal}
-          register={register}
-          watch={watch}
-          loading={loading}
-          handleSubmit={handleSubmit}
-          onCheckoutSubmit={onCheckoutSubmit}
-          cartType={checkoutType}
-          isBuyNow={isBuyNow}
-          onCouponApplied={handleCouponApplied}
-          onCouponRemoved={handleCouponRemoved}
-          appliedCoupon={appliedCoupon}
-          couponDiscount={couponDiscount}
-          onPointsApplied={handlePointsApplied}
-          onPointsRemoved={handlePointsRemoved}
-          pointsToRedeem={pointsToRedeem}
-          pointsDiscount={pointsDiscount}
-          userEmail={user?.email} // Pass email to fetch correct customer ID
-          placeOrderRef={placeOrderRef}
-        />
+          {/* Order Summary Column */}
+          <div className="lg:col-span-5">
+            <OrderSummary
+              cart={checkoutItems}
+              getCartTotal={getCheckoutTotal}
+              register={register}
+              watch={watch}
+              loading={loading}
+              handleSubmit={handleSubmit}
+              onCheckoutSubmit={onCheckoutSubmit}
+              cartType={checkoutType}
+              isBuyNow={isBuyNow}
+              onCouponApplied={handleCouponApplied}
+              onCouponRemoved={handleCouponRemoved}
+              appliedCoupon={appliedCoupon}
+              couponDiscount={couponDiscount}
+              onPointsApplied={handlePointsApplied}
+              onPointsRemoved={handlePointsRemoved}
+              pointsToRedeem={pointsToRedeem}
+              pointsDiscount={pointsDiscount}
+              userEmail={user?.email}
+              placeOrderRef={placeOrderRef}
+            />
+          </div>
+        </div>
       </div>
     </Container>
   );
