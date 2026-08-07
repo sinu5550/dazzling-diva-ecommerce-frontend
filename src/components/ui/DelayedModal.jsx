@@ -16,8 +16,6 @@ export default function DelayedModal({ allProducts }) {
   const [progress, setProgress] = useState(100);
   const [activeCoupon, setActiveCoupon] = useState(null);
 
-
-  
   // Get 3 random products from allProducts
   const randomProducts = useMemo(() => {
     if (!allProducts || allProducts.length === 0) return [];
@@ -61,10 +59,15 @@ export default function DelayedModal({ allProducts }) {
       // Helper to extract image URL safely
       const getImageUrl = () => {
         const img = product.images?.[0] || product.image;
-        if (!img) return "https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png";
+        if (!img)
+          return "https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png";
         if (typeof img === "string") return img;
         if (typeof img === "object" && img !== null) {
-          return img.url || img.secure_url || "https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png";
+          return (
+            img.url ||
+            img.secure_url ||
+            "https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png"
+          );
         }
         return "https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png";
       };
@@ -241,7 +244,7 @@ export default function DelayedModal({ allProducts }) {
   // Don't show modal if no products
   if (!showModal || formattedProducts.length === 0) return null;
 
-    return (
+  return (
     <div
       className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 transition-all duration-300 ease-out ${
         isVisible
@@ -294,7 +297,8 @@ export default function DelayedModal({ allProducts }) {
                 Elegance in Every Detail
               </p>
               <p className="text-xs text-white/90 mb-8 max-w-[240px] mx-auto leading-relaxed">
-                Discover our handpicked collection of exquisite jewelry and accessories designed to make you shine.
+                Discover our handpicked collection of exquisite jewelry and
+                accessories designed to make you shine.
               </p>
 
               {/* Action button */}
