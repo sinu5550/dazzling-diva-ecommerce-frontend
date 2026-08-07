@@ -92,9 +92,26 @@ export function isValueAvailable(product, attributeName, value, currentSelection
 export function calculateVariantPrice(variant, product) {
     const basePrice = variant ? parseFloat(variant.price) : parseFloat(product.price);
 
-    const discountedPrice = product.discountValue > 0
-        ? basePrice - (basePrice * product.discountValue / 100)
-        : basePrice;
+    let discountedPrice = basePrice;
+
+    if (product.campaignInfo && product.campaignInfo.discountValue > 0) {
+        const campaign = product.campaignInfo;
+        const discountValue = parseFloat(campaign.discountValue);
+        const maxDiscount = campaign.maxDiscountAmount ? parseFloat(campaign.maxDiscountAmount) : null;
+        let discountAmount = 0;
+
+        if (campaign.discountType === 'Fixed') {
+            discountAmount = Math.min(discountValue, basePrice);
+        } else {
+            discountAmount = (basePrice * discountValue) / 100;
+            if (maxDiscount && discountAmount > maxDiscount) {
+                discountAmount = maxDiscount;
+            }
+        }
+        discountedPrice = Math.max(0, basePrice - discountAmount);
+    } else if (product.discountValue > 0) {
+        discountedPrice = basePrice - (basePrice * product.discountValue / 100);
+    }
 
     return {
         original: basePrice,

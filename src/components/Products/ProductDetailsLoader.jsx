@@ -49,6 +49,43 @@ export default function ProductDetailsLoader({ slug, type = 'product' }) {
                 }
             }
 
+            // Check if there is an active store-wide discount campaign (appliesToAll) if product doesn't already have campaignInfo
+            if (productData && !productData.campaignInfo) {
+                try {
+                    const { apiClient } = await import('@/lib/apiClient');
+                    const activeCampaignsRes = await apiClient('/api/discount-campaign/active');
+                    const activeCampaigns = Array.isArray(activeCampaignsRes)
+                        ? activeCampaignsRes
+                        : (activeCampaignsRes?.data || activeCampaignsRes?.campaigns || []);
+
+                    const appliesToAllCampaign = activeCampaigns.find(c => c.appliesToAll);
+                    if (appliesToAllCampaign) {
+                        productData = {
+                            ...productData,
+                            campaignInfo: {
+                                campaignId: appliesToAllCampaign.id,
+                                campaignName: appliesToAllCampaign.name,
+                                campaignType: appliesToAllCampaign.campaignType,
+                                discountType: appliesToAllCampaign.discountType,
+                                discountValue: parseFloat(appliesToAllCampaign.discountValue) || 0,
+                                maxDiscountAmount: appliesToAllCampaign.maxDiscountAmount
+                                    ? parseFloat(appliesToAllCampaign.maxDiscountAmount)
+                                    : null,
+                                appliesToAll: appliesToAllCampaign.appliesToAll,
+                                startAt: appliesToAllCampaign.startAt,
+                                endAt: appliesToAllCampaign.endAt,
+                                showCountdown: appliesToAllCampaign.showCountdown,
+                                badgeText: appliesToAllCampaign.badgeText,
+                                badgeColor: appliesToAllCampaign.badgeColor,
+                                priority: appliesToAllCampaign.priority || 0,
+                            }
+                        };
+                    }
+                } catch (cErr) {
+                    console.error('Error fetching active store-wide campaign info:', cErr);
+                }
+            }
+
             if (!productData) {
                 throw new Error('Product not found');
             }

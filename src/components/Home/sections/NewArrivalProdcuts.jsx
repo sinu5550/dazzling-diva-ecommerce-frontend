@@ -11,7 +11,7 @@ export const NewArrivalProducts = ({ newProductData }) => {
   const [selectedQuickViewProduct, setSelectedQuickViewProduct] = useState(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
-  const newArrivalProductsData = newProductData?.data.products || [];
+  const newArrivalProductsData = newProductData?.data?.products || [];
 
   // Show nothing if no new products
   if (newArrivalProductsData.length === 0) {
