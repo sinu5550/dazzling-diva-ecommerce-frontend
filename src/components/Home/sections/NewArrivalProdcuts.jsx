@@ -11,10 +11,13 @@ export const NewArrivalProducts = ({ newProductData }) => {
   const [selectedQuickViewProduct, setSelectedQuickViewProduct] = useState(null);
   const [isQuickViewOpen, setIsQuickViewOpen] = useState(false);
 
-  const newArrivalProductsData = newProductData?.data?.products || [];
+  const newArrivalProductsData =
+    newProductData?.data?.products ||
+    newProductData?.products ||
+    (Array.isArray(newProductData) ? newProductData : []);
 
   // Show nothing if no new products
-  if (newArrivalProductsData.length === 0) {
+  if (!Array.isArray(newArrivalProductsData) || newArrivalProductsData.length === 0) {
     return null;
   }
 
