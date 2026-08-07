@@ -95,9 +95,22 @@ export default function NewProductCard({
   const variantPriceRange = useMemo(() => {
     if (!isVariantProduct || !product.productVariants?.length) return null;
 
-    const prices = product.productVariants.map((v) => parseFloat(v.price));
-    const minPrice = Math.min(...prices);
-    const maxPrice = Math.max(...prices);
+    const discountVal = product.campaignInfo?.discountValue || product.discountValue || 0;
+    const discountedPrices = product.productVariants.map((v) => {
+      const base = parseFloat(v.price);
+      if (product.campaignInfo && product.campaignInfo.discountValue > 0) {
+        const campaign = product.campaignInfo;
+        const dValue = parseFloat(campaign.discountValue);
+        const maxD = campaign.maxDiscountAmount ? parseFloat(campaign.maxDiscountAmount) : null;
+        let dAmount = campaign.discountType === 'Fixed' ? Math.min(dValue, base) : (base * dValue) / 100;
+        if (maxD && dAmount > maxD) dAmount = maxD;
+        return Math.max(0, base - dAmount);
+      }
+      return discountVal > 0 ? base - (base * discountVal / 100) : base;
+    });
+
+    const minPrice = Math.min(...discountedPrices);
+    const maxPrice = Math.max(...discountedPrices);
 
     if (minPrice === maxPrice) {
       return `BDT ${formatPrice(minPrice)}`;
@@ -270,9 +283,9 @@ export default function NewProductCard({
               New
             </div>
           )}
-          {product.discountValue > 0 && (
+          {(product.discountValue > 0 || (product.campaignInfo && product.campaignInfo.discountValue > 0)) && (
             <div className="bg-rose-600 text-white text-[10px] md:text-[11px] font-bold px-2 py-0.5  shadow-sm w-fit">
-              -{product.discountValue}%
+              -{product.campaignInfo?.discountValue || product.discountValue}%
             </div>
           )}
         </div>
@@ -316,7 +329,7 @@ export default function NewProductCard({
                   ? variantPriceRange
                   : `BDT ${formatPrice(discountedPrice)}`}
               </span>
-              {!variantPriceRange && product.discountValue > 0 && (
+              {(product.discountValue > 0 || (product.campaignInfo && product.campaignInfo.discountValue > 0)) && originalPrice > discountedPrice && (
                 <span className="text-[10px] md:text-[12px] font-outfit font-normal text-gray-400 line-through">
                   BDT {formatPrice(originalPrice)}
                 </span>

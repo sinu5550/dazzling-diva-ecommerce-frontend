@@ -260,7 +260,7 @@ export default function ProductDetailsLoader({ slug, type = 'product' }) {
     // Fully Loaded Transition Component
     return (
         <div className="transition-opacity duration-500 ease-in-out opacity-100 animate-fadeIn">
-            {type === 'campaign' ? (
+            {type === 'campaign' || data.product?.campaignInfo ? (
                 <DiscountProductDetailsClient product={data.product} />
             ) : (
                 <ProductDetailsClient product={data.product} relatedProducts={data.relatedProducts} />
