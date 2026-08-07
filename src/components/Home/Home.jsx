@@ -125,35 +125,56 @@ const Home = async () => {
       })) || [],
   );
 
+  const appliesToAllCampaign = campaignsData.find((c) => c.appliesToAll);
+  const activeCampaignInfo = appliesToAllCampaign
+    ? {
+        campaignId: appliesToAllCampaign.id,
+        campaignName: appliesToAllCampaign.name,
+        campaignType: appliesToAllCampaign.campaignType,
+        discountType: appliesToAllCampaign.discountType,
+        discountValue: parseFloat(appliesToAllCampaign.discountValue) || 0,
+        maxDiscountAmount:
+          parseFloat(appliesToAllCampaign.maxDiscountAmount) || null,
+        appliesToAll: appliesToAllCampaign.appliesToAll,
+        startAt: appliesToAllCampaign.startAt,
+        endAt: appliesToAllCampaign.endAt,
+        showCountdown: appliesToAllCampaign.showCountdown,
+        badgeText: appliesToAllCampaign.badgeText,
+        badgeColor: appliesToAllCampaign.badgeColor,
+        priority: appliesToAllCampaign.priority,
+      }
+    : null;
+
   // If campaign has appliesToAll: true and no specific discountProducts are linked, attach campaignInfo to catalog products
-  if (allProductsFromCampaigns.length === 0 && campaignsData.length > 0) {
-    const appliesToAllCampaign =
-      campaignsData.find((c) => c.appliesToAll) || campaignsData[0];
+  if (allProductsFromCampaigns.length === 0 && appliesToAllCampaign) {
     const catalogProducts =
       newProductData?.data?.products ||
       newProductData?.products ||
       (Array.isArray(newProductData) ? newProductData : []);
 
-    if (appliesToAllCampaign && catalogProducts.length > 0) {
+    if (catalogProducts.length > 0) {
       allProductsFromCampaigns = catalogProducts.map((product) => ({
         ...product,
-        campaignInfo: {
-          campaignId: appliesToAllCampaign.id,
-          campaignName: appliesToAllCampaign.name,
-          campaignType: appliesToAllCampaign.campaignType,
-          discountType: appliesToAllCampaign.discountType,
-          discountValue: parseFloat(appliesToAllCampaign.discountValue) || 0,
-          maxDiscountAmount:
-            parseFloat(appliesToAllCampaign.maxDiscountAmount) || null,
-          appliesToAll: appliesToAllCampaign.appliesToAll,
-          startAt: appliesToAllCampaign.startAt,
-          endAt: appliesToAllCampaign.endAt,
-          showCountdown: appliesToAllCampaign.showCountdown,
-          badgeText: appliesToAllCampaign.badgeText,
-          badgeColor: appliesToAllCampaign.badgeColor,
-          priority: appliesToAllCampaign.priority,
-        },
+        campaignInfo: product.campaignInfo || activeCampaignInfo,
       }));
+    }
+  }
+
+  let processedNewProductData = newProductData;
+  if (activeCampaignInfo) {
+    const rawList =
+      newProductData?.data?.products ||
+      newProductData?.products ||
+      (Array.isArray(newProductData) ? newProductData : []);
+    if (rawList.length > 0) {
+      const enrichedProducts = rawList.map((p) => ({
+        ...p,
+        campaignInfo: p.campaignInfo || activeCampaignInfo,
+      }));
+
+      processedNewProductData = newProductData?.data?.products
+        ? { ...newProductData, data: { ...newProductData.data, products: enrichedProducts } }
+        : enrichedProducts;
     }
   }
 
@@ -164,7 +185,7 @@ const Home = async () => {
       {/* <MidBannerOne midBannerData={midBannerData} /> */}
       <DiscountProducts productData={allProductsFromCampaigns} />
       <HomeBento />
-      <NewArrivalProducts newProductData={newProductData} />
+      <NewArrivalProducts newProductData={processedNewProductData} />
       {/* <Promotional promoData={promoData} /> */}
       <BentoImageGalleryOne bentoImageGalleryData={bentoImageGalleryData} />
       <TopSellingProducts topSellingProductData={topSellingProductData} />
