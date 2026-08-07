@@ -565,6 +565,7 @@ export default function Checkout() {
         couponDiscount: couponDiscountAmount || 0,
         pointsToRedeem: pointsToRedeem || 0,
         pointsDiscount: pointsDiscountAmount || 0,
+        customerEmail: data.email || user?.email || customerData?.email || null,
         bundleVATDetails: bundleItems.map((item) => ({
           bundleId: item.id,
           name: item.name,
@@ -634,9 +635,9 @@ export default function Checkout() {
 
         if (regularItemsInOrder.length > 0) {
           try {
-            for (const item of regularItemsInOrder) {
-              await clearRegularCart(item.id, item.variantId);
-            }
+            await Promise.all(
+              regularItemsInOrder.map((item) => clearRegularCart(item.id, item.variantId))
+            );
           } catch (e) {
             console.error("Failed to clear regular cart items:", e);
           }
@@ -652,13 +653,7 @@ export default function Checkout() {
         }
       }
 
-      await Swal.fire({
-        icon: "success",
-        title: "Success!",
-        text: `${successMessage}. Order #${orderData.orderNumber || orderData.id}`,
-        confirmButtonColor: "#14b8a6",
-      });
-
+      toast.success(`${successMessage}. Order #${orderData.orderNumber || orderData.id}`);
       router.push(`/track-order?orderId=${orderData.id}`);
     } catch (error) {
       console.error("Checkout error:", error);
@@ -711,68 +706,70 @@ export default function Checkout() {
   }
 
   return (
-    <Container className="py-5 sm:py-8 md:py-10 font-outfit">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 text-gray-600 text-xs md:text-sm mb-6">
-        <Link
-          href="/"
-          className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1 transition"
-        >
-          Home <IoIosArrowForward size={12} />
-        </Link>
-        <Link
-          href="/cart"
-          className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1 transition"
-        >
-          Cart <IoIosArrowForward size={12} />
-        </Link>
-        <p className="font-semibold text-gray-900">Checkout</p>
-      </div>
+    <div className="bg-white text-gray-900 min-h-screen">
+      <Container className="py-5 sm:py-8 md:py-10 font-outfit text-gray-900">
+        {/* Breadcrumb */}
+        <div className="flex items-center gap-2 text-gray-700 text-xs md:text-sm mb-6">
+          <Link
+            href="/"
+            className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1 transition"
+          >
+            Home <IoIosArrowForward size={12} />
+          </Link>
+          <Link
+            href="/cart"
+            className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1 transition"
+          >
+            Cart <IoIosArrowForward size={12} />
+          </Link>
+          <p className="font-semibold text-gray-900">Checkout</p>
+        </div>
 
-      <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          {/* Billing Form Column */}
-          <div className="lg:col-span-7">
-            <BillingDetails
-              user={user}
-              register={register}
-              errors={errors}
-              watch={watch}
-              setValue={setValue}
-              handleSubmit={handleSubmit}
-              onCheckoutSubmit={onCheckoutSubmit}
-              loading={loading}
-              totalAmount={getCheckoutTotal()}
-              placeOrderRef={placeOrderRef}
-            />
-          </div>
+        <div className="max-w-7xl mx-auto text-gray-900">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Billing Form Column */}
+            <div className="lg:col-span-7">
+              <BillingDetails
+                user={user}
+                register={register}
+                errors={errors}
+                watch={watch}
+                setValue={setValue}
+                handleSubmit={handleSubmit}
+                onCheckoutSubmit={onCheckoutSubmit}
+                loading={loading}
+                totalAmount={getCheckoutTotal()}
+                placeOrderRef={placeOrderRef}
+              />
+            </div>
 
-          {/* Order Summary Column */}
-          <div className="lg:col-span-5">
-            <OrderSummary
-              cart={checkoutItems}
-              getCartTotal={getCheckoutTotal}
-              register={register}
-              watch={watch}
-              loading={loading}
-              handleSubmit={handleSubmit}
-              onCheckoutSubmit={onCheckoutSubmit}
-              cartType={checkoutType}
-              isBuyNow={isBuyNow}
-              onCouponApplied={handleCouponApplied}
-              onCouponRemoved={handleCouponRemoved}
-              appliedCoupon={appliedCoupon}
-              couponDiscount={couponDiscount}
-              onPointsApplied={handlePointsApplied}
-              onPointsRemoved={handlePointsRemoved}
-              pointsToRedeem={pointsToRedeem}
-              pointsDiscount={pointsDiscount}
-              userEmail={user?.email}
-              placeOrderRef={placeOrderRef}
-            />
+            {/* Order Summary Column */}
+            <div className="lg:col-span-5">
+              <OrderSummary
+                cart={checkoutItems}
+                getCartTotal={getCheckoutTotal}
+                register={register}
+                watch={watch}
+                loading={loading}
+                handleSubmit={handleSubmit}
+                onCheckoutSubmit={onCheckoutSubmit}
+                cartType={checkoutType}
+                isBuyNow={isBuyNow}
+                onCouponApplied={handleCouponApplied}
+                onCouponRemoved={handleCouponRemoved}
+                appliedCoupon={appliedCoupon}
+                couponDiscount={couponDiscount}
+                onPointsApplied={handlePointsApplied}
+                onPointsRemoved={handlePointsRemoved}
+                pointsToRedeem={pointsToRedeem}
+                pointsDiscount={pointsDiscount}
+                userEmail={user?.email}
+                placeOrderRef={placeOrderRef}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </Container>
+      </Container>
+    </div>
   );
 }

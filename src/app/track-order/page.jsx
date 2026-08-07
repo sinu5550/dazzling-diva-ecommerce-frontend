@@ -437,12 +437,12 @@ function TrackOrderContent() {
                                 </div>
                             </div>
 
-                            {/* Right: Summary Sidebar */}
+                            {/* Right: Summary Sidebar
                             <div className="lg:col-span-5">
                                 <div className="bg-gray-50 rounded-2xl p-5 sm:p-6 border border-gray-200 shadow-2xs">
                                     <h3 className="text-xs font-bold tracking-widest uppercase text-gray-400 mb-4 border-b border-gray-200 pb-3">Order Summary</h3>
 
-                                    {/* Shipping Address */}
+                                    
                                     <div className="flex items-start gap-3 mb-6 pb-6 border-b border-gray-200">
                                         <MapPin className="w-4 h-4 text-[#5A0C3D] mt-0.5 flex-shrink-0" />
                                         <div className="min-w-0 flex-1">
@@ -461,7 +461,7 @@ function TrackOrderContent() {
                                         </div>
                                     </div>
 
-                                    {/* Items List */}
+                                 
                                     <div className="mb-6 pb-6 border-b border-gray-200">
                                         <p className="text-[10px] font-bold tracking-widest uppercase text-gray-400 mb-3">Items ({itemsList.length})</p>
                                         <div className="space-y-3">
@@ -486,7 +486,7 @@ function TrackOrderContent() {
                                         </div>
                                     </div>
 
-                                    {/* Total */}
+                                   
                                     {orderTotal > 0 && (
                                         <div className="flex items-center justify-between mb-6">
                                             <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Grand Total</span>
@@ -494,7 +494,7 @@ function TrackOrderContent() {
                                         </div>
                                     )}
 
-                                    {/* Actions */}
+                                   
                                     <div className="space-y-2.5">
                                         <Link
                                             href="/"
@@ -510,7 +510,7 @@ function TrackOrderContent() {
                                         </button>
                                     </div>
                                 </div>
-                            </div>
+                            </div> */}
                         </div>
                     )}
                 </div>

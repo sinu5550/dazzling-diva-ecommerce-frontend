@@ -241,11 +241,17 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                 status: product.status,
                 tax: product.tax,
                 taxType: product.taxType,
-                discountValue: product.discountValue,
-                discountType: product.discountType,
+                discountValue: product.campaignInfo?.discountValue || product.discountValue,
+                discountType: product.campaignInfo?.discountType || product.discountType || 'Percentage',
+                discountAmount: originalPrice - discountedPrice,
                 sku: isVariantProduct ? selectedVariant?.sku : product.sku,
                 type: 'regular',
                 isBundle: false,
+                ...(product.campaignInfo && {
+                    campaignId: product.campaignInfo.campaignId,
+                    campaignName: product.campaignInfo.campaignName,
+                    campaignType: product.campaignInfo.campaignType,
+                }),
                 // Include variant details
                 ...(isVariantProduct && selectedVariant && {
                     variantId: selectedVariant.id,
@@ -410,10 +416,15 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                                 <span className="text-2xl md:text-3xl font-bold text-primary flex items-center">
                                     BDT {formatPrice(discountedPrice)}
                                 </span>
-                                {product.discountValue > 0 && (
-                                    <span className="text-md lg:text-xl text-gray-400 flex items-center line-through">
-                                        BDT {formatPrice(originalPrice)}
-                                    </span>
+                                {(product.discountValue > 0 || (product.campaignInfo && product.campaignInfo.discountValue > 0)) && originalPrice > discountedPrice && (
+                                    <>
+                                        <span className="text-md lg:text-xl text-gray-400 flex items-center line-through">
+                                            BDT {formatPrice(originalPrice)}
+                                        </span>
+                                        <span className="bg-rose-600 text-white text-xs font-bold px-2 py-0.5 rounded">
+                                            -{product.campaignInfo?.discountValue || product.discountValue}% OFF
+                                        </span>
+                                    </>
                                 )}
 
                                 {/* VAT/Tax Display */}

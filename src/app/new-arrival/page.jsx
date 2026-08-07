@@ -10,7 +10,7 @@ export const metadata = {
 const Page = async () => {
 
     const proudctData = await apiClient("/api/product/new");
-    const newArrivalProducts = proudctData?.data.products || [];
+    const newArrivalProducts = proudctData?.data?.products || proudctData?.products || (Array.isArray(proudctData) ? proudctData : []);
 
     return (
         <AllProductsClient

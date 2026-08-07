@@ -79,7 +79,7 @@ export default function ProductCard({ product, user = null }) {
 
         const variants = product.productVariants;
         const totalStock = variants.reduce((sum, v) => sum + (v.quantity || 0), 0);
-        const discountValue = product.discountValue || 0;
+        const discountValue = product.campaignInfo?.discountValue || product.discountValue || 0;
 
         const originalPrices = variants.map(v => parseFloat(v.price));
         const minOriginalPrice = Math.min(...originalPrices);
@@ -87,6 +87,14 @@ export default function ProductCard({ product, user = null }) {
 
         const discountedPrices = variants.map(v => {
             const base = parseFloat(v.price);
+            if (product.campaignInfo && product.campaignInfo.discountValue > 0) {
+                const campaign = product.campaignInfo;
+                const dValue = parseFloat(campaign.discountValue);
+                const maxD = campaign.maxDiscountAmount ? parseFloat(campaign.maxDiscountAmount) : null;
+                let dAmount = campaign.discountType === 'Fixed' ? Math.min(dValue, base) : (base * dValue) / 100;
+                if (maxD && dAmount > maxD) dAmount = maxD;
+                return Math.max(0, base - dAmount);
+            }
             return discountValue > 0 ? base - (base * discountValue / 100) : base;
         });
         const minDiscountedPrice = Math.min(...discountedPrices);

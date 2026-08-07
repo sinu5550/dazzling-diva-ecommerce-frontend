@@ -738,7 +738,7 @@ const OrderSummary = ({
   if (cart.length === 0) {
     return (
       <div className="sticky top-6">
-        <h2 className="text-2xl font-semibold mb-6">Your Order</h2>
+        <h2 className="text-2xl font-semibold mb-6 text-gray-900">Your Order</h2>
         <div className="border border-stone-300 rounded p-6 bg-white shadow-sm">
           <div className="text-center py-8">
             <FaShoppingBag className="text-4xl text-gray-300 mx-auto mb-4" />
@@ -751,35 +751,14 @@ const OrderSummary = ({
 
   return (
     <div className="sticky top-6">
-      <h2 className="text-2xl font-semibold mb-6">Your Order</h2>
+      <h2 className="text-2xl font-semibold mb-6 text-gray-900">Your Order</h2>
       <div className="border border-gray-200 rounded p-6 bg-white shadow-sm">
-        {/* Product Table */}
-        <div className="mb-6 overflow-x-auto">
+        {/* Products Section */}
+        <div className="mb-6">
           {regularItems.length > 0 && (
-            <table className="w-full border-collapse rounded text-sm">
-              <thead>
-                <tr className="bg-neutral-100">
-                  <th className="p-3 text-left border border-stone-200 font-semibold">
-                    Image
-                  </th>
-                  <th className="p-3 text-left border border-stone-200 font-semibold">
-                    Product Info
-                  </th>
-                  <th className="p-3 text-right border border-stone-200 font-semibold">
-                    Unit Price
-                  </th>
-                  <th className="p-3 text-right border border-stone-200 font-semibold">
-                    Discount
-                  </th>
-                  <th className="p-3 text-right border border-stone-200 font-semibold">
-                    VAT/TAX
-                  </th>
-                  <th className="p-3 text-right border border-stone-200 font-semibold">
-                    Total
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
+            <>
+              {/* Mobile View Card List (Cart Page style) */}
+              <div className="block md:hidden space-y-3">
                 {regularItems.map((item, index) => {
                   const quantity = parseInt(item.quantity || 1);
                   const originalPrice = parseFloat(
@@ -806,81 +785,185 @@ const OrderSummary = ({
                     (currentPrice - campaignDiscount) * quantity + itemVAT;
 
                   return (
-                    <tr
-                      key={`regular-${item.productId}-${item.variantId || index
-                        }`}
-                      className="border-b"
+                    <div
+                      key={`regular-mobile-${item.productId}-${item.variantId || index}`}
+                      className="bg-white rounded-xl border border-gray-200 p-3.5 shadow-xs"
                     >
-                      <td className="p-3 border border-stone-200">
-                        <div className="relative w-16 h-16">
+                      <div className="flex gap-3">
+                        {/* Product Image */}
+                        <div className="relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
                           <Image
                             src={getItemImage(item)}
                             alt={item.productName || 'Product'}
-                            width={400}
-                            height={400}
-                            className="w-full h-full object-cover rounded"
-                            style={{ width: 'auto', height: 'auto' }}
+                            fill
+                            sizes="80px"
+                            className="object-cover"
                           />
-                          {item.variantId && (
-                            <div className="absolute -top-1 -right-1 bg-sky-500 text-white text-[10px] p-1 rounded-full">
-                              <SiVala />
+                        </div>
+
+                        {/* Product Details */}
+                        <div className="flex-1 min-w-0 flex flex-col justify-between">
+                          <div>
+                            <h4 className="font-semibold text-gray-900 text-sm line-clamp-2 leading-snug">
+                              {item.productName}
+                            </h4>
+                            {renderVariantAttributes(item)}
+                            {item.campaignName && (
+                              <span className="inline-block text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md font-medium mt-1">
+                                {item.campaignName}
+                              </span>
+                            )}
+                          </div>
+
+                          <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100 text-xs">
+                            <span className="text-gray-500 font-medium">Qty: <span className="text-gray-900 font-bold">{quantity}</span></span>
+                            <div className="text-right">
+                              <span className="font-bold text-[#5A0C3D] text-sm">
+                                {formatPrice(lineTotal)}
+                              </span>
+                              {totalItemDiscount > 0 && (
+                                <span className="block text-[10px] text-gray-400 line-through">
+                                  {formatPrice(originalPrice * quantity)}
+                                </span>
+                              )}
                             </div>
-                          )}
-                        </div>
-                      </td>
-
-                      <td className="p-3 border border-stone-200">
-                        <div>
-                          <h4 className="font-semibold text-gray-900">
-                            {item.productName}
-                          </h4>
-                          {renderVariantAttributes(item)}
-                          {item.campaignName && (
-                            <div className="text-xs text-purple-600 font-medium mt-1">
-                              {item.campaignName}
-                            </div>
-                          )}
-                          <div className="text-xs text-gray-600 mt-1">
-                            Qty: {quantity}
                           </div>
                         </div>
-                      </td>
-
-                      <td className="p-3 border border-stone-200 text-right">
-                        <div className="font-medium">
-                          {formatPrice(originalPrice)}
-                        </div>
-                      </td>
-
-                      <td className="p-3 border border-stone-200 text-right">
-                        {totalItemDiscount > 0 ? (
-                          <div className="font-medium text-red-600">
-                            {formatPrice(totalItemDiscount)}
-                          </div>
-                        ) : (
-                          <div className="text-gray-400">-</div>
-                        )}
-                      </td>
-                      <td className="p-3 border border-stone-200 text-right">
-                        {itemVAT > 0 ? (
-                          <div className="font-medium">
-                            {formatPrice(itemVAT)}
-                          </div>
-                        ) : (
-                          <div className="text-gray-600">Included</div>
-                        )}
-                      </td>
-
-                      <td className="p-3 border border-stone-200 text-right">
-                        <div className="font-bold text-gray-900">
-                          {formatPrice(lineTotal)}
-                        </div>
-                      </td>
-                    </tr>
+                      </div>
+                    </div>
                   );
                 })}
-              </tbody>
-            </table>
+              </div>
+
+              {/* Desktop Table View */}
+              <div className="hidden md:block overflow-x-auto">
+                <table className="w-full border-collapse rounded text-sm">
+                  <thead>
+                    <tr className="bg-neutral-100">
+                      <th className="p-3 text-left border border-stone-200 font-semibold">
+                        Image
+                      </th>
+                      <th className="p-3 text-left border border-stone-200 font-semibold">
+                        Product Info
+                      </th>
+                      <th className="p-3 text-right border border-stone-200 font-semibold">
+                        Unit Price
+                      </th>
+                      <th className="p-3 text-right border border-stone-200 font-semibold">
+                        Discount
+                      </th>
+                      <th className="p-3 text-right border border-stone-200 font-semibold">
+                        VAT/TAX
+                      </th>
+                      <th className="p-3 text-right border border-stone-200 font-semibold">
+                        Total
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {regularItems.map((item, index) => {
+                      const quantity = parseInt(item.quantity || 1);
+                      const originalPrice = parseFloat(
+                        item.originalPrice || item.price || 0
+                      );
+                      const currentPrice = parseFloat(item.price || 0);
+
+                      const productDiscount = originalPrice - currentPrice;
+                      const campaignDiscount = parseFloat(item.discountAmount || 0);
+                      const totalItemDiscount =
+                        (productDiscount + campaignDiscount) * quantity;
+
+                      let itemVAT = 0;
+                      const taxType = item.taxType
+                        ? item.taxType.toLowerCase()
+                        : "";
+                      if (taxType === "exclusive" && item.tax) {
+                        const taxRate = parseFloat(item.tax || 0);
+                        const finalPrice = currentPrice - campaignDiscount;
+                        itemVAT = (finalPrice * quantity * taxRate) / 100;
+                      }
+
+                      const lineTotal =
+                        (currentPrice - campaignDiscount) * quantity + itemVAT;
+
+                      return (
+                        <tr
+                          key={`regular-${item.productId}-${item.variantId || index
+                            }`}
+                          className="border-b"
+                        >
+                          <td className="p-3 border border-stone-200">
+                            <div className="relative w-16 h-16">
+                              <Image
+                                src={getItemImage(item)}
+                                alt={item.productName || 'Product'}
+                                width={400}
+                                height={400}
+                                className="w-full h-full object-cover rounded"
+                                style={{ width: 'auto', height: 'auto' }}
+                              />
+                              {item.variantId && (
+                                <div className="absolute -top-1 -right-1 bg-sky-500 text-white text-[10px] p-1 rounded-full">
+                                  <SiVala />
+                                </div>
+                              )}
+                            </div>
+                          </td>
+
+                          <td className="p-3 border border-stone-200">
+                            <div>
+                              <h4 className="font-semibold text-gray-900">
+                                {item.productName}
+                              </h4>
+                              {renderVariantAttributes(item)}
+                              {item.campaignName && (
+                                <div className="text-xs text-purple-600 font-medium mt-1">
+                                  {item.campaignName}
+                                </div>
+                              )}
+                              <div className="text-xs text-gray-600 mt-1">
+                                Qty: {quantity}
+                              </div>
+                            </div>
+                          </td>
+
+                          <td className="p-3 border border-stone-200 text-right">
+                            <div className="font-medium">
+                              {formatPrice(originalPrice)}
+                            </div>
+                          </td>
+
+                          <td className="p-3 border border-stone-200 text-right">
+                            {totalItemDiscount > 0 ? (
+                              <div className="font-medium text-red-600">
+                                {formatPrice(totalItemDiscount)}
+                              </div>
+                            ) : (
+                              <div className="text-gray-400">-</div>
+                            )}
+                          </td>
+                          <td className="p-3 border border-stone-200 text-right">
+                            {itemVAT > 0 ? (
+                              <div className="font-medium">
+                                {formatPrice(itemVAT)}
+                              </div>
+                            ) : (
+                              <div className="text-gray-600">Included</div>
+                            )}
+                          </td>
+
+                          <td className="p-3 border border-stone-200 text-right">
+                            <div className="font-bold text-gray-900">
+                              {formatPrice(lineTotal)}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </>
           )}
 
           {/* Bundle Items */}

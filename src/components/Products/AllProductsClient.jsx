@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import React, { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { X, SlidersHorizontal, Grid, List, ChevronDown, Check } from 'lucide-react';
 import ProductCard from './ProductCard';
 import Container from '../Container/Container';
@@ -20,29 +20,73 @@ export default function AllProductsClient({
     fetchUrl
 }) {
     const { user } = useUser();
+    // Helper function to attach store-wide campaign info to product list
+    const applyCampaignToProducts = useCallback((productList, campaign) => {
+        if (!campaign || !productList || productList.length === 0) return productList;
+
+        const campaignInfo = {
+            campaignId: campaign.id,
+            campaignName: campaign.name,
+            campaignType: campaign.campaignType,
+            discountType: campaign.discountType,
+            discountValue: parseFloat(campaign.discountValue) || 0,
+            maxDiscountAmount: campaign.maxDiscountAmount
+                ? parseFloat(campaign.maxDiscountAmount)
+                : null,
+            appliesToAll: campaign.appliesToAll,
+            startAt: campaign.startAt,
+            endAt: campaign.endAt,
+            showCountdown: campaign.showCountdown,
+            badgeText: campaign.badgeText,
+            badgeColor: campaign.badgeColor,
+            priority: campaign.priority || 0,
+        };
+
+        return productList.map(p => ({
+            ...p,
+            campaignInfo: p.campaignInfo || campaignInfo
+        }));
+    }, []);
+
     const [products, setProducts] = useState(initialProducts || []);
     const [filteredProducts, setFilteredProducts] = useState(initialProducts || []);
     const [viewMode, setViewMode] = useState('grid'); // 'grid' | 'list'
     const [showDrawer, setShowDrawer] = useState(false);
 
     useEffect(() => {
-        if (!fetchUrl) return;
-
-        const fetchFullCatalog = async () => {
+        const fetchCampaignsAndCatalog = async () => {
             try {
                 const { apiClient } = await import('@/lib/apiClient');
-                const response = await apiClient(fetchUrl);
-                const fullProducts = response?.products || response?.data?.products || response || [];
-                if (fullProducts && Array.isArray(fullProducts) && fullProducts.length > 0) {
-                    setProducts(fullProducts);
+                
+                // Fetch active campaigns
+                const campaignsRes = await apiClient('/api/discount-campaign/active');
+                const campaigns = Array.isArray(campaignsRes) 
+                    ? campaignsRes 
+                    : (campaignsRes?.data || campaignsRes?.campaigns || []);
+                const appliesToAllCampaign = campaigns.find(c => c.appliesToAll);
+
+                let catalogList = initialProducts || [];
+
+                if (fetchUrl) {
+                    const response = await apiClient(fetchUrl);
+                    const fullProducts = response?.products || response?.data?.products || response || [];
+                    if (fullProducts && Array.isArray(fullProducts) && fullProducts.length > 0) {
+                        catalogList = fullProducts;
+                    }
                 }
+
+                if (appliesToAllCampaign) {
+                    catalogList = applyCampaignToProducts(catalogList, appliesToAllCampaign);
+                }
+
+                setProducts(catalogList);
             } catch (error) {
-                console.error("[AllProductsClient] Error fetching full catalog:", error);
+                console.error("[AllProductsClient] Error fetching catalog or campaigns:", error);
             }
         };
 
-        fetchFullCatalog();
-    }, [fetchUrl]);
+        fetchCampaignsAndCatalog();
+    }, [fetchUrl, initialProducts, applyCampaignToProducts]);
 
     // Countdown Timer logic for campaign banner
     const nearestEndingCampaign = useMemo(() => {

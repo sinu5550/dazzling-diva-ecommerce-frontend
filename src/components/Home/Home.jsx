@@ -15,9 +15,6 @@ import BentoImageGalleryTwo from "./sections/BentoImageGalleryTwo";
 import BentoImageGalleryOne from "./sections/BentoImageGalleryOne";
 import Testimonials from "./sections/Testimonials";
 
-
-
-
 // API main categories fetch
 export async function getMainCategories() {
   try {
@@ -40,7 +37,7 @@ function getAllCategories(mainCategories) {
       mainCategoryName: mainCat.name,
       mainCategoryCode: mainCat.code,
       mainCategoryImage: mainCat.image,
-    }))
+    })),
   );
 }
 
@@ -65,7 +62,7 @@ const Home = async () => {
     bentoGalleryRes,
     mainCategoriesRes,
     activeCampaignsRes,
-    testimonialsRes
+    testimonialsRes,
   ] = await Promise.allSettled([
     apiClient("/api/hero-sliders"),
     apiClient("/api/product/new"),
@@ -74,23 +71,38 @@ const Home = async () => {
     apiClient("/api/bento-gallery"),
     getMainCategories(),
     fetchActiveCampaigns(),
-    apiClient("/api/testimonials")
+    apiClient("/api/testimonials"),
   ]);
 
-  const heroSliderData = heroSliderRes.status === "fulfilled" ? heroSliderRes.value : [];
-  const newProductData = newProductRes.status === "fulfilled" ? newProductRes.value : { data: { products: [] } };
-  const topSellingProductData = topSellingRes.status === "fulfilled" ? topSellingRes.value : { data: { products: [] } };
-  const midBannerData = midBannerRes.status === "fulfilled" ? midBannerRes.value : null;
-  const bentoImageGalleryData = bentoGalleryRes.status === "fulfilled" ? bentoGalleryRes.value : [];
-  const mainCategoriesData = mainCategoriesRes.status === "fulfilled" ? mainCategoriesRes.value : [];
-  const campaignsData = activeCampaignsRes.status === "fulfilled" ? activeCampaignsRes.value : [];
-  const testimonialsData = testimonialsRes.status === "fulfilled" ? testimonialsRes.value : null;
+  const heroSliderData =
+    heroSliderRes.status === "fulfilled" ? heroSliderRes.value : [];
+  const newProductData =
+    newProductRes.status === "fulfilled"
+      ? newProductRes.value
+      : { data: { products: [] } };
+  const topSellingProductData =
+    topSellingRes.status === "fulfilled"
+      ? topSellingRes.value
+      : { data: { products: [] } };
+  const midBannerData =
+    midBannerRes.status === "fulfilled" ? midBannerRes.value : null;
+  const bentoImageGalleryData =
+    bentoGalleryRes.status === "fulfilled" ? bentoGalleryRes.value : [];
+  const mainCategoriesData =
+    mainCategoriesRes.status === "fulfilled" ? mainCategoriesRes.value : [];
+  const rawCampaigns = activeCampaignsRes.status === "fulfilled" ? activeCampaignsRes.value : [];
+  const campaignsData = Array.isArray(rawCampaigns)
+    ? rawCampaigns
+    : (rawCampaigns?.data || rawCampaigns?.campaigns || []);
+
+  const testimonialsData =
+    testimonialsRes.status === "fulfilled" ? testimonialsRes.value : null;
 
   // Extract all categories into a flat array
   const allCategories = getAllCategories(mainCategoriesData);
 
   // Extract all products from active campaigns
-  const allProductsFromCampaigns = campaignsData.flatMap(
+  let allProductsFromCampaigns = campaignsData.flatMap(
     (campaign) =>
       (campaign.discountProducts || []).map((dp) => ({
         ...dp.product,
@@ -109,8 +121,35 @@ const Home = async () => {
           badgeColor: campaign.badgeColor,
           priority: campaign.priority,
         },
-      })) || []
+      })) || [],
   );
+
+  // If campaign has appliesToAll: true and no specific discountProducts are linked, attach campaignInfo to catalog products
+  if (allProductsFromCampaigns.length === 0 && campaignsData.length > 0) {
+    const appliesToAllCampaign = campaignsData.find(c => c.appliesToAll) || campaignsData[0];
+    const catalogProducts = newProductData?.data?.products || newProductData?.products || (Array.isArray(newProductData) ? newProductData : []);
+
+    if (appliesToAllCampaign && catalogProducts.length > 0) {
+      allProductsFromCampaigns = catalogProducts.map(product => ({
+        ...product,
+        campaignInfo: {
+          campaignId: appliesToAllCampaign.id,
+          campaignName: appliesToAllCampaign.name,
+          campaignType: appliesToAllCampaign.campaignType,
+          discountType: appliesToAllCampaign.discountType,
+          discountValue: parseFloat(appliesToAllCampaign.discountValue) || 0,
+          maxDiscountAmount: parseFloat(appliesToAllCampaign.maxDiscountAmount) || null,
+          appliesToAll: appliesToAllCampaign.appliesToAll,
+          startAt: appliesToAllCampaign.startAt,
+          endAt: appliesToAllCampaign.endAt,
+          showCountdown: appliesToAllCampaign.showCountdown,
+          badgeText: appliesToAllCampaign.badgeText,
+          badgeColor: appliesToAllCampaign.badgeColor,
+          priority: appliesToAllCampaign.priority,
+        },
+      }));
+    }
+  }
 
   return (
     <div className="space-y-10 bg-white text-gray-800">
@@ -127,7 +166,6 @@ const Home = async () => {
       <MidBannerTwo midBannerData={midBannerData} />
       {/* <BentoImageGalleryTwo bentoImageGalleryData={bentoImageGalleryData} /> */}
       {/* <TopPickSeason topPickData={topPickData} /> */}
-
 
       {/* <Coupon couponData={couponData} /> */}
 

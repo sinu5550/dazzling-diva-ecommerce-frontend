@@ -34,6 +34,8 @@ const BillingDetails = ({
     const [filteredDistricts, setFilteredDistricts] = useState([]);
     const [filteredUpazilas, setFilteredUpazilas] = useState([]);
 
+    const [isGuestCheckout, setIsGuestCheckout] = useState(false);
+
     // Payment Modal State
     const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
     const [tempCheckoutData, setTempCheckoutData] = useState(null);
@@ -305,6 +307,7 @@ const BillingDetails = ({
             const checkoutData = {
                 customerId: targetCustomerId,
                 customerAddressId: newAddressId,
+                email: emailToUse,
                 note: formData.note || '',
                 shippingMethod: formData.shipping,
                 paymentMethod: formData.payment
@@ -445,9 +448,47 @@ const BillingDetails = ({
         );
     }
 
+    if (!user && !isGuestCheckout) {
+        return (
+            <div className="bg-white border border-gray-200 rounded-md p-6 md:p-8 shadow-sm text-center md:mt-14 space-y-6">
+                <div className="max-w-md mx-auto space-y-3">
+                    <h3 className="text-xl md:text-2xl font-bold text-gray-800 font-outfit">
+                        Do you already have an account?
+                    </h3>
+                    <p className="text-sm text-gray-500 font-outfit leading-relaxed">
+                        Log in to use your saved addresses, track orders easily, and earn loyalty points on your purchase.
+                    </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
+                    <Link
+                        href="/login?redirect=/checkout"
+                        className="w-full sm:w-auto px-8 py-3 bg-[#5A0C3D] hover:bg-[#450322] text-white font-semibold rounded-xl transition-all shadow-md active:scale-95 text-center"
+                    >
+                        Log In to Account
+                    </Link>
+                </div>
+
+                <div className="relative flex py-2 items-center">
+                    <div className="flex-grow border-t border-gray-200"></div>
+                    <span className="flex-shrink mx-4 text-xs font-semibold uppercase tracking-wider text-gray-400">or</span>
+                    <div className="flex-grow border-t border-gray-200"></div>
+                </div>
+
+                <button
+                    type="button"
+                    onClick={() => setIsGuestCheckout(true)}
+                    className="w-full sm:w-auto px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-xl transition-all border border-gray-300 cursor-pointer active:scale-95"
+                >
+                    Order as Guest
+                </button>
+            </div>
+        );
+    }
+
     return (
         <div>
-            <h2 className="text-2xl font-semibold mb-6">Shipping Address</h2>
+            <h2 className="text-2xl font-semibold mb-6 text-gray-900">Shipping Address</h2>
 
             {/* User Info Display */}
             {user && (
@@ -561,14 +602,23 @@ const BillingDetails = ({
                 /* Manual Address Form - For guest users or users without addresses */
                 <form onSubmit={handleSubmit(handleSaveAndCheckout)}>
                     <div className="space-y-4 mb-6">
-                        <div>
-                            <h3 className="font-medium mb-3 text-lg">
-                                {user ? "Add New Shipping Address" : "Shipping Details"}
+                        <div className="flex items-center justify-between mb-3">
+                            <h3 className="font-medium text-lg text-gray-900">
+                                {user ? "Add New Shipping Address" : "Guest Shipping Details"}
                             </h3>
+                            {!user && (
+                                <button
+                                    type="button"
+                                    onClick={() => setIsGuestCheckout(false)}
+                                    className="text-xs text-[#5A0C3D] hover:underline font-semibold"
+                                >
+                                    Already have an account? Log In
+                                </button>
+                            )}
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-900">
                             <div>
-                                <label className="block mb-1 font-medium">
+                                <label className="block mb-1 font-medium text-gray-900">
                                     Recipient Name <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -577,13 +627,13 @@ const BillingDetails = ({
                                         minLength: { value: 2, message: "At least 2 characters" }
                                     })}
                                     placeholder="Full Name"
-                                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
+                                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all bg-white text-gray-900"
                                     defaultValue={user?.fullName}
                                 />
                                 {errors.recipientName && <p className="text-red-500 text-sm mt-1">{errors.recipientName.message}</p>}
                             </div>
                             <div>
-                                <label className="block mb-1 font-medium">
+                                <label className="block mb-1 font-medium text-gray-900">
                                     Phone Number <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -593,7 +643,7 @@ const BillingDetails = ({
                                         pattern: { value: /^(?:\+88|01)?\d{9,11}$/, message: "Valid BD number" }
                                     })}
                                     placeholder="01XXXXXXXXX"
-                                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
+                                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all bg-white text-gray-900"
                                     defaultValue={user?.phone}
                                 />
                                 {errors.phoneNumber && <p className="text-red-500 text-sm mt-1">{errors.phoneNumber.message}</p>}
