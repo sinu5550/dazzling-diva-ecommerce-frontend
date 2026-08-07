@@ -90,10 +90,11 @@ const Home = async () => {
     bentoGalleryRes.status === "fulfilled" ? bentoGalleryRes.value : [];
   const mainCategoriesData =
     mainCategoriesRes.status === "fulfilled" ? mainCategoriesRes.value : [];
-  const rawCampaigns = activeCampaignsRes.status === "fulfilled" ? activeCampaignsRes.value : [];
+  const rawCampaigns =
+    activeCampaignsRes.status === "fulfilled" ? activeCampaignsRes.value : [];
   const campaignsData = Array.isArray(rawCampaigns)
     ? rawCampaigns
-    : (rawCampaigns?.data || rawCampaigns?.campaigns || []);
+    : rawCampaigns?.data || rawCampaigns?.campaigns || [];
 
   const testimonialsData =
     testimonialsRes.status === "fulfilled" ? testimonialsRes.value : null;
@@ -126,11 +127,15 @@ const Home = async () => {
 
   // If campaign has appliesToAll: true and no specific discountProducts are linked, attach campaignInfo to catalog products
   if (allProductsFromCampaigns.length === 0 && campaignsData.length > 0) {
-    const appliesToAllCampaign = campaignsData.find(c => c.appliesToAll) || campaignsData[0];
-    const catalogProducts = newProductData?.data?.products || newProductData?.products || (Array.isArray(newProductData) ? newProductData : []);
+    const appliesToAllCampaign =
+      campaignsData.find((c) => c.appliesToAll) || campaignsData[0];
+    const catalogProducts =
+      newProductData?.data?.products ||
+      newProductData?.products ||
+      (Array.isArray(newProductData) ? newProductData : []);
 
     if (appliesToAllCampaign && catalogProducts.length > 0) {
-      allProductsFromCampaigns = catalogProducts.map(product => ({
+      allProductsFromCampaigns = catalogProducts.map((product) => ({
         ...product,
         campaignInfo: {
           campaignId: appliesToAllCampaign.id,
@@ -138,7 +143,8 @@ const Home = async () => {
           campaignType: appliesToAllCampaign.campaignType,
           discountType: appliesToAllCampaign.discountType,
           discountValue: parseFloat(appliesToAllCampaign.discountValue) || 0,
-          maxDiscountAmount: parseFloat(appliesToAllCampaign.maxDiscountAmount) || null,
+          maxDiscountAmount:
+            parseFloat(appliesToAllCampaign.maxDiscountAmount) || null,
           appliesToAll: appliesToAllCampaign.appliesToAll,
           startAt: appliesToAllCampaign.startAt,
           endAt: appliesToAllCampaign.endAt,
