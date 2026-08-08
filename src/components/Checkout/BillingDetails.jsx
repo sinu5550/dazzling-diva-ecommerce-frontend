@@ -355,73 +355,62 @@ const BillingDetails = ({
         <>
             {/* Shipping Method */}
             <div className="mb-6">
-                <p className="font-medium mb-3">Shipping Method</p>
-                <div className="space-y-2">
-                    {/* <label className="flex items-center gap-3 p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors">
-                        <input
-                            type="radio"
-                            value="local"
-                            {...register("shipping")}
-                            className="h-4 w-4 text-secound"
-                        />
-                        <div className="flex-1">
-                            <p className="font-medium">Local Pickup</p>
-                        </div>
-                        <p className="font-semibold">{formatPrice(0)}</p>
-                    </label> */}
-                    <label className="flex items-center gap-3 p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+                <p className="font-medium text-xs md:text-base mb-2 md:mb-3">Shipping Method</p>
+                <div className="grid grid-cols-2 gap-2 md:gap-3">
+                    <label className="flex items-center gap-2 p-2.5 md:p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
                         <input
                             type="radio"
                             value="dhaka-city"
                             {...register("shipping")}
-                            className="h-4 w-4 text-secound"
+                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-secound shrink-0"
                             defaultChecked
                         />
-                        <div className="flex-1">
-                            <p className="font-medium">Dhaka City</p>
+                        <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">Dhaka City</p>
                         </div>
-                        <p className="font-semibold">{formatPrice(0)}</p>
+                        <p className="font-semibold text-xs md:text-sm shrink-0">{formatPrice(0)}</p>
                     </label>
-                    <label className="flex items-center gap-3 p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+                    <label className="flex items-center gap-2 p-2.5 md:p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
                         <input
                             type="radio"
                             value="outside"
                             {...register("shipping")}
-                            className="h-4 w-4 text-secound"
+                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-secound shrink-0"
                         />
-                        <div className="flex-1">
-                            <p className="font-medium">Outside Dhaka</p>
+                        <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">Outside Dhaka</p>
                         </div>
-                        <p className="font-semibold">{formatPrice(0)}</p>
+                        <p className="font-semibold text-xs md:text-sm shrink-0">{formatPrice(0)}</p>
                     </label>
                 </div>
             </div>
 
             {/* Payment Method */}
             <div className="mb-6">
-                <p className="font-medium mb-3">Payment Method</p>
-                <div className="space-y-2">
-                    <label className="flex items-center gap-3 p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+                <p className="font-medium text-xs md:text-base mb-2 md:mb-3">Payment Method</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
+                    <label className="flex items-center gap-2 p-2.5 md:p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
                         <input
                             type="radio"
                             value="cod"
                             {...register("payment")}
-                            className="h-4 w-4 text-secound"
+                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-secound shrink-0"
                             defaultChecked
                         />
                         <div>
-                            <p className="font-medium">Cash on Delivery</p>
+                            <p className="font-medium text-xs md:text-sm">Cash on Delivery</p>
                         </div>
                     </label>
-                    {/* <label className="flex items-center gap-3 p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors">
+                    {/* Future payment options will automatically grid into 2 columns (1 row 2 col on mobile) when uncommented: */}
+                    {/* <label className="flex items-center gap-2 p-2.5 md:p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
                         <input
                             type="radio"
                             value="online"
                             {...register("payment")}
-                            className="h-4 w-4 text-secound"
+                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-secound shrink-0"
                         />
                         <div>
-                            <p className="font-medium">Online Payment</p>
+                            <p className="font-medium text-xs md:text-sm">Online Payment</p>
                         </div>
                     </label> */}
                 </div>
@@ -448,47 +437,11 @@ const BillingDetails = ({
         );
     }
 
-    if (!user && !isGuestCheckout) {
-        return (
-            <div className="bg-white border border-gray-200 rounded-md p-6 md:p-8 shadow-sm text-center md:mt-14 space-y-6">
-                <div className="max-w-md mx-auto space-y-3">
-                    <h3 className="text-xl md:text-2xl font-bold text-gray-800 font-outfit">
-                        Do you already have an account?
-                    </h3>
-                    <p className="text-sm text-gray-500 font-outfit leading-relaxed">
-                        Log in to use your saved addresses, track orders easily, and earn loyalty points on your purchase.
-                    </p>
-                </div>
 
-                <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-                    <Link
-                        href="/login?redirect=/checkout"
-                        className="w-full sm:w-auto px-8 py-3 bg-[#5A0C3D] hover:bg-[#450322] text-white font-semibold rounded-xl transition-all shadow-md active:scale-95 text-center"
-                    >
-                        Log In to Account
-                    </Link>
-                </div>
-
-                <div className="relative flex py-2 items-center">
-                    <div className="flex-grow border-t border-gray-200"></div>
-                    <span className="flex-shrink mx-4 text-xs font-semibold uppercase tracking-wider text-gray-400">or</span>
-                    <div className="flex-grow border-t border-gray-200"></div>
-                </div>
-
-                <button
-                    type="button"
-                    onClick={() => setIsGuestCheckout(true)}
-                    className="w-full sm:w-auto px-8 py-3 bg-gray-100 hover:bg-gray-200 text-gray-800 font-medium rounded-xl transition-all border border-gray-300 cursor-pointer active:scale-95"
-                >
-                    Order as Guest
-                </button>
-            </div>
-        );
-    }
 
     return (
         <div>
-            <h2 className="text-2xl font-semibold mb-6 text-gray-900">Shipping Address</h2>
+            <h2 className="text-lg md:text-2xl font-semibold mb-4 md:mb-6 text-gray-900">Shipping Address</h2>
 
             {/* User Info Display */}
             {user && (
@@ -583,27 +536,12 @@ const BillingDetails = ({
 
                     {/* Shipping and Payment Options */}
                     {renderShippingAndPayment()}
-
-                    {/* Place Order Button - Moved to OrderSummary section */}
-                    {/*
-                    <div className="space-y-3">
-                        <button
-                            type="button"
-                            onClick={handlePlaceOrder}
-                            disabled={loading || !selectedAddress}
-                            className="w-full py-3 bg-secound text-white rounded font-bold hover:bg-secound-hover cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed text-lg"
-                        >
-                            {loading ? "Processing..." : "Place Order"}
-                        </button>
-                    </div>
-                    */}
                 </div>
             ) : (
-                /* Manual Address Form - For guest users or users without addresses */
-                <form onSubmit={handleSubmit(handleSaveAndCheckout)}>
+                <form onSubmit={handleSubmit(handleSaveAndCheckout)} className="bg-white border border-gray-200 rounded-md p-4 md:p-6 shadow-sm">
                     <div className="space-y-4 mb-6">
                         <div className="flex items-center justify-between mb-3">
-                            <h3 className="font-medium text-lg text-gray-900">
+                            <h3 className="font-medium text-base md:text-lg text-gray-900">
                                 {user ? "Add New Shipping Address" : "Guest Shipping Details"}
                             </h3>
                             {!user && (
@@ -616,9 +554,9 @@ const BillingDetails = ({
                                 </button>
                             )}
                         </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-900">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 text-gray-900">
                             <div>
-                                <label className="block mb-1 font-medium text-gray-900">
+                                <label className="block mb-1 text-xs md:text-sm font-medium text-gray-900">
                                     Recipient Name <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -627,13 +565,13 @@ const BillingDetails = ({
                                         minLength: { value: 2, message: "At least 2 characters" }
                                     })}
                                     placeholder="Full Name"
-                                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all bg-white text-gray-900"
+                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all bg-white text-gray-900"
                                     defaultValue={user?.fullName}
                                 />
-                                {errors.recipientName && <p className="text-red-500 text-sm mt-1">{errors.recipientName.message}</p>}
+                                {errors.recipientName && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.recipientName.message}</p>}
                             </div>
                             <div>
-                                <label className="block mb-1 font-medium text-gray-900">
+                                <label className="block mb-1 text-xs md:text-sm font-medium text-gray-900">
                                     Phone Number <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -643,15 +581,15 @@ const BillingDetails = ({
                                         pattern: { value: /^(?:\+88|01)?\d{9,11}$/, message: "Valid BD number" }
                                     })}
                                     placeholder="01XXXXXXXXX"
-                                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all bg-white text-gray-900"
+                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all bg-white text-gray-900"
                                     defaultValue={user?.phone}
                                 />
-                                {errors.phoneNumber && <p className="text-red-500 text-sm mt-1">{errors.phoneNumber.message}</p>}
+                                {errors.phoneNumber && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.phoneNumber.message}</p>}
                             </div>
                         </div>
                         {!user && (
                             <div>
-                                <label className="block mb-1 font-medium">
+                                <label className="block mb-1 text-xs md:text-sm font-medium">
                                     Email Address <span className="text-red-500">*</span>
                                 </label>
                                 <input
@@ -661,61 +599,69 @@ const BillingDetails = ({
                                         pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: "Invalid email" }
                                     })}
                                     placeholder="your@email.com"
-                                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
+                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
                                 />
-                                {errors.email && <p className="text-red-500 text-sm mt-1">{errors.email.message}</p>}
+                                {errors.email && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.email.message}</p>}
                             </div>
                         )}
                     </div>
 
                     <div className="space-y-4 mb-6">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-4 text-xs md:text-sm">
+                            {/* Country & Division in 1 Row */}
                             <div>
-                                <label className="block mb-1 font-medium">Country <span className="text-red-500">*</span></label>
+                                <label className="block mb-1 font-medium text-xs md:text-sm">Country <span className="text-red-500">*</span></label>
                                 <input
                                     {...register("country")}
-                                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
+                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
                                     value="Bangladesh"
                                     readOnly
                                 />
                             </div>
                             <div>
-                                <label className="block mb-1 font-medium">Division <span className="text-red-500">*</span></label>
+                                <label className="block mb-1 font-medium text-xs md:text-sm">Division <span className="text-red-500">*</span></label>
                                 <select {...register("division", { required: "Division is required" })}
-                                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all">
+                                    className="w-full text-xs md:text-sm pl-2 md:pl-4 pr-2 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all">
                                     <option value="">Select Division</option>
                                     {divisions.map((division) => (
                                         <option key={division.id} value={division.name}>{division.name}</option>
                                     ))}
                                 </select>
-                                {errors.division && <p className="text-red-500 text-sm mt-1">{errors.division.message}</p>}
+                                {errors.division && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.division.message}</p>}
                             </div>
+
+                            {/* District & Upazila in 1 Row */}
                             <div>
-                                <label className="block mb-1 font-medium">District <span className="text-red-500">*</span></label>
-                                <select {...register("district", { required: "District is required" })} className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all disabled:bg-gray-100" disabled={!watchDivision}>
-                                    <option value="">{watchDivision ? "Select District" : "Select Division First"}</option>
+                                <label className="block mb-1 font-medium text-xs md:text-sm">District <span className="text-red-500">*</span></label>
+                                <select {...register("district", { required: "District is required" })} className="w-full text-xs md:text-sm pl-2 md:pl-4 pr-2 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all disabled:bg-gray-100" disabled={!watchDivision}>
+                                    <option value="">{watchDivision ? "Select District" : "Select Division"}</option>
                                     {filteredDistricts.map((district) => (
                                         <option key={district.id} value={district.name}>{district.name}</option>
                                     ))}
                                 </select>
-                                {errors.district && <p className="text-red-500 text-sm mt-1">{errors.district.message}</p>}
+                                {errors.district && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.district.message}</p>}
                             </div>
                             <div>
-                                <label className="block mb-1 font-medium">Upazila / Thana <span className="text-red-500">*</span></label>
+                                <label className="block mb-1 font-medium text-xs md:text-sm">Upazila / Thana <span className="text-red-500">*</span></label>
                                 <input
                                     {...register("upazila", { required: "Upazila is required" })}
                                     type="text"
                                     placeholder="e.g. Mirpur"
-                                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
+                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
                                 />
-                                {errors.upazila && <p className="text-red-500 text-sm mt-1">{errors.upazila.message}</p>}
+                                {errors.upazila && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.upazila.message}</p>}
                             </div>
+
+                            {/* City Field - Commented out for now */}
+                            {/* 
                             <div>
-                                <label className="block mb-1 font-medium">City</label>
-                                <input {...register("city")} placeholder="City" className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all" />
+                                <label className="block mb-1 font-medium text-xs md:text-sm">City</label>
+                                <input {...register("city")} placeholder="City" className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all" />
                             </div>
-                            <div>
-                                <label className="block mb-1 font-medium">Postal Code <span className="text-red-500">*</span></label>
+                            */}
+
+                            <div className="col-span-2">
+                                <label className="block mb-1 font-medium text-xs md:text-sm">Postal Code <span className="text-red-500">*</span></label>
                                 <input
                                     {...register("postalCode", {
                                         required: "Postal code is required",
@@ -723,27 +669,29 @@ const BillingDetails = ({
                                     })}
                                     placeholder="1230"
                                     maxLength="4"
-                                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
+                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
                                 />
-                                {errors.postalCode && <p className="text-red-500 text-sm mt-1">{errors.postalCode.message}</p>}
+                                {errors.postalCode && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.postalCode.message}</p>}
                             </div>
                         </div>
+
                         <div>
-                            <label className="block mb-1 font-medium">Street Address <span className="text-red-500">*</span></label>
+                            <label className="block mb-1 font-medium text-xs md:text-sm">Street Address <span className="text-red-500">*</span></label>
                             <textarea
                                 {...register("address", {
                                     required: "Address is required",
                                     minLength: { value: 10, message: "At least 10 characters" }
                                 })}
                                 placeholder="House No, Road No, Area"
-                                className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all h-24"
+                                className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all h-20 md:h-24"
                                 rows={3}
                             />
-                            {errors.address && <p className="text-red-500 text-sm mt-1">{errors.address.message}</p>}
+                            {errors.address && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.address.message}</p>}
                         </div>
+
                         <div>
-                            <label className="block mb-1 font-medium">Address Type</label>
-                            <select {...register("type")} className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all">
+                            <label className="block mb-1 font-medium text-xs md:text-sm">Address Type</label>
+                            <select {...register("type")} className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all">
                                 <option value="Home">Home</option>
                                 <option value="Office">Office</option>
                                 <option value="Other">Other</option>
@@ -752,7 +700,7 @@ const BillingDetails = ({
                         {user && customerId && (
                             <div className="flex items-center">
                                 <input type="checkbox" {...register("isDefault")} className="h-4 w-4 text-secound rounded" defaultChecked={addresses.length === 0} />
-                                <label className="ml-2 text-gray-700">Set as default shipping address</label>
+                                <label className="ml-2 text-xs md:text-sm text-gray-700">Set as default shipping address</label>
                             </div>
                         )}
                     </div>

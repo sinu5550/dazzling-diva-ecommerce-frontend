@@ -123,7 +123,7 @@ const PaymentMethodModal = ({ isOpen, onClose, onSelectPayment, totalAmount }) =
                     <div className="flex justify-between items-center">
                         <div>
                             <h2 className="text-2xl font-bold text-gray-800 font-philosopher">Select Payment Method</h2>
-                            <p className="text-gray-600 mt-1">Total Amount: ৳{totalAmount.toFixed(2)}</p>
+                            <p className="text-gray-600 mt-1">Total Amount: ৳{Math.ceil(totalAmount).toLocaleString('en-BD')}</p>
                         </div>
                         <button
                             onClick={onClose}
@@ -216,7 +216,7 @@ const PaymentMethodModal = ({ isOpen, onClose, onSelectPayment, totalAmount }) =
                                 Processing...
                             </div>
                         ) : (
-                            `Pay ৳${totalAmount.toFixed(2)}`
+                            `Pay ৳${Math.ceil(totalAmount).toLocaleString('en-BD')}`
                         )}
                     </button>
                     <p className="text-xs text-gray-500 text-center mt-3 flex items-center justify-center gap-1">

@@ -367,17 +367,17 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
         <div className="bg-white my-2 lg:py-4 max-w-7xl mx-auto">
             <Container>
                 {/* Breadcrumb */}
-                <div className="hidden lg:flex">
-                    <nav className="text-sm text-gray-600 mb-2 flex items-center gap-2 ">
-                        <Link href="/" className="hover:text-primary">
+                <div className="flex">
+                    <nav className="text-xs md:text-sm text-gray-600 mb-2 flex items-center gap-1.5 md:gap-2 flex-nowrap overflow-hidden">
+                        <Link href="/" className="hover:text-primary shrink-0">
                             Home
                         </Link>
-                        <span>/</span>
-                        <Link href={`/products/category/${product.subCategory?.category?.name}`} className="hover:text-primary">
+                        <span className="shrink-0">/</span>
+                        <Link href={`/products/category/${product.subCategory?.category?.name}`} className="hover:text-primary shrink-0 whitespace-nowrap">
                             {product.subCategory?.category?.name || 'Category'}
                         </Link>
-                        <span>/</span>
-                        <span className="text-gray-900 font-medium">{product.productName}</span>
+                        <span className="shrink-0">/</span>
+                        <span className="text-gray-900 font-medium truncate min-w-0">{product.productName}</span>
                     </nav>
                 </div>
 
@@ -391,12 +391,14 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                     {/* Right Column - Product Details */}
                     <div className="space-y-4">
                         {/* Category Tag */}
-                        <div className="text-sm text-gray-600">
-                            {product.subCategory?.category?.name || ''}, {product.subCategory?.name || ''}
-                        </div>
+                        {product.subCategory && (
+                            <div className="text-xs md:text-sm text-gray-600">
+                                {[product.subCategory?.category?.name, product.subCategory?.name].filter(Boolean).join(', ')}
+                            </div>
+                        )}
 
                         {/* Product Name */}
-                        <h1 className="font-poppins text-xl lg:text-2xl font-medium text-gray-800 leading-tight">
+                        <h1 className="font-poppins text-lg md:text-2xl font-medium text-gray-800 leading-tight">
                             {product.productName}
                         </h1>
 
@@ -414,12 +416,12 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                         <div className="py-4 border-t border-b border-gray-200 text-gray-700">
                             <div className="flex items-center gap-4 flex-wrap">
                                 <span className="text-2xl md:text-3xl font-bold text-primary flex items-center">
-                                    BDT {formatPrice(discountedPrice)}
+                                    ৳{formatPrice(discountedPrice)}
                                 </span>
                                 {(product.discountValue > 0 || (product.campaignInfo && product.campaignInfo.discountValue > 0)) && originalPrice > discountedPrice && (
                                     <>
                                         <span className="text-md lg:text-xl text-gray-400 flex items-center line-through">
-                                            BDT {formatPrice(originalPrice)}
+                                            ৳{formatPrice(originalPrice)}
                                         </span>
                                         <span className="bg-rose-600 text-white text-xs font-bold px-2 py-0.5 rounded">
                                             -{product.campaignInfo?.discountValue || product.discountValue}% OFF

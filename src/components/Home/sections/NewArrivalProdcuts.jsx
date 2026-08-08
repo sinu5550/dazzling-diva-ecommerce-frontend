@@ -30,7 +30,7 @@ export const NewArrivalProducts = ({ newProductData }) => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-[18px]   text-black font-normal font-outfit"
+            className="text-[16px] md:text-[18px] text-black font-normal font-outfit"
           >
             New Arrivals
           </motion.p>
@@ -39,7 +39,7 @@ export const NewArrivalProducts = ({ newProductData }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-2xl lg:text-[48px] font-normal text-black text-center font-outfit uppercase"
+            className="text-[22px] md:text-2xl lg:text-[48px] font-normal text-black text-center font-outfit uppercase"
           >
             The latest styles <br />you'll love.
           </motion.h2>

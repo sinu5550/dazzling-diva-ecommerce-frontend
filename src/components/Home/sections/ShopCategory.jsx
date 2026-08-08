@@ -10,7 +10,6 @@ import { motion } from "framer-motion";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const Category = ({ data }) => {
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(null);
 
@@ -100,7 +99,7 @@ const Category = ({ data }) => {
   };
 
   return (
-    <section className="overflow-hidden py-12 pt-4">
+    <section className="overflow-hidden py-4 md:py-12 md:pt-4">
       <Container>
         {/*Heading */}
         <div className="flex flex-col items-center mb-10 space-y-1">
@@ -109,7 +108,7 @@ const Category = ({ data }) => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-[18px] font-outfit font-normal text-black text-center tracking-wide"
+            className="text-[16px] md:text-[18px] font-outfit font-normal text-black text-center tracking-wide"
           >
             Shop By Category
           </motion.span>
@@ -117,7 +116,7 @@ const Category = ({ data }) => {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-[32px] md:text-[48px] uppercase text-black font-normal tracking-wide text-center"
+            className="text-[22px] md:text-[48px] uppercase text-black font-normal tracking-wide text-center"
           >
             Find your Perfect Style
           </motion.h2>
@@ -142,7 +141,6 @@ const Category = ({ data }) => {
               "
             >
               <ChevronLeft className="text-sm lg:text-base text-[#5A0C3D]" />
-
             </button>
           )}
 
@@ -167,7 +165,7 @@ const Category = ({ data }) => {
           )}
 
           {/* Slider */}
-          <div 
+          <div
             className="overflow-hidden"
             onTouchStart={onTouchStart}
             onTouchMove={onTouchMove}
@@ -176,8 +174,9 @@ const Category = ({ data }) => {
             <div
               className="flex transition-transform duration-700 ease-out"
               style={{
-                transform: `translateX(-${currentIndex * (100 / itemsPerPage)
-                  }%)`,
+                transform: `translateX(-${
+                  currentIndex * (100 / itemsPerPage)
+                }%)`,
               }}
             >
               {data.map((category) => (
@@ -187,9 +186,7 @@ const Category = ({ data }) => {
                   style={{ width: `${100 / itemsPerPage}%` }}
                 >
                   <Link
-                    href={`/products/category/${encodeCategory(
-                      category.name
-                    )}`}
+                    href={`/products/category/${encodeCategory(category.name)}`}
                     className="group/card block"
                   >
                     {/* Card */}

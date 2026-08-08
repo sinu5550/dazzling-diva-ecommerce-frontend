@@ -19,7 +19,7 @@ export const TopSellingProducts = ({ topSellingProductData }) => {
     const displayedProducts = topSellingProducts.slice(0, 3);
 
     return (
-        <section className="py-6">
+        <section className="py-2 md:py-6">
             <Container>
                 {/* Heading */}
                 <div className="flex flex-col items-center mb-8 space-y-2">
@@ -27,7 +27,7 @@ export const TopSellingProducts = ({ topSellingProductData }) => {
                         initial={{ opacity: 0, y: 10 }}
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
-                        className="text-[18px] text-black font-normal font-outfit"
+                        className="text-[16px] md:text-[18px] text-black font-normal font-outfit"
                     >
                         Most Loved Collection
                     </motion.p>
@@ -36,7 +36,7 @@ export const TopSellingProducts = ({ topSellingProductData }) => {
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         transition={{ delay: 0.1 }}
-                        className="text-2xl lg:text-[48px] font-normal text-black text-center font-outfit uppercase"
+                        className="text-[22px] md:text-2xl lg:text-[48px] font-normal text-black text-center font-outfit uppercase"
                     >
                        Shop the styles our customers <br />can't get enough of.
                     </motion.h2>

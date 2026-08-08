@@ -302,7 +302,7 @@ const SearchComponent = () => {
 
                                                     {suggestion.type === 'product' && suggestion.price && (
                                                         <span className="text-[12px] font-bold text-gray-900">
-                                                            ৳{parseFloat(suggestion.price).toFixed(2)}
+                                                            ৳{Math.ceil(parseFloat(suggestion.price) || 0).toLocaleString('en-BD')}
                                                         </span>
                                                     )}
                                                     {suggestion.sku && (

@@ -123,7 +123,9 @@ const WishlistClient = ({ user = null }) => {
 
     const formatPrice = (price) => {
         if (!price) return "৳0";
-        return `৳${Number(price).toLocaleString("en-BD")}`;
+        const num = Number(price);
+        const ceilNum = isNaN(num) ? 0 : Math.ceil(num);
+        return `৳${ceilNum.toLocaleString("en-BD")}`;
     };
 
     const calculateDiscountPercentage = (originalPrice, discountPrice) => {

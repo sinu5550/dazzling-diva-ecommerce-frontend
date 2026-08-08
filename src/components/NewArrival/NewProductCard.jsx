@@ -113,9 +113,9 @@ export default function NewProductCard({
     const maxPrice = Math.max(...discountedPrices);
 
     if (minPrice === maxPrice) {
-      return `BDT ${formatPrice(minPrice)}`;
+      return `৳${formatPrice(minPrice)}`;
     }
-    return `BDT ${formatPrice(minPrice)} - BDT ${formatPrice(maxPrice)}`;
+    return `৳${formatPrice(minPrice)} - ৳${formatPrice(maxPrice)}`;
   }, [isVariantProduct, product]);
 
   // Cart handler
@@ -318,20 +318,20 @@ export default function NewProductCard({
         </div>
 
         {/* White Details Banner Overlay at the Bottom */}
-        <div className="absolute bottom-3 left-3 right-3 bg-white p-3  flex items-center justify-between shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-20 border border-gray-100/50">
-          <div className="flex flex-col items-start min-w-0 pr-2">
-            <span className="text-[12px] md:text-[14px] font-outfit font-regular text-black line-clamp-1 group-hover/card:text-[#5A0C3D] transition-colors duration-200">
+        <div className="absolute bottom-2.5 left-2.5 right-2.5 md:bottom-3 md:left-3 md:right-3 bg-white p-2.5 md:p-3 flex items-center justify-between shadow-[0_4px_12px_rgba(0,0,0,0.08)] z-20 border border-gray-100/50">
+          <div className="flex flex-col items-start min-w-0 pr-1.5">
+            <span className="text-[11px] md:text-[14px] font-outfit font-regular text-black truncate w-full group-hover/card:text-[#5A0C3D] transition-colors duration-200">
               {product.productName}
             </span>
-            <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-              <span className="text-[12px] md:text-[14px] font-outfit font-bold text-[#5A0C3D]">
+            <div className="flex flex-nowrap items-center gap-1 mt-0.5 min-w-0 overflow-hidden">
+              <span className="text-[11px] md:text-[14px] font-outfit font-bold text-[#5A0C3D] whitespace-nowrap truncate">
                 {variantPriceRange
                   ? variantPriceRange
-                  : `BDT ${formatPrice(discountedPrice)}`}
+                  : `৳${formatPrice(discountedPrice)}`}
               </span>
               {(product.discountValue > 0 || (product.campaignInfo && product.campaignInfo.discountValue > 0)) && originalPrice > discountedPrice && (
-                <span className="text-[10px] md:text-[12px] font-outfit font-normal text-gray-400 line-through">
-                  BDT {formatPrice(originalPrice)}
+                <span className="text-[9px] md:text-[12px] font-outfit font-normal text-gray-400 line-through whitespace-nowrap truncate shrink-0">
+                  ৳{formatPrice(originalPrice)}
                 </span>
               )}
             </div>

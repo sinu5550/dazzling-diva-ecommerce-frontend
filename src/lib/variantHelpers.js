@@ -176,8 +176,10 @@ export function getVariantImage(variant, product) {
  * Format price with Bangladeshi Taka
  */
 export function formatPrice(price) {
+    const num = typeof price === 'number' ? price : parseFloat(price);
+    const ceilNum = isNaN(num) ? 0 : Math.ceil(num);
     return new Intl.NumberFormat('en-BD', {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
-    }).format(price);
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+    }).format(ceilNum);
 }
