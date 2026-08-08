@@ -117,7 +117,7 @@ export default function Testimonials({ testimonialsData }) {
   }
 
   return (
-    <section className="py-6 bg-white font-outfit overflow-hidden">
+    <section className="pb-6 bg-white font-outfit overflow-hidden">
       <Container>
         {/* Heading */}
         <div className="flex flex-col items-center mb-8 space-y-2 text-center">
@@ -125,7 +125,7 @@ export default function Testimonials({ testimonialsData }) {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-[18px] text-black font-normal font-outfit"
+            className="text-[16px] md:text-[18px] text-black font-normal font-outfit"
           >
             Diva Diaries
           </motion.p>
@@ -134,7 +134,7 @@ export default function Testimonials({ testimonialsData }) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-2xl lg:text-[48px] font-normal text-black text-center font-outfit uppercase leading-tight"
+            className="text-[22px] md:text-2xl lg:text-[48px] font-normal text-black text-center font-outfit uppercase leading-tight"
           >
             What our lovely divas <br />are saying about us.
           </motion.h2>

@@ -328,25 +328,25 @@ export default function DiscountProductDetailsClient({ product }) {
         <div className="bg-white py-4">
             <Container>
                 {/* Breadcrumb */}
-                <nav className="text-sm text-gray-600 mb-2 flex items-center gap-2">
-                    <Link href="/" className="hover:text-teal-600">Home</Link>
-                    <span>/</span>
-                    <Link href="/discount-campaigns" className="hover:text-teal-600">Discount Campaigns</Link>
-                    <span>/</span>
-                    <span className="text-gray-900 font-medium">{product.productName}</span>
+                <nav className="text-xs md:text-sm text-gray-600 mb-2 flex items-center gap-1.5 md:gap-2 flex-nowrap overflow-hidden">
+                    <Link href="/" className="hover:text-teal-600 shrink-0">Home</Link>
+                    <span className="shrink-0">/</span>
+                    <Link href="/discount-campaigns" className="hover:text-teal-600 shrink-0 whitespace-nowrap">Discount Campaigns</Link>
+                    <span className="shrink-0">/</span>
+                    <span className="text-gray-900 font-medium truncate min-w-0">{product.productName}</span>
                 </nav>
 
                 {/* Campaign Banner - Brand plum styling */}
                 {hasCampaignDiscount && campaignInfo && (
                     <div className="mb-3 py-2 px-3.5 md:py-2.5 md:px-4 rounded-[12px] bg-[#5A0C3D]/5 border border-[#5A0C3D]/15 font-outfit shadow-xs">
-                        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2.5 md:gap-4">
-                            <div className="flex items-center gap-3">
-                                <div className="text-white text-xs md:text-sm font-bold px-3 py-1.5 rounded-lg shadow-xs bg-[#5A0C3D] uppercase tracking-wider">
+                        <div className="flex flex-row items-center justify-between gap-2 md:gap-4 flex-wrap sm:flex-nowrap">
+                            <div className="flex items-center gap-2.5 md:gap-3 min-w-0">
+                                <div className="text-white text-xs md:text-sm font-bold px-2.5 py-1.5 md:px-3 rounded-lg shadow-xs bg-[#5A0C3D] uppercase tracking-wider shrink-0">
                                     {getBadgeText()}
                                 </div>
-                                <div>
-                                    <h3 className="font-bold text-gray-900 text-base md:text-lg leading-tight">{campaignInfo.campaignName}</h3>
-                                    <p className="text-xs md:text-sm text-gray-600 font-light mt-0.5">
+                                <div className="min-w-0">
+                                    <h3 className="font-bold text-gray-900 text-sm md:text-lg leading-tight truncate">{campaignInfo.campaignName}</h3>
+                                    <p className="text-[11px] md:text-sm text-gray-600 font-light mt-0.5 truncate">
                                         {campaignInfo.discountType === 'Fixed'
                                             ? `৳${formatPrice(campaignInfo.discountValue)} discount applied`
                                             : `${campaignInfo.discountValue}% discount applied`}
@@ -355,8 +355,8 @@ export default function DiscountProductDetailsClient({ product }) {
                                 </div>
                             </div>
                             {campaignInfo.endAt && campaignInfo.showCountdown && (
-                                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5 md:gap-2.5 bg-white/80 backdrop-blur-xs px-2.5 py-1 md:py-1.5 rounded-lg border border-[#5A0C3D]/10 shadow-2xs">
-                                    <span className="text-[10px] md:text-[11px] font-bold text-[#5A0C3D] uppercase tracking-widest">Offer ends in:</span>
+                                <div className="flex flex-col sm:flex-row items-center gap-1.5 md:gap-2.5 bg-white/80 backdrop-blur-xs px-2 py-1 md:py-1.5 rounded-lg border border-[#5A0C3D]/10 shadow-2xs shrink-0 ml-auto">
+                                    <span className="text-[9px] md:text-[11px] font-bold text-[#5A0C3D] uppercase tracking-widest hidden sm:inline">Offer ends in:</span>
                                     <CountdownTimer endDate={new Date(campaignInfo.endAt)} />
                                 </div>
                             )}
@@ -375,13 +375,13 @@ export default function DiscountProductDetailsClient({ product }) {
                     <div className="space-y-4">
                         {/* Category Tag */}
                         {product.subCategory && (
-                            <div className="text-sm text-gray-600">
-                                {product.subCategory.category?.name || ''}, {product.subCategory.name || ''}
+                            <div className="text-xs md:text-sm text-gray-600">
+                                {[product.subCategory?.category?.name, product.subCategory?.name].filter(Boolean).join(', ')}
                             </div>
                         )}
 
                         {/* Product Name */}
-                        <h1 className="text-3xl font-bold text-gray-900 leading-tight">
+                        <h1 className="text-xl md:text-3xl font-semibold text-gray-900 leading-tight">
                             {product.productName}
                         </h1>
 
@@ -405,12 +405,12 @@ export default function DiscountProductDetailsClient({ product }) {
                         {/* Price Section */}
                         <div className="py-4 border-t border-b border-gray-200">
                             <div className="flex items-center gap-4 flex-wrap">
-                                <span className="text-4xl font-bold text-primary">
-                                    {formatPriceWithIcon(discountedPrice)}
+                                <span className="text-2xl md:text-4xl font-semibold text-primary">
+                                    ৳{formatPrice(discountedPrice)}
                                 </span>
                                 {hasCampaignDiscount && originalPrice > discountedPrice && (
-                                    <span className="text-xl text-gray-400 line-through">
-                                        {formatPriceWithIcon(originalPrice)}
+                                    <span className="text-lg md:text-xl text-gray-400 line-through">
+                                        ৳{formatPrice(originalPrice)}
                                     </span>
                                 )}
                                 <div className="flex items-center gap-2">

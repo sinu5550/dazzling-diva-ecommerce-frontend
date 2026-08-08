@@ -392,11 +392,11 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                         {/* Prices */}
                         <div className="flex items-center gap-3 mt-3">
                             <span className="text-xl md:text-2xl font-bold font-outfit text-[#5A0C3D]">
-                                BDT {formatPrice(discountedPrice)}
+                                ৳{formatPrice(discountedPrice)}
                             </span>
                             {discountValue > 0 && originalPrice !== discountedPrice && (
                                 <span className="text-sm md:text-base text-gray-400 font-outfit line-through font-light">
-                                    BDT {formatPrice(originalPrice)}
+                                    ৳{formatPrice(originalPrice)}
                                 </span>
                             )}
                         </div>

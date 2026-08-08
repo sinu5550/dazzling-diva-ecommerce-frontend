@@ -217,7 +217,7 @@ const DiscountProducts = ({ productData = [], isLoading, user = null }) => {
         >
             {/* Banner Header: Fixed height, background image, overlay text, and timer styling */}
             <div
-                className="relative w-full h-[320px] sm:h-[350px] md:h-[380px] lg:h-[400px] bg-[#5A0C3D] flex items-center overflow-hidden mb-12"
+                className="relative w-full h-[320px] sm:h-[350px] md:h-[380px] lg:h-[400px] bg-[#5A0C3D] flex items-center overflow-hidden mb-6 md:mb-12"
                 style={{
                     backgroundImage: "url('/assects/flashdeals-banner.png')",
                     backgroundSize: "cover",
@@ -233,11 +233,11 @@ const DiscountProducts = ({ productData = [], isLoading, user = null }) => {
                     <div className="md:col-span-7 lg:col-span-6 flex flex-col items-center justify-center text-center space-y-4 px-4">
                         
                         {/* Title with word split and Subtract SVG container */}
-                        <div className="flex flex-wrap items-center justify-center gap-2.5 md:gap-3.5 text-2xl sm:text-3xl md:text-[36px] lg:text-[48px] font-bold text-white uppercase font-outfit">
+                        <div className="flex flex-wrap items-center justify-center gap-2.5 md:gap-3.5 text-[20px] sm:text-3xl md:text-[36px] lg:text-[48px] font-bold text-white uppercase font-outfit">
                             <span>{word1}</span>
                             <div className="relative w-[110px] h-[52px] md:w-[130px] md:h-[60px] flex items-center justify-center px-1">
                                 <img src="/assects/Subtract.svg" className="absolute inset-0 w-full h-full object-contain" alt="" />
-                                <span className="relative z-10 text-[32px] md:text-[48px] text-[#5A0C3D] font-instrument_serif italic normal-case font-normal -mt-0.5 leading-none select-none">
+                                <span className="relative z-10 text-[28px] md:text-[48px] text-[#5A0C3D] font-instrument_serif italic normal-case font-normal -mt-0.5 leading-none select-none">
                                     {word2}
                                 </span>
                             </div>
@@ -306,7 +306,7 @@ const DiscountProducts = ({ productData = [], isLoading, user = null }) => {
             <Container>
                 <div>
                     <div className="flex justify-between items-center mb-6">
-                        <h3 className="text-lg md:text-2xl font-outfit font-semibold text-gray-800">
+                        <h3 className="text-md md:text-2xl font-outfit font-semibold text-gray-800">
                             Deals Products
                         </h3>
                         <Link

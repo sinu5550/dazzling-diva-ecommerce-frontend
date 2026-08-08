@@ -162,8 +162,8 @@ const DiscountProductCard = ({
       maxPrice,
       priceRange:
         minPrice === maxPrice
-          ? `BDT ${formatPrice(minPrice)}`
-          : `BDT ${formatPrice(minPrice)} - BDT ${formatPrice(maxPrice)}`,
+          ? `৳${formatPrice(minPrice)}`
+          : `৳${formatPrice(minPrice)} - ৳${formatPrice(maxPrice)}`,
       // Also get the selected variant's price for comparison
       selectedVariantPrice: selectedVariant
         ? calculateCampaignPrice(parseFloat(selectedVariant.price) || 0)
@@ -190,8 +190,8 @@ const DiscountProductCard = ({
       maxOriginalPrice,
       originalPriceRange:
         minOriginalPrice === maxOriginalPrice
-          ? `BDT ${formatPrice(minOriginalPrice)}`
-          : `BDT ${formatPrice(minOriginalPrice)} - BDT ${formatPrice(maxOriginalPrice)}`,
+          ? `৳${formatPrice(minOriginalPrice)}`
+          : `৳${formatPrice(minOriginalPrice)} - ৳${formatPrice(maxOriginalPrice)}`,
     };
   }, [isVariantProduct, product.productVariants, formatPrice]);
 
@@ -362,7 +362,7 @@ const DiscountProductCard = ({
     e.stopPropagation();
 
     const shareUrl = `${window.location.origin}/discount-campaigns/${product.slug}`;
-    const shareText = `Check out ${product.productName} at BDT ${formatPrice(discountedPrice)}!`;
+    const shareText = `Check out ${product.productName} at ৳${formatPrice(discountedPrice)}!`;
 
     if (navigator.share) {
       try {
@@ -487,8 +487,8 @@ const DiscountProductCard = ({
         </div>
 
         {/* Info Section (Below Image) */}
-        <div className="pt-3 pb-2 flex flex-col items-start">
-          <h3 className="text-sm md:text-[18px] font-outfit font-regular text-black line-clamp-1 group-hover/card:text-[#5A0C3D] transition-colors duration-200 hover:underline cursor-pointer">
+        <div className="pt-3 pb-2 flex flex-col items-start min-w-0">
+          <h3 className="text-xs md:text-[18px] font-outfit font-regular text-black truncate w-full group-hover/card:text-[#5A0C3D] transition-colors duration-200 hover:underline cursor-pointer">
             {product.productName}
           </h3>
 
@@ -496,26 +496,26 @@ const DiscountProductCard = ({
           {isVariantProduct &&
           getVariantPriceRange &&
           getOriginalVariantPriceRange ? (
-            <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-              <span className="text-[14px] md:text-[18px] font-outfit font-semibold text-black">
+            <div className="flex flex-nowrap items-center gap-1 mt-0.5 min-w-0 overflow-hidden w-full">
+              <span className="text-[11px] md:text-[18px] font-outfit font-semibold text-black whitespace-nowrap truncate">
                 {getVariantPriceRange.priceRange}
               </span>
               {discountValue > 0 &&
                 getVariantPriceRange.minPrice !==
                   getOriginalVariantPriceRange.minOriginalPrice && (
-                  <span className="text-xs md:text-sm text-gray-400 font-outfit font-normal line-through">
+                  <span className="text-[9px] md:text-sm text-gray-400 font-outfit font-normal line-through whitespace-nowrap truncate shrink-0">
                     {getOriginalVariantPriceRange.originalPriceRange}
                   </span>
                 )}
             </div>
           ) : (
-            <div className="flex flex-wrap items-center gap-1.5 mt-0.5">
-              <span className="text-[14px] md:text-[18px] font-outfit font-semibold text-black">
-                BDT {formatPrice(discountedPrice)}
+            <div className="flex flex-nowrap items-center gap-1 mt-0.5 min-w-0 overflow-hidden w-full">
+              <span className="text-[11px] md:text-[18px] font-outfit font-semibold text-black whitespace-nowrap truncate">
+                ৳{formatPrice(discountedPrice)}
               </span>
               {discountValue > 0 && originalPrice !== discountedPrice && (
-                <span className="text-xs md:text-sm text-gray-400 font-outfit font-normal line-through">
-                  BDT {formatPrice(originalPrice)}
+                <span className="text-[9px] md:text-sm text-gray-400 font-outfit font-normal line-through whitespace-nowrap truncate shrink-0">
+                  ৳{formatPrice(originalPrice)}
                 </span>
               )}
             </div>

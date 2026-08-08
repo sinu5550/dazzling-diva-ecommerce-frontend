@@ -84,9 +84,10 @@ const OrderSummary = ({
     if (price === null || price === undefined) return "৳0";
     const priceNumber = parseFloat(price);
     if (isNaN(priceNumber)) return "৳0";
-    return `৳${priceNumber.toLocaleString("en-BD", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
+    const ceilPrice = Math.ceil(priceNumber);
+    return `৳${ceilPrice.toLocaleString("en-BD", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
     })}`;
   }, []);
 
@@ -738,7 +739,7 @@ const OrderSummary = ({
   if (cart.length === 0) {
     return (
       <div className="sticky top-6">
-        <h2 className="text-2xl font-semibold mb-6 text-gray-900">Your Order</h2>
+        <h2 className="text-lg md:text-2xl font-semibold mb-6 text-gray-900">Your Order</h2>
         <div className="border border-stone-300 rounded p-6 bg-white shadow-sm">
           <div className="text-center py-8">
             <FaShoppingBag className="text-4xl text-gray-300 mx-auto mb-4" />

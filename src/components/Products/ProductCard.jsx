@@ -315,9 +315,9 @@ export default function ProductCard({ product, user = null }) {
                 </div>
 
                 {/* Product Info - Flex column with margin-top auto to push price to bottom */}
-                <div className="mt-3 flex flex-col flex-grow">
+                <div className="mt-3 flex flex-col flex-grow min-w-0">
                     {/* Product Name - Takes available space but doesn't push beyond */}
-                    <h3 className="text-sm font-medium text-gray-800 mb-2  font-geist">
+                    <h3 className="text-[11px] md:text-sm font-medium text-gray-800 mb-1 font-geist truncate w-full">
                         {product.productName}
                     </h3>
 
@@ -325,30 +325,28 @@ export default function ProductCard({ product, user = null }) {
                     <div className="flex-grow"></div>
 
                     {/* Price Section - Always at bottom */}
-                    <div className="mt-auto">
+                    <div className="mt-auto min-w-0 overflow-hidden w-full">
                         {isVariantProduct && variantStats ? (
                             // Show price range for variant products
-                            <div className="flex flex-wrap items-center gap-2">
-                                <span className="text-gray-800 font-bold text-sm">
+                            <div className="flex flex-nowrap items-center gap-1 min-w-0 overflow-hidden w-full">
+                                <span className="text-gray-800 font-bold text-[11px] md:text-sm whitespace-nowrap truncate">
                                     {variantStats.priceRange}
                                 </span>
                                 {variantStats.hasDiscount && (
-                                    <span className="text-gray-400 text-xs line-through font-normal">
+                                    <span className="text-gray-400 text-[9px] md:text-xs line-through font-normal whitespace-nowrap truncate shrink-0">
                                         {variantStats.originalPriceRange}
                                     </span>
                                 )}
                             </div>
                         ) : (
                             // Show single price for non-variant products
-                            <div className="flex items-center gap-3">
-                                <span className="text-gray-800 font-bold text-sm flex items-center">
-                                    <FaBangladeshiTakaSign className="inline mr-1" size={16} />
-                                    {formatPrice(discountedPrice)}
+                            <div className="flex flex-nowrap items-center gap-1 min-w-0 overflow-hidden w-full">
+                                <span className="text-gray-800 font-bold text-[11px] md:text-sm flex items-center whitespace-nowrap truncate">
+                                    ৳{formatPrice(discountedPrice)}
                                 </span>
                                 {product.discountValue > 0 && (
-                                    <span className="text-gray-400 text-sm line-through flex items-center font-normal">
-                                        <FaBangladeshiTakaSign className="inline mr-1" size={12} />
-                                        {formatPrice(originalPrice)}
+                                    <span className="text-gray-400 text-[9px] md:text-sm line-through flex items-center font-normal whitespace-nowrap truncate shrink-0">
+                                        ৳{formatPrice(originalPrice)}
                                     </span>
                                 )}
                             </div>
