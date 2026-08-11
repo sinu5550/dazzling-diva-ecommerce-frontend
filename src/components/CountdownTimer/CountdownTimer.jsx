@@ -73,11 +73,11 @@ const CountdownTimer = ({ endDate }) => {
                             <div
                                 className="
                                     relative overflow-hidden
-                                    w-[26px] h-[30px]
-                                    sm:w-[32px] sm:h-[36px]
-                                    md:w-[36px] md:h-[40px]
+                                    w-[36px] h-[40px]
+                                    
+                                    md:w-[38px] md:h-[42px]
                                     bg-[#5A0C3D]
-                                    rounded-md
+                                    rounded-lg
                                     flex items-center justify-center
                                     shadow-2xs
                                 "
@@ -92,7 +92,7 @@ const CountdownTimer = ({ endDate }) => {
                                 <span
                                     className="
                                         relative z-10
-                                        text-[12px] sm:text-[15px] md:text-[17px]
+                                        text-[14px] sm:text-[16px] md:text-[18px]
                                         font-bold leading-none
                                         text-white
                                         font-outfit
@@ -104,7 +104,7 @@ const CountdownTimer = ({ endDate }) => {
                             </div>
 
                             {/* Label */}
-                            <span className="text-[6.5px] sm:text-[7.5px] font-bold tracking-widest text-[#5A0C3D] uppercase font-outfit">
+                            <span className="text-[7.5px] sm:text-[8.5px] font-bold tracking-widest text-[#5A0C3D] uppercase font-outfit mt-0.5">
                                 {unit.label}
                             </span>
                         </div>
