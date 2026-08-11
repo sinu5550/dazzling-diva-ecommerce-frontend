@@ -38,52 +38,76 @@ export default function ProductDetailsLoader({ slug, type = 'product' }) {
 
             if (type === 'campaign') {
                 productData = await getDiscountProductBySlug(slug);
+                if (productData) {
+                    const catId = productData.categoryId || productData.subCategory?.categoryId || productData.subCategory?.category?.id;
+                    const mainCatId = productData.mainCategoryId || productData.subCategory?.category?.mainCategoryId || productData.subCategory?.category?.mainCategory?.id;
+                    relatedData = await getRelatedProducts(
+                        productData.subCategoryId,
+                        productData.id || productData.productId,
+                        8,
+                        catId,
+                        mainCatId
+                    );
+                }
             } else {
                 productData = await getProductBySlug(slug);
                 if (productData) {
+                    const catId = productData.categoryId || productData.subCategory?.categoryId || productData.subCategory?.category?.id;
+                    const mainCatId = productData.mainCategoryId || productData.subCategory?.category?.mainCategoryId || productData.subCategory?.category?.mainCategory?.id;
                     relatedData = await getRelatedProducts(
                         productData.subCategoryId,
                         productData.id,
-                        4
+                        8,
+                        catId,
+                        mainCatId
                     );
                 }
             }
 
-            // Check if there is an active store-wide discount campaign (appliesToAll) if product doesn't already have campaignInfo
-            if (productData && !productData.campaignInfo) {
-                try {
-                    const { apiClient } = await import('@/lib/apiClient');
-                    const activeCampaignsRes = await apiClient('/api/discount-campaign/active');
-                    const activeCampaigns = Array.isArray(activeCampaignsRes)
-                        ? activeCampaignsRes
-                        : (activeCampaignsRes?.data || activeCampaignsRes?.campaigns || []);
+            // Check if there is an active store-wide discount campaign (appliesToAll)
+            try {
+                const { apiClient } = await import('@/lib/apiClient');
+                const activeCampaignsRes = await apiClient('/api/discount-campaign/active');
+                const activeCampaigns = Array.isArray(activeCampaignsRes)
+                    ? activeCampaignsRes
+                    : (activeCampaignsRes?.data || activeCampaignsRes?.campaigns || []);
 
-                    const appliesToAllCampaign = activeCampaigns.find(c => c.appliesToAll);
-                    if (appliesToAllCampaign) {
+                const appliesToAllCampaign = activeCampaigns.find(c => c.appliesToAll);
+                if (appliesToAllCampaign) {
+                    const campaignInfo = {
+                        campaignId: appliesToAllCampaign.id,
+                        campaignName: appliesToAllCampaign.name,
+                        campaignType: appliesToAllCampaign.campaignType,
+                        discountType: appliesToAllCampaign.discountType,
+                        discountValue: parseFloat(appliesToAllCampaign.discountValue) || 0,
+                        maxDiscountAmount: appliesToAllCampaign.maxDiscountAmount
+                            ? parseFloat(appliesToAllCampaign.maxDiscountAmount)
+                            : null,
+                        appliesToAll: appliesToAllCampaign.appliesToAll,
+                        startAt: appliesToAllCampaign.startAt,
+                        endAt: appliesToAllCampaign.endAt,
+                        showCountdown: appliesToAllCampaign.showCountdown,
+                        badgeText: appliesToAllCampaign.badgeText,
+                        badgeColor: appliesToAllCampaign.badgeColor,
+                        priority: appliesToAllCampaign.priority || 0,
+                    };
+
+                    if (productData && !productData.campaignInfo) {
                         productData = {
                             ...productData,
-                            campaignInfo: {
-                                campaignId: appliesToAllCampaign.id,
-                                campaignName: appliesToAllCampaign.name,
-                                campaignType: appliesToAllCampaign.campaignType,
-                                discountType: appliesToAllCampaign.discountType,
-                                discountValue: parseFloat(appliesToAllCampaign.discountValue) || 0,
-                                maxDiscountAmount: appliesToAllCampaign.maxDiscountAmount
-                                    ? parseFloat(appliesToAllCampaign.maxDiscountAmount)
-                                    : null,
-                                appliesToAll: appliesToAllCampaign.appliesToAll,
-                                startAt: appliesToAllCampaign.startAt,
-                                endAt: appliesToAllCampaign.endAt,
-                                showCountdown: appliesToAllCampaign.showCountdown,
-                                badgeText: appliesToAllCampaign.badgeText,
-                                badgeColor: appliesToAllCampaign.badgeColor,
-                                priority: appliesToAllCampaign.priority || 0,
-                            }
+                            campaignInfo
                         };
                     }
-                } catch (cErr) {
-                    console.error('Error fetching active store-wide campaign info:', cErr);
+
+                    if (Array.isArray(relatedData) && relatedData.length > 0) {
+                        relatedData = relatedData.map(rp => ({
+                            ...rp,
+                            campaignInfo: rp.campaignInfo || campaignInfo
+                        }));
+                    }
                 }
+            } catch (cErr) {
+                console.error('Error fetching active store-wide campaign info:', cErr);
             }
 
             if (!productData) {
@@ -261,7 +285,7 @@ export default function ProductDetailsLoader({ slug, type = 'product' }) {
     return (
         <div className="transition-opacity duration-500 ease-in-out opacity-100 animate-fadeIn">
             {type === 'campaign' || data.product?.campaignInfo ? (
-                <DiscountProductDetailsClient product={data.product} />
+                <DiscountProductDetailsClient product={data.product} relatedProducts={data.relatedProducts} />
             ) : (
                 <ProductDetailsClient product={data.product} relatedProducts={data.relatedProducts} />
             )}

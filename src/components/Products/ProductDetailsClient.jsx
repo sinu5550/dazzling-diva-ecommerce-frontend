@@ -8,7 +8,7 @@ import { FaStar, FaRegStar, FaCheck } from 'react-icons/fa6';
 import { MdOutlineAssignmentReturn, MdSupportAgent, MdLiveTv } from 'react-icons/md';
 import ProductImageGallery from './ProductImageGallery';
 import ProductTabs from './ProductTabs';
-import ProductCard from './ProductCard';
+import RelatedProductsSlider from './RelatedProductsSlider';
 import VariantSelector from './VariantSelector';
 import WishlistButton from "../ui/WishlistButton";
 import Container from "../Container/Container";
@@ -669,19 +669,8 @@ export default function ProductDetailsClient({ product, relatedProducts = [] }) 
                     />
                 </div>
 
-                {/* Related Products */}
-                {relatedProducts.length > 0 && (
-                    <div className="mt-16">
-                        <h2 className="text-2xl font-bold text-gray-900 mb-6">
-                            You may also like
-                        </h2>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                            {relatedProducts.map((relatedProduct) => (
-                                <ProductCard key={relatedProduct.id} product={relatedProduct} user={user} />
-                            ))}
-                        </div>
-                    </div>
-                )}
+                {/* Related Products Slider */}
+                <RelatedProductsSlider relatedProducts={relatedProducts} user={user} />
             </Container>
         </div>
     );
