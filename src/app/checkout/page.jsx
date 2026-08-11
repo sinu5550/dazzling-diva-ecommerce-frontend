@@ -476,6 +476,8 @@ export default function Checkout() {
             .join(", ");
         }
 
+        const variantIdVal = item.variantId ? parseInt(item.variantId) : null;
+
         const baseItem = {
           productId: productId,
           sku: item.sku || item.variantSku || null,
@@ -487,15 +489,25 @@ export default function Checkout() {
           tax: itemVAT,
           lineTotal: lineTotal,
           originalPrice: originalPrice,
+          ...(variantIdVal && { variantId: variantIdVal, productVariantId: variantIdVal }),
+          ...(variantAttrs && {
+            variantAttributes: variantAttrs,
+            attributes: variantAttrs,
+            variantType: variantTypeStr || "",
+          }),
           ...(item.campaignId && {
             campaignId: item.campaignId,
             campaignName: item.campaignName,
           }),
         };
 
-        if (isVariant || item.variantId || variantAttrs) {
-          if (item.variantId) baseItem.variantId = parseInt(item.variantId);
+        if (isVariant || variantIdVal || variantAttrs) {
+          if (variantIdVal) {
+            baseItem.variantId = variantIdVal;
+            baseItem.productVariantId = variantIdVal;
+          }
           baseItem.variantAttributes = variantAttrs || {};
+          baseItem.attributes = variantAttrs || {};
           baseItem.variantType = variantTypeStr || "";
           baseItem.productType = "variant";
         }

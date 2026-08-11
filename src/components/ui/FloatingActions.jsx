@@ -77,30 +77,25 @@ export default function FloatingActions() {
             {/* Sticky Cart Widget (Right Center - Responsive) */}
             <Link 
                 href="/cart"
-                className="fixed right-0 top-[45%] z-[998] flex flex-col items-center bg-[#5A0C3D] md:bg-white shadow-[0_4px_20px_rgba(90,12,61,0.25)] rounded-l-2xl overflow-hidden border border-[#5A0C3D]/20 md:border-gray-200 border-r-0 hover:translate-x-[-2px] transition-transform duration-300 select-none group/sticky-cart"
+                className="fixed right-0 top-[45%] z-[998] flex flex-col items-center bg-[#5A0C3D] shadow-[0_4px_20px_rgba(90,12,61,0.25)] rounded-l-2xl overflow-hidden border border-[#5A0C3D]/20 border-r-0 hover:translate-x-[-2px] transition-transform duration-300 select-none group/sticky-cart"
             >
-                {/* Top Section: Brand maroon background */}
-                <div className="bg-[#5A0C3D] text-white p-2.5 md:p-3.5 flex flex-col items-center justify-center w-11 h-11 md:w-20 md:min-h-[75px] group-hover/sticky-cart:bg-[#4a0a32] transition-colors relative">
-                    <div className="relative flex items-center justify-center">
-                        <CartIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                        <span className="md:hidden absolute -top-2.5 -right-2.5 bg-white text-[#5A0C3D] text-[9px] font-bold font-outfit w-4 h-4 rounded-full flex items-center justify-center border border-[#5A0C3D]/20 shadow-xs">
-                            {cartCount}
-                        </span>
-                    </div>
-                    <span className="hidden md:block text-[11px] font-semibold font-outfit whitespace-nowrap mt-1">
+                {/* Top Section: Brand maroon background with cart icon and item count */}
+                <div className="bg-[#5A0C3D] text-white p-2.5 md:p-3 flex flex-col items-center justify-center w-14 md:w-20 min-h-[58px] md:min-h-[75px] group-hover/sticky-cart:bg-[#4a0a32] transition-colors relative">
+                    <CartIcon className="w-5 h-5 md:w-6 md:h-6 text-white" />
+                    <span className="text-[10px] md:text-[11px] font-semibold font-outfit whitespace-nowrap mt-1">
                         {cartCount} {cartCount === 1 ? 'Item' : 'Items'}
                     </span>
                 </div>
-                {/* Bottom Section: White background with price (Desktop Only) */}
-                <div className="hidden md:flex bg-white text-gray-800 py-2.5 px-3 items-center justify-center w-20 border-t border-gray-150">
-                    <span className="text-[13px] font-bold font-outfit text-gray-900">
+                {/* Bottom Section: White background with total price */}
+                <div className="flex bg-white text-gray-800 py-1.5 md:py-2.5 px-1.5 md:px-3 items-center justify-center w-14 md:w-20 border-t border-gray-150">
+                    <span className="text-[11px] md:text-[13px] font-bold font-outfit text-gray-900 truncate">
                         ৳{cartTotal.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
                     </span>
                 </div>
             </Link>
 
             {/* Bottom-right Floating Actions Panel */}
-            <div className="fixed bottom-6 right-6 z-[999] flex flex-col items-center gap-3.5 font-outfit">
+            <div className="fixed bottom-20 md:bottom-6 right-6 z-[999] flex flex-col items-center gap-3.5 font-outfit">
                 
                 {/* Social Links Speed Dial (Collapsed by default, opens on hover/click) */}
                 <div ref={speedDialRef} className="relative group/speeddial flex flex-col items-center">

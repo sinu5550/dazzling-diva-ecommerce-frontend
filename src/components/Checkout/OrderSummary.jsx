@@ -753,338 +753,141 @@ const OrderSummary = ({
   return (
     <div className="sticky top-6">
       <h2 className="text-2xl font-semibold mb-6 text-gray-900">Your Order</h2>
-      <div className="border border-gray-200 rounded p-6 bg-white shadow-sm">
+      <div className="border border-gray-200 rounded-2xl p-4 sm:p-6 bg-white shadow-sm">
         {/* Products Section */}
-        <div className="mb-6">
-          {regularItems.length > 0 && (
-            <>
-              {/* Mobile View Card List (Cart Page style) */}
-              <div className="block md:hidden space-y-3">
-                {regularItems.map((item, index) => {
-                  const quantity = parseInt(item.quantity || 1);
-                  const originalPrice = parseFloat(
-                    item.originalPrice || item.price || 0
-                  );
-                  const currentPrice = parseFloat(item.price || 0);
+        <div className="mb-6 space-y-3">
+          {regularItems.map((item, index) => {
+            const quantity = parseInt(item.quantity || 1);
+            const originalPrice = parseFloat(
+              item.originalPrice || item.price || 0
+            );
+            const currentPrice = parseFloat(item.price || 0);
 
-                  const productDiscount = originalPrice - currentPrice;
-                  const campaignDiscount = parseFloat(item.discountAmount || 0);
-                  const totalItemDiscount =
-                    (productDiscount + campaignDiscount) * quantity;
+            const productDiscount = originalPrice - currentPrice;
+            const campaignDiscount = parseFloat(item.discountAmount || 0);
+            const totalItemDiscount =
+              (productDiscount + campaignDiscount) * quantity;
 
-                  let itemVAT = 0;
-                  const taxType = item.taxType
-                    ? item.taxType.toLowerCase()
-                    : "";
-                  if (taxType === "exclusive" && item.tax) {
-                    const taxRate = parseFloat(item.tax || 0);
-                    const finalPrice = currentPrice - campaignDiscount;
-                    itemVAT = (finalPrice * quantity * taxRate) / 100;
-                  }
+            let itemVAT = 0;
+            const taxType = item.taxType
+              ? item.taxType.toLowerCase()
+              : "";
+            if (taxType === "exclusive" && item.tax) {
+              const taxRate = parseFloat(item.tax || 0);
+              const finalPrice = currentPrice - campaignDiscount;
+              itemVAT = (finalPrice * quantity * taxRate) / 100;
+            }
 
-                  const lineTotal =
-                    (currentPrice - campaignDiscount) * quantity + itemVAT;
+            const lineTotal =
+              (currentPrice - campaignDiscount) * quantity + itemVAT;
 
-                  return (
-                    <div
-                      key={`regular-mobile-${item.productId}-${item.variantId || index}`}
-                      className="bg-white rounded-xl border border-gray-200 p-3.5 shadow-xs"
-                    >
-                      <div className="flex gap-3">
-                        {/* Product Image */}
-                        <div className="relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
-                          <Image
-                            src={getItemImage(item)}
-                            alt={item.productName || 'Product'}
-                            fill
-                            sizes="80px"
-                            className="object-cover"
-                          />
-                        </div>
+            return (
+              <div
+                key={`regular-${item.productId}-${item.variantId || index}`}
+                className="bg-white rounded-2xl border border-gray-200 p-3.5 shadow-xs transition-all hover:border-gray-300"
+              >
+                <div className="flex gap-3.5">
+                  {/* Product Image */}
+                  <div className="relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
+                    <Image
+                      src={getItemImage(item)}
+                      alt={item.productName || 'Product'}
+                      fill
+                      sizes="96px"
+                      className="object-cover"
+                    />
+                  </div>
 
-                        {/* Product Details */}
-                        <div className="flex-1 min-w-0 flex flex-col justify-between">
-                          <div>
-                            <h4 className="font-semibold text-gray-900 text-sm line-clamp-2 leading-snug">
-                              {item.productName}
-                            </h4>
-                            {renderVariantAttributes(item)}
-                            {item.campaignName && (
-                              <span className="inline-block text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md font-medium mt-1">
-                                {item.campaignName}
-                              </span>
-                            )}
-                          </div>
+                  {/* Product Details */}
+                  <div className="flex-1 min-w-0 flex flex-col justify-between">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 text-sm sm:text-base line-clamp-2 leading-snug">
+                        {item.productName}
+                      </h4>
+                      {renderVariantAttributes(item)}
+                      {item.campaignName && (
+                        <span className="inline-block text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md font-medium mt-1">
+                          {item.campaignName}
+                        </span>
+                      )}
+                    </div>
 
-                          <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100 text-xs">
-                            <span className="text-gray-500 font-medium">Qty: <span className="text-gray-900 font-bold">{quantity}</span></span>
-                            <div className="text-right">
-                              <span className="font-bold text-[#5A0C3D] text-sm">
-                                {formatPrice(lineTotal)}
-                              </span>
-                              {totalItemDiscount > 0 && (
-                                <span className="block text-[10px] text-gray-400 line-through">
-                                  {formatPrice(originalPrice * quantity)}
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100 text-xs sm:text-sm">
+                      <span className="text-gray-500 font-medium">Qty: <span className="text-gray-900 font-bold">{quantity}</span></span>
+                      <div className="text-right">
+                        <span className="font-bold text-[#5A0C3D] text-sm sm:text-base">
+                          {formatPrice(lineTotal)}
+                        </span>
+                        {totalItemDiscount > 0 && (
+                          <span className="block text-[10px] sm:text-xs text-gray-400 line-through">
+                            {formatPrice(originalPrice * quantity)}
+                          </span>
+                        )}
                       </div>
                     </div>
-                  );
-                })}
+                  </div>
+                </div>
               </div>
-
-              {/* Desktop Table View */}
-              <div className="hidden md:block overflow-x-auto">
-                <table className="w-full border-collapse rounded text-sm">
-                  <thead>
-                    <tr className="bg-neutral-100">
-                      <th className="p-3 text-left border border-stone-200 font-semibold">
-                        Image
-                      </th>
-                      <th className="p-3 text-left border border-stone-200 font-semibold">
-                        Product Info
-                      </th>
-                      <th className="p-3 text-right border border-stone-200 font-semibold">
-                        Unit Price
-                      </th>
-                      <th className="p-3 text-right border border-stone-200 font-semibold">
-                        Discount
-                      </th>
-                      <th className="p-3 text-right border border-stone-200 font-semibold">
-                        VAT/TAX
-                      </th>
-                      <th className="p-3 text-right border border-stone-200 font-semibold">
-                        Total
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {regularItems.map((item, index) => {
-                      const quantity = parseInt(item.quantity || 1);
-                      const originalPrice = parseFloat(
-                        item.originalPrice || item.price || 0
-                      );
-                      const currentPrice = parseFloat(item.price || 0);
-
-                      const productDiscount = originalPrice - currentPrice;
-                      const campaignDiscount = parseFloat(item.discountAmount || 0);
-                      const totalItemDiscount =
-                        (productDiscount + campaignDiscount) * quantity;
-
-                      let itemVAT = 0;
-                      const taxType = item.taxType
-                        ? item.taxType.toLowerCase()
-                        : "";
-                      if (taxType === "exclusive" && item.tax) {
-                        const taxRate = parseFloat(item.tax || 0);
-                        const finalPrice = currentPrice - campaignDiscount;
-                        itemVAT = (finalPrice * quantity * taxRate) / 100;
-                      }
-
-                      const lineTotal =
-                        (currentPrice - campaignDiscount) * quantity + itemVAT;
-
-                      return (
-                        <tr
-                          key={`regular-${item.productId}-${item.variantId || index
-                            }`}
-                          className="border-b"
-                        >
-                          <td className="p-3 border border-stone-200">
-                            <div className="relative w-16 h-16">
-                              <Image
-                                src={getItemImage(item)}
-                                alt={item.productName || 'Product'}
-                                width={400}
-                                height={400}
-                                className="w-full h-full object-cover rounded"
-                                style={{ width: 'auto', height: 'auto' }}
-                              />
-                              {item.variantId && (
-                                <div className="absolute -top-1 -right-1 bg-sky-500 text-white text-[10px] p-1 rounded-full">
-                                  <SiVala />
-                                </div>
-                              )}
-                            </div>
-                          </td>
-
-                          <td className="p-3 border border-stone-200">
-                            <div>
-                              <h4 className="font-semibold text-gray-900">
-                                {item.productName}
-                              </h4>
-                              {renderVariantAttributes(item)}
-                              {item.campaignName && (
-                                <div className="text-xs text-purple-600 font-medium mt-1">
-                                  {item.campaignName}
-                                </div>
-                              )}
-                              <div className="text-xs text-gray-600 mt-1">
-                                Qty: {quantity}
-                              </div>
-                            </div>
-                          </td>
-
-                          <td className="p-3 border border-stone-200 text-right">
-                            <div className="font-medium">
-                              {formatPrice(originalPrice)}
-                            </div>
-                          </td>
-
-                          <td className="p-3 border border-stone-200 text-right">
-                            {totalItemDiscount > 0 ? (
-                              <div className="font-medium text-red-600">
-                                {formatPrice(totalItemDiscount)}
-                              </div>
-                            ) : (
-                              <div className="text-gray-400">-</div>
-                            )}
-                          </td>
-                          <td className="p-3 border border-stone-200 text-right">
-                            {itemVAT > 0 ? (
-                              <div className="font-medium">
-                                {formatPrice(itemVAT)}
-                              </div>
-                            ) : (
-                              <div className="text-gray-600">Included</div>
-                            )}
-                          </td>
-
-                          <td className="p-3 border border-stone-200 text-right">
-                            <div className="font-bold text-gray-900">
-                              {formatPrice(lineTotal)}
-                            </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
+            );
+          })}
 
           {/* Bundle Items */}
-          {bundleItems.length > 0 && (
-            <div className="mt-6">
-              <h3 className="font-semibold mb-3 flex items-center gap-2">
-                <FaBox className="text-secound" />
-                Bundles ({bundleItems.length})
-              </h3>
-              <table className="w-full border-collapse rounded text-sm mt-2">
-                <thead>
-                  <tr className="bg-secound/5">
-                    <th className="p-3 text-left border border-secound/20 font-semibold">
-                      Image
-                    </th>
-                    <th className="p-3 text-left border border-secound/20 font-semibold">
-                      Bundle Info
-                    </th>
-                    <th className="p-3 text-right border border-secound/20 font-semibold">
-                      Original Price
-                    </th>
-                    <th className="p-3 text-right border border-secound/20 font-semibold">
-                      Discount
-                    </th>
-                    <th className="p-3 text-right border border-secound/20 font-semibold">
-                      VAT/TAX
-                    </th>
-                    <th className="p-3 text-right border border-secound/20 font-semibold">
-                      Final Price
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {bundleItems.map((item, index) => {
-                    const quantity = parseInt(item.quantity || 1);
-                    const originalPrice = parseFloat(
-                      item.originalPrice || item.totalOriginalPrice || 0
-                    );
-                    const finalPrice = parseFloat(
-                      item.price || item.finalPrice || 0
-                    );
-                    const discountAmount = parseFloat(item.discountAmount || 0);
-                    const bundleVAT = calculateBundleVAT(item);
+          {bundleItems.map((item, index) => {
+            const quantity = parseInt(item.quantity || 1);
+            const originalPrice = parseFloat(
+              item.originalPrice || item.totalOriginalPrice || 0
+            );
+            const finalPrice = parseFloat(
+              item.price || item.finalPrice || 0
+            );
+            const discountAmount = parseFloat(item.discountAmount || 0);
+            const bundleVAT = calculateBundleVAT(item);
 
-                    return (
-                      <tr
-                        key={`bundle-${item.id || index}`}
-                        className="border-b"
-                      >
-                        <td className="p-3 border border-secound/20">
-                          <div className="relative w-16 h-16">
-                            <Image
-                              src={getItemImage(item)}
-                              alt={item.name || 'Bundle'}
-                              width={400}
-                              height={400}
-                              className="w-full h-full object-cover rounded"
-                              style={{ width: 'auto', height: 'auto' }}
-                            />
-                            <div className="absolute -top-1 -right-1 bg-secound text-white text-[10px] p-1 rounded-full">
-                              <FaBox />
-                            </div>
-                          </div>
-                        </td>
+            return (
+              <div
+                key={`bundle-${item.id || index}`}
+                className="bg-white rounded-2xl border border-teal-200 p-3.5 shadow-xs transition-all"
+              >
+                <div className="flex gap-3.5">
+                  <div className="relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border border-teal-100 bg-teal-50/30">
+                    <Image
+                      src={getItemImage(item)}
+                      alt={item.name || 'Bundle'}
+                      fill
+                      sizes="96px"
+                      className="object-cover"
+                    />
+                    <div className="absolute top-1 right-1 bg-teal-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
+                      Bundle
+                    </div>
+                  </div>
 
-                        <td className="p-3 border border-secound/20">
-                          <div>
-                            <h4 className="font-semibold text-gray-900">
-                              {item.name}
-                            </h4>
-                            {renderBundleItems(item)}
-                            <div className="text-xs text-gray-600 mt-1">
-                              Qty: {quantity}
-                            </div>
-                            {item.discountValue && (
-                              <div className="text-xs text-red-600 font-medium mt-1">
-                                Bundle Discount: {item.discountValue}%
-                              </div>
-                            )}
-                          </div>
-                        </td>
+                  <div className="flex-1 min-w-0 flex flex-col justify-between">
+                    <div>
+                      <h4 className="font-semibold text-gray-900 text-sm sm:text-base line-clamp-2">
+                        {item.name}
+                      </h4>
+                      {renderBundleItems(item)}
+                    </div>
 
-                        <td className="p-3 border border-secound/20 text-right">
-                          <div className="font-medium">
-                            {formatPrice(originalPrice)}
-                          </div>
-                        </td>
-
-                        <td className="p-3 border border-secound/20 text-right">
-                          {discountAmount > 0 ? (
-                            <div className="font-medium text-red-600">
-                              -{formatPrice(discountAmount)}
-                            </div>
-                          ) : (
-                            <div className="text-gray-400">-</div>
-                          )}
-                        </td>
-
-                        <td className="p-3 border border-secound/20 text-right">
-                          {bundleVAT > 0 ? (
-                            <div className="font-medium">
-                              {formatPrice(bundleVAT / quantity)}
-                            </div>
-                          ) : (
-                            <div className="text-gray-600">Included</div>
-                          )}
-                        </td>
-
-                        <td className="p-3 border border-secound/20 text-right">
-                          <div className="font-bold text-secound-hover">
-                            {formatPrice(finalPrice)}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-          )}
+                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100 text-xs sm:text-sm">
+                      <span className="text-gray-500 font-medium">Qty: <span className="text-gray-900 font-bold">{quantity}</span></span>
+                      <div className="text-right">
+                        <span className="font-bold text-teal-700 text-sm sm:text-base">
+                          {formatPrice(finalPrice)}
+                        </span>
+                        {discountAmount > 0 && (
+                          <span className="block text-[10px] sm:text-xs text-gray-400 line-through">
+                            {formatPrice(originalPrice * quantity)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
         </div>
 
         {/* Loyalty Points Section - Disabled per requirements */}
@@ -1108,7 +911,7 @@ const OrderSummary = ({
         */}
 
         {/* Summary Section */}
-        <div className="bg-white p-4 rounded space-y-3 border border-gray-200 shadow">
+        <div className="bg-white p-4 sm:p-5 rounded-2xl space-y-3 border border-gray-200 shadow-xs">
           <h3 className="font-bold text-lg mb-3">Order Summary</h3>
 
           <div className="flex justify-between text-sm">

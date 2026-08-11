@@ -45,7 +45,8 @@ function getAllCategories(mainCategories) {
 export async function fetchActiveCampaigns() {
   try {
     return await apiClient("/api/discount-campaign/active", {
-      revalidate: 60,
+      tags: ["discount-campaigns"],
+      revalidate: 15,
     });
   } catch (error) {
     console.error("Error fetching active campaigns:", error);
@@ -64,14 +65,14 @@ const Home = async () => {
     activeCampaignsRes,
     testimonialsRes,
   ] = await Promise.allSettled([
-    apiClient("/api/hero-sliders"),
-    apiClient("/api/product/new"),
-    apiClient("/api/product/top-selling?limit=10"),
-    apiClient("/api/mid-banner"),
-    apiClient("/api/bento-gallery"),
+    apiClient("/api/hero-sliders", { tags: ["hero-sliders"], revalidate: 60 }),
+    apiClient("/api/product/new", { tags: ["new-products", "products"], revalidate: 15 }),
+    apiClient("/api/product/top-selling?limit=10", { tags: ["top-selling", "products"], revalidate: 15 }),
+    apiClient("/api/mid-banner", { tags: ["mid-banner"], revalidate: 60 }),
+    apiClient("/api/bento-gallery", { tags: ["bento-gallery"], revalidate: 60 }),
     getMainCategories(),
     fetchActiveCampaigns(),
-    apiClient("/api/testimonials"),
+    apiClient("/api/testimonials", { tags: ["testimonials"], revalidate: 60 }),
   ]);
 
   const heroSliderData =

@@ -97,7 +97,7 @@ const Topbar = ({
                 </div>
 
                 {/* COL 2 — CENTER: Logo */}
-                <div className="flex-shrink-0 flex items-center justify-center mx-2">
+                <div className="flex-shrink-0 flex items-center justify-center mx-2 ">
                     <Link href="/" aria-label="Home" className="block hover:opacity-90 transition-opacity">
                         <Image 
                             src="/assects/dazzling-logo.svg" 
@@ -141,9 +141,9 @@ const Topbar = ({
                         )}
                     </Link>
 
-                    {/* Account Section */}
+                    {/* Account Section (Desktop Only - Mobile accesses Account via Bottom Bar) */}
                     {isMounted && user ? (
-                        <div className="relative group/account">
+                        <div className="hidden lg:block relative group/account">
                             <Link
                                 href="/my-account"
                                 className="w-10 h-10 flex items-center justify-center rounded-full border border-[#44444433] bg-white hover:border-[#5A0C3D] hover:bg-gray-50 active:scale-95 transition-all duration-200 md:w-auto md:h-auto md:px-1.5 md:py-1 md:gap-2"
@@ -200,7 +200,7 @@ const Topbar = ({
                     ) : (
                         <Link
                             href="/login"
-                            className="w-10 h-10 flex items-center justify-center rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] hover:text-white group/login active:scale-95 transition-all duration-200 md:w-auto md:h-auto md:px-3 md:py-2 md:gap-2"
+                            className="hidden lg:flex w-10 h-10 items-center justify-center rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] hover:text-white group/login active:scale-95 transition-all duration-200 md:w-auto md:h-auto md:px-3 md:py-2 md:gap-2"
                             aria-label="Login / Sign Up"
                         >
                             <ProfileIcon className="w-[18px] h-[18px] text-black group-hover/login:text-white" />

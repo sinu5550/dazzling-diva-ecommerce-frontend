@@ -357,12 +357,12 @@ const BillingDetails = ({
             <div className="mb-6">
                 <p className="font-medium text-xs md:text-base mb-2 md:mb-3">Shipping Method</p>
                 <div className="grid grid-cols-2 gap-2 md:gap-3">
-                    <label className="flex items-center gap-2 p-2.5 md:p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
+                    <label className="flex items-center gap-2 p-2.5 md:p-3 border border-gray-200 rounded-[6px] cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
                         <input
                             type="radio"
                             value="dhaka-city"
                             {...register("shipping")}
-                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-secound shrink-0"
+                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#5A0C3D] accent-[#5A0C3D] shrink-0"
                             defaultChecked
                         />
                         <div className="flex-1 min-w-0">
@@ -370,12 +370,12 @@ const BillingDetails = ({
                         </div>
                         <p className="font-semibold text-xs md:text-sm shrink-0">{formatPrice(0)}</p>
                     </label>
-                    <label className="flex items-center gap-2 p-2.5 md:p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
+                    <label className="flex items-center gap-2 p-2.5 md:p-3 border border-gray-200 rounded-[6px] cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
                         <input
                             type="radio"
                             value="outside"
                             {...register("shipping")}
-                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-secound shrink-0"
+                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#5A0C3D] accent-[#5A0C3D] shrink-0"
                         />
                         <div className="flex-1 min-w-0">
                             <p className="font-medium truncate">Outside Dhaka</p>
@@ -389,40 +389,28 @@ const BillingDetails = ({
             <div className="mb-6">
                 <p className="font-medium text-xs md:text-base mb-2 md:mb-3">Payment Method</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
-                    <label className="flex items-center gap-2 p-2.5 md:p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
+                    <label className="flex items-center gap-2 p-2.5 md:p-3 border border-gray-200 rounded-[6px] cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
                         <input
                             type="radio"
                             value="cod"
                             {...register("payment")}
-                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-secound shrink-0"
+                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#5A0C3D] accent-[#5A0C3D] shrink-0"
                             defaultChecked
                         />
                         <div>
                             <p className="font-medium text-xs md:text-sm">Cash on Delivery</p>
                         </div>
                     </label>
-                    {/* Future payment options will automatically grid into 2 columns (1 row 2 col on mobile) when uncommented: */}
-                    {/* <label className="flex items-center gap-2 p-2.5 md:p-3 border border-stone-300 rounded cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
-                        <input
-                            type="radio"
-                            value="online"
-                            {...register("payment")}
-                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-secound shrink-0"
-                        />
-                        <div>
-                            <p className="font-medium text-xs md:text-sm">Online Payment</p>
-                        </div>
-                    </label> */}
                 </div>
             </div>
 
             {/* Order Notes */}
             <div className="mb-6">
-                <label className="block mb-1 font-medium">Order Notes (Optional)</label>
+                <label className="block mb-1 font-medium text-xs md:text-sm">Order Notes (Optional)</label>
                 <textarea
                     {...register("note")}
                     placeholder="Special instructions for delivery..."
-                    className="w-full pl-4 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all h-24"
+                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all h-24"
                     rows={3}
                 />
             </div>
@@ -538,7 +526,7 @@ const BillingDetails = ({
                     {renderShippingAndPayment()}
                 </div>
             ) : (
-                <form onSubmit={handleSubmit(handleSaveAndCheckout)} className="bg-white border border-gray-200 rounded-md p-4 md:p-6 shadow-sm">
+                <form onSubmit={handleSubmit(handleSaveAndCheckout)} className="bg-white border border-gray-200 rounded-2xl p-4 md:p-6 shadow-sm">
                     <div className="space-y-4 mb-6">
                         <div className="flex items-center justify-between mb-3">
                             <h3 className="font-medium text-base md:text-lg text-gray-900">
@@ -565,7 +553,7 @@ const BillingDetails = ({
                                         minLength: { value: 2, message: "At least 2 characters" }
                                     })}
                                     placeholder="Full Name"
-                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all bg-white text-gray-900"
+                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all bg-white text-gray-900"
                                     defaultValue={user?.fullName}
                                 />
                                 {errors.recipientName && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.recipientName.message}</p>}
@@ -581,7 +569,7 @@ const BillingDetails = ({
                                         pattern: { value: /^(?:\+88|01)?\d{9,11}$/, message: "Valid BD number" }
                                     })}
                                     placeholder="01XXXXXXXXX"
-                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all bg-white text-gray-900"
+                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all bg-white text-gray-900"
                                     defaultValue={user?.phone}
                                 />
                                 {errors.phoneNumber && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.phoneNumber.message}</p>}
@@ -599,7 +587,7 @@ const BillingDetails = ({
                                         pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: "Invalid email" }
                                     })}
                                     placeholder="your@email.com"
-                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
+                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all"
                                 />
                                 {errors.email && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.email.message}</p>}
                             </div>
@@ -613,7 +601,7 @@ const BillingDetails = ({
                                 <label className="block mb-1 font-medium text-xs md:text-sm">Country <span className="text-red-500">*</span></label>
                                 <input
                                     {...register("country")}
-                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
+                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all bg-gray-50"
                                     value="Bangladesh"
                                     readOnly
                                 />
@@ -621,7 +609,7 @@ const BillingDetails = ({
                             <div>
                                 <label className="block mb-1 font-medium text-xs md:text-sm">Division <span className="text-red-500">*</span></label>
                                 <select {...register("division", { required: "Division is required" })}
-                                    className="w-full text-xs md:text-sm pl-2 md:pl-4 pr-2 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all">
+                                    className="w-full text-xs md:text-sm pl-2 md:pl-4 pr-2 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all cursor-pointer">
                                     <option value="">Select Division</option>
                                     {divisions.map((division) => (
                                         <option key={division.id} value={division.name}>{division.name}</option>
@@ -633,7 +621,7 @@ const BillingDetails = ({
                             {/* District & Upazila in 1 Row */}
                             <div>
                                 <label className="block mb-1 font-medium text-xs md:text-sm">District <span className="text-red-500">*</span></label>
-                                <select {...register("district", { required: "District is required" })} className="w-full text-xs md:text-sm pl-2 md:pl-4 pr-2 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all disabled:bg-gray-100" disabled={!watchDivision}>
+                                <select {...register("district", { required: "District is required" })} className="w-full text-xs md:text-sm pl-2 md:pl-4 pr-2 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all disabled:bg-gray-100 cursor-pointer" disabled={!watchDivision}>
                                     <option value="">{watchDivision ? "Select District" : "Select Division"}</option>
                                     {filteredDistricts.map((district) => (
                                         <option key={district.id} value={district.name}>{district.name}</option>
@@ -643,22 +631,18 @@ const BillingDetails = ({
                             </div>
                             <div>
                                 <label className="block mb-1 font-medium text-xs md:text-sm">Upazila / Thana <span className="text-red-500">*</span></label>
-                                <input
+                                <select
                                     {...register("upazila", { required: "Upazila is required" })}
-                                    type="text"
-                                    placeholder="e.g. Mirpur"
-                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
-                                />
+                                    className="w-full text-xs md:text-sm pl-2 md:pl-4 pr-2 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all disabled:bg-gray-100 cursor-pointer"
+                                    disabled={!watchDistrict}
+                                >
+                                    <option value="">{watchDistrict ? "Select Upazila / Thana" : "Select District First"}</option>
+                                    {filteredUpazilas.map((upazila) => (
+                                        <option key={upazila.id} value={upazila.name}>{upazila.name}</option>
+                                    ))}
+                                </select>
                                 {errors.upazila && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.upazila.message}</p>}
                             </div>
-
-                            {/* City Field - Commented out for now */}
-                            {/* 
-                            <div>
-                                <label className="block mb-1 font-medium text-xs md:text-sm">City</label>
-                                <input {...register("city")} placeholder="City" className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all" />
-                            </div>
-                            */}
 
                             <div className="col-span-2">
                                 <label className="block mb-1 font-medium text-xs md:text-sm">Postal Code <span className="text-red-500">*</span></label>
@@ -669,7 +653,7 @@ const BillingDetails = ({
                                     })}
                                     placeholder="1230"
                                     maxLength="4"
-                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all"
+                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all"
                                 />
                                 {errors.postalCode && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.postalCode.message}</p>}
                             </div>
@@ -683,7 +667,7 @@ const BillingDetails = ({
                                     minLength: { value: 10, message: "At least 10 characters" }
                                 })}
                                 placeholder="House No, Road No, Area"
-                                className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all h-20 md:h-24"
+                                className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all h-20 md:h-24"
                                 rows={3}
                             />
                             {errors.address && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.address.message}</p>}
@@ -691,7 +675,7 @@ const BillingDetails = ({
 
                         <div>
                             <label className="block mb-1 font-medium text-xs md:text-sm">Address Type</label>
-                            <select {...register("type")} className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-1.5 md:py-2 border border-gray-200 rounded focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all">
+                            <select {...register("type")} className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all cursor-pointer">
                                 <option value="Home">Home</option>
                                 <option value="Office">Office</option>
                                 <option value="Other">Other</option>

@@ -9,7 +9,8 @@ export async function getProducts(filters = {}, page = 1, limit = 10) {
     });
 
     return await apiClient(`/api/product?${params.toString()}`, {
-      revalidate: 60, // cache for 1 minute
+      tags: ["products"],
+      revalidate: 15, // fast revalidate (15 seconds)
     });
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -39,7 +40,8 @@ export const getProductsByMainCategory = (id, p = 1, l = 10) =>
 
 export async function getProductBySlug(slug) {
   return apiClient(`/api/product/${slug}`, {
-    revalidate: 60,
+    tags: ["products", `product-${slug}`],
+    revalidate: 15,
   });
 }
 
@@ -57,6 +59,8 @@ export async function getRelatedProducts(subCategoryId, currentProductId, limit 
 
 export async function getDiscountProductBySlug(slug) {
   return apiClient(`/api/discount-campaign/discount-product/${slug}`, {
-    revalidate: 60,
+    tags: ["discount-products", `discount-product-${slug}`],
+    revalidate: 15,
   });
 }
+

@@ -15,7 +15,10 @@ export default async function BundleDetailsPage(props) {
 
     console.log("Bundle slug:", slug);
 
-    const bundleData = await apiClient(`/api/bundle-product/${slug}`);
+    const bundleData = await apiClient(`/api/bundle-product/${slug}`, {
+        tags: ["bundle-product", `bundle-product-${slug}`],
+        revalidate: 15,
+    });
 
 
     return <BundleProductDetails bundle={bundleData} />;

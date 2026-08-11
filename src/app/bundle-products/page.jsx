@@ -10,7 +10,10 @@ export const metadata = {
 
 export default async function BundleProductsPage() {
     try {
-        const response = await apiClient('/api/bundle-product');
+        const response = await apiClient('/api/bundle-product', {
+            tags: ["bundle-product"],
+            revalidate: 15,
+        });
 
         const productData = {
             data: response?.data || [],

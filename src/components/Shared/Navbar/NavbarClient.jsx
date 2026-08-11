@@ -16,6 +16,8 @@ import Link from "next/link";
 import Image from "next/image";
 import logo from "../../../../public/assects/Logo.png";
 import SearchComponent from "@/components/Search/SearchComponent";
+import MobileBottomNav from "./MobileBottomNav";
+import MobileSearchModal from "./MobileSearchModal";
 import { DropdownIcon } from "@/components/svg";
 import {
   FaFacebookF,
@@ -231,10 +233,10 @@ export default function NavbarClient({ data, contactData, config }) {
 
   return (
     <>
-      {/* Navbar Shell — Relative, normal flow so 1st and 2nd nav bars scroll out of view */}
-      <div className="navbar-shell w-full relative z-[60]">
+      {/* Navbar Shell — Sticky top-0 on mobile, static on desktop */}
+      <div className="navbar-shell w-full sticky top-0 lg:static z-[60]">
         {/* Announcement Bar */}
-        {announcementOpen && (
+        {/* {announcementOpen && (
           <div className="bg-[#5A0C3D] text-white text-[13px] md:text-[14px] min-h-[38px] py-2 md:py-0 px-4 relative flex items-center justify-center font-outfit font-normal">
             <span className="text-center tracking-wide px-8 leading-normal">
               Limited Time! Enjoy 15% OFF on Regular Items — Online Only. Shop
@@ -248,7 +250,7 @@ export default function NavbarClient({ data, contactData, config }) {
               <X size={14} />
             </button>
           </div>
-        )}
+        )} */}
 
         {/* Topbar */}
         <Topbar
@@ -261,9 +263,9 @@ export default function NavbarClient({ data, contactData, config }) {
         />
       </div>
 
-      {/* Primary/Sub-navigation Bar — Sticky top-0 with transition classes for shadow and background */}
+      {/* Primary/Sub-navigation Bar — Sticky top-[72px] on mobile, sticky top-0 on desktop */}
       <div
-        className={`primary-nav sticky top-0 z-50 transition-all duration-300 bg-white border-t border-gray-100/80 py-3 lg:py-0 h-auto lg:h-[60px] flex items-center font-outfit  ${
+        className={`primary-nav sticky top-[72px] lg:top-0 z-50 transition-all duration-300 bg-white border-t border-gray-100/80 py-3 lg:py-0 h-auto lg:h-[60px] flex items-center font-outfit  ${
           isSticky
             ? "shadow-[0_4px_12px_rgba(0,0,0,0.05)] border-b border-gray-150/80 bg-white/95 backdrop-blur-md"
             : "border-b border-transparent shadow-none"
@@ -485,48 +487,9 @@ export default function NavbarClient({ data, contactData, config }) {
             </div>
           </div>
 
-          {/* Mobile Nav Row (Simplified search & horizontal categories) */}
-          <div className="flex flex-col lg:hidden gap-2 w-full">
-            <div className="w-full flex items-center gap-2">
-              {/* Show exact same hamburger button beside search when sticky & scrolled */}
-              {isSticky && (
-                <button
-                  onClick={() => setIsMobileMenuOpen((prev) => !prev)}
-                  className="flex-shrink-0 w-9 h-9 flex items-center justify-center bg-gray-50 hover:bg-gray-100 rounded-xl border border-gray-200 transition-all duration-200 active:scale-90 cursor-pointer group"
-                  aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
-                  title="Toggle menu"
-                >
-                  <div className="relative w-5 h-4 flex flex-col justify-between items-start">
-                    {/* Line 1 */}
-                    <span
-                      className={`h-[2px] bg-black rounded-full transition-all duration-300 ease-in-out ${
-                        isMobileMenuOpen
-                          ? "w-5 rotate-45 translate-y-[7px]"
-                          : "w-5"
-                      }`}
-                    />
-                    {/* Line 2 */}
-                    <span
-                      className={`h-[2px] bg-black rounded-full transition-all duration-300 ease-in-out ${
-                        isMobileMenuOpen ? "w-0 opacity-0" : "w-[70%]"
-                      }`}
-                    />
-                    {/* Line 3 */}
-                    <span
-                      className={`h-[2px] bg-black rounded-full transition-all duration-300 ease-in-out ${
-                        isMobileMenuOpen
-                          ? "w-5 -rotate-45 -translate-y-[7px]"
-                          : "w-[45%]"
-                      }`}
-                    />
-                  </div>
-                </button>
-              )}
-              <div className="flex-1 min-w-0">
-                <SearchComponent />
-              </div>
-            </div>
-            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-0.5">
+          {/* Mobile Nav Row (horizontal category pills only, search moved to bottom bar & top modal) */}
+          <div className="flex lg:hidden w-full">
+            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-0.5 w-full">
               <Link
                 href="/product"
                 className="px-3.5 py-1.5 bg-white text-gray-800 text-[12px] font-normal rounded-full border border-[#44444433] whitespace-nowrap flex-shrink-0"
@@ -746,6 +709,18 @@ export default function NavbarClient({ data, contactData, config }) {
         onToggleL2={toggleMobileL2}
         onLinkClick={closeMobileMenu}
         contactData={contactData}
+      />
+
+      {/* Mobile Bottom Bar Navigation */}
+      <MobileBottomNav
+        onOpenMenu={() => setIsMobileMenuOpen(true)}
+        onOpenSearch={() => setMobileSearchOpen(true)}
+      />
+
+      {/* Mobile Search Top Slide Modal */}
+      <MobileSearchModal
+        isOpen={mobileSearchOpen}
+        onClose={() => setMobileSearchOpen(false)}
       />
 
       <style jsx global>{`
