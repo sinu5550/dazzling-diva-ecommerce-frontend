@@ -559,7 +559,14 @@ export default function Checkout() {
       const orderPayload = {
         customerId: parseInt(customerId),
         shippingAddressId: parseInt(data.customerAddressId),
-        paymentMethod: watch("payment") === "cod" ? "COD" : "OnlinePayment",
+        paymentMethod:
+          watch("payment") === "bkash"
+            ? "bKash"
+            : watch("payment") === "nagad"
+            ? "Nagad"
+            : watch("payment") === "cod"
+            ? "COD"
+            : "OnlinePayment",
         totalAmount: Math.ceil(subtotalBeforeDiscount),
         discount: Math.ceil(totalProductDiscount),
         voucher_promo: Math.ceil(couponDiscountAmount),

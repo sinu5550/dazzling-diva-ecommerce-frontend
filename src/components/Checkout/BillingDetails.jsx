@@ -7,6 +7,7 @@ import { divisions, districts, upazilas } from '@/lib/data';
 import Link from 'next/link';
 import { Home, Briefcase, MapPin, Plus, Star, X } from 'lucide-react';
 import Swal from 'sweetalert2';
+import Image from 'next/image';
 import AddressAddModal from "../Modal/AddressModal/AddressAddModal";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import PaymentMethodModal from "../Modal/PaymentMethodModal/PaymentMethodModal";
@@ -343,11 +344,14 @@ const BillingDetails = ({
     }
 
     const formatPrice = (price) => {
-        return new Intl.NumberFormat('en-BD', {
-            style: 'currency',
-            currency: 'BDT',
-            minimumFractionDigits: 2
-        }).format(price);
+        if (price === null || price === undefined) return "৳0";
+        const priceNumber = parseFloat(price);
+        if (isNaN(priceNumber)) return "৳0";
+        const ceilPrice = Math.ceil(priceNumber);
+        return `৳${ceilPrice.toLocaleString("en-BD", {
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0,
+        })}`;
     };
 
     // Render shipping and payment options (common for both flows)
@@ -388,8 +392,9 @@ const BillingDetails = ({
             {/* Payment Method */}
             <div className="mb-6">
                 <p className="font-medium text-xs md:text-base mb-2 md:mb-3">Payment Method</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 md:gap-3">
-                    <label className="flex items-center gap-2 p-2.5 md:p-3 border border-gray-200 rounded-[6px] cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3">
+                    {/* Cash on Delivery */}
+                    <label className={`flex items-center gap-2.5 p-3 border rounded-[6px] cursor-pointer transition-all text-xs md:text-sm ${watchPayment === 'cod' ? 'border-[#5A0C3D] bg-[#5A0C3D]/5 font-semibold' : 'border-gray-200 hover:bg-gray-50'}`}>
                         <input
                             type="radio"
                             value="cod"
@@ -397,8 +402,46 @@ const BillingDetails = ({
                             className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#5A0C3D] accent-[#5A0C3D] shrink-0"
                             defaultChecked
                         />
-                        <div>
-                            <p className="font-medium text-xs md:text-sm">Cash on Delivery</p>
+                        <span className="text-xs md:text-sm text-gray-900">Cash on Delivery</span>
+                    </label>
+
+                    {/* bKash Mobile Banking */}
+                    <label className={`flex items-center gap-2.5 p-3 border rounded-[6px] cursor-pointer transition-all text-xs md:text-sm ${watchPayment === 'bkash' ? 'border-[#E2136E] bg-[#E2136E]/5 font-semibold' : 'border-gray-200 hover:bg-gray-50'}`}>
+                        <input
+                            type="radio"
+                            value="bkash"
+                            {...register("payment")}
+                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#E2136E] accent-[#E2136E] shrink-0"
+                        />
+                        <div className="flex items-center gap-2">
+                            <Image 
+                                src="/assects/bkash-logo.svg" 
+                                alt="bKash" 
+                                width={24} 
+                                height={24} 
+                                className="w-10 h-6 object-contain shrink-0"
+                            />
+                            <span className="text-xs md:text-sm text-gray-900 font-medium">bKash</span>
+                        </div>
+                    </label>
+
+                    {/* Nagad Mobile Banking */}
+                    <label className={`flex items-center gap-2.5 p-3 border rounded-[6px] cursor-pointer transition-all text-xs md:text-sm ${watchPayment === 'nagad' ? 'border-[#F7931E] bg-[#F7931E]/5 font-semibold' : 'border-gray-200 hover:bg-gray-50'}`}>
+                        <input
+                            type="radio"
+                            value="nagad"
+                            {...register("payment")}
+                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#F7931E] accent-[#F7931E] shrink-0"
+                        />
+                        <div className="flex items-center gap-2">
+                            <Image 
+                                src="/assects/nagad-logo.svg" 
+                                alt="Nagad" 
+                                width={24} 
+                                height={24} 
+                                className="w-10 h-6 object-contain shrink-0"
+                            />
+                            <span className="text-xs md:text-sm text-gray-900 font-medium">Nagad</span>
                         </div>
                     </label>
                 </div>
