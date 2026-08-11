@@ -386,15 +386,22 @@ const AddressAddModal = ({ isOpen, onClose, onSuccess, customerId }) => {
                                 <label className="block text-xs font-semibold uppercase tracking-wider text-gray-600 mb-1.5">
                                     Upazila/Thana <span className="text-rose-500">*</span>
                                 </label>
-                                <input
-                                    type="text"
+                                <select
                                     name="upazila"
                                     value={formData.upazila}
-                                    onChange={handleInputChange}
-                                    disabled={isSubmitting}
-                                    placeholder="e.g. Mirpur"
-                                    className="w-full px-3.5 py-2.5 bg-gray-50/50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:bg-white focus:outline-none focus:border-[#5A0C3D] focus:ring-2 focus:ring-[#5A0C3D]/15 transition-all"
-                                />
+                                    onChange={(e) => handleSelectChange('upazila', e.target.value)}
+                                    disabled={!formData.district || isSubmitting}
+                                    className="w-full px-3.5 py-2.5 bg-gray-50/50 border border-gray-200 rounded-lg text-sm text-gray-800 focus:bg-white focus:outline-none focus:border-[#5A0C3D] focus:ring-2 focus:ring-[#5A0C3D]/15 transition-all cursor-pointer disabled:opacity-50"
+                                >
+                                    <option value="">
+                                        {formData.district ? "Select Upazila / Thana" : "Select District First"}
+                                    </option>
+                                    {filteredUpazilas.map((upazila) => (
+                                        <option key={upazila.id} value={upazila.name}>
+                                            {upazila.name}
+                                        </option>
+                                    ))}
+                                </select>
                                 {errors.upazila && (
                                     <p className="mt-1 text-xs text-rose-500 font-medium">{errors.upazila}</p>
                                 )}

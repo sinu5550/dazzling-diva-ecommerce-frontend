@@ -418,8 +418,8 @@ export default function AllProductsClient({
                             sizes="100vw"
                             className="object-cover opacity-80"
                         />
-                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                            <h1 className="font-outfit text-white text-3xl md:text-5xl font-bold tracking-wide uppercase drop-shadow-md">
+                        <div className="absolute inset-0 bg-black/30 flex items-center justify-center p-4">
+                            <h1 className="font-outfit text-white text-2xl sm:text-3xl md:text-5xl font-bold tracking-wide uppercase drop-shadow-md text-center">
                                 {title}
                             </h1>
                         </div>

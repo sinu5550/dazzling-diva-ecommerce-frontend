@@ -9,7 +9,10 @@ export const metadata = {
 
 const Page = async () => {
 
-    const proudctData = await apiClient("/api/product/new");
+    const proudctData = await apiClient("/api/product/new", {
+        tags: ["new-products", "products"],
+        revalidate: 15,
+    });
     const newArrivalProducts = proudctData?.data?.products || proudctData?.products || (Array.isArray(proudctData) ? proudctData : []);
 
     return (
