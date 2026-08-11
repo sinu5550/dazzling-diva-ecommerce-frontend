@@ -13,20 +13,20 @@ const ShipingProcess = () => {
     ];
 
     return (
-        <div className="bg-white border-b border-gray-100 py-10  w-full">
+        <div className="bg-white border-b border-gray-100 py-4 sm:py-10 w-full">
             <Container>
-                <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-6">
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-6">
                     {trustBadges.map(({ icon: Icon, title, sub }) => (
                         <div
                             key={title}
-                            className="flex flex-col items-center text-center px-4"
+                            className="flex flex-col items-center text-center px-1 sm:px-4"
                         >
-                            <div className="w-12 h-12 flex items-center justify-center shrink-0 mb-1 text-stone-800">
-                                <Icon size={42} strokeWidth={1.5} />
+                            <div className="w-6 h-6 sm:w-12 sm:h-12 flex items-center justify-center shrink-0 mb-1 text-stone-800">
+                                <Icon className="text-[22px] sm:text-[42px]" strokeWidth={1.5} />
                             </div>
-                            <div className="space-y-1">
-                                <h4 className="text-[16px] font-semibold text-stone-900 font-outfit">{title}</h4>
-                                <p className="text-xs text-stone-500 font-outfit max-w-[200px] leading-relaxed">{sub}</p>
+                            <div className="space-y-0.5 sm:space-y-1">
+                                <h4 className="text-xs sm:text-base font-semibold text-stone-900 font-outfit leading-tight whitespace-nowrap">{title}</h4>
+                                <p className="text-[9px] sm:text-xs text-stone-500 font-outfit leading-tight sm:leading-relaxed">{sub}</p>
                             </div>
                         </div>
                     ))}
