@@ -202,7 +202,29 @@ const DiscountProductCard = ({
   };
 
   const { originalPrice, discountedPrice, discountAmount } = getCurrentPrices();
-  const discountValue = product.campaignInfo?.discountValue || 0;
+  const discountValue = product.campaignInfo?.discountValue || product.discountValue || 0;
+
+  // Determine if product is NEW
+  const isNewProduct = useMemo(() => {
+    if (
+      product.newArrival ||
+      product.new ||
+      product.isNew ||
+      product.newProduct ||
+      product.isNewArrival ||
+      product.is_new ||
+      (typeof product.badge === 'string' && product.badge.toLowerCase().includes('new'))
+    ) {
+      return true;
+    }
+    if (product.createdAt) {
+      const createdDate = new Date(product.createdAt);
+      const now = new Date();
+      const diffInDays = (now - createdDate) / (1000 * 60 * 60 * 24);
+      return diffInDays >= 0 && diffInDays <= 30;
+    }
+    return false;
+  }, [product]);
   const isWishlisted = isInWishlist(
     product.id,
     isVariantProduct ? selectedVariant?.id : null,
@@ -406,9 +428,9 @@ const DiscountProductCard = ({
         <div className="relative w-full aspect-[2/3] rounded-[12px] md:rounded-[12px] overflow-hidden bg-gray-100 border border-gray-100">
           {/* Badges Container (top-left) */}
           <div className="absolute top-3 left-3 z-20 flex flex-col gap-1.5 pointer-events-none">
-            {(product.newArrival || product.new || product.isNew || product.newProduct) && (
+            {isNewProduct && (
               <div className="bg-[#5A0C3D] text-white text-[10px] md:text-[11px] font-bold px-2.5 py-1 uppercase tracking-wider shadow-sm w-fit font-outfit rounded-[4px]">
-                New In
+                New
               </div>
             )}
             {discountValue > 0 && (

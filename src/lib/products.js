@@ -46,14 +46,54 @@ export async function getProductBySlug(slug) {
 }
 
 
-export async function getRelatedProducts(subCategoryId, currentProductId, limit = 4) {
-  const response = await getProducts({ subCategoryId }, 1, limit + 1);
+export async function getRelatedProducts(subCategoryId, currentProductId, limit = 8, categoryId = null, mainCategoryId = null) {
+  try {
+    let products = [];
+    
+    // 1. Try fetching by subCategoryId first
+    if (subCategoryId) {
+      const response = await getProducts({ subCategoryId }, 1, 20);
+      const fetched = response?.products || response?.data?.products || response?.data || [];
+      if (Array.isArray(fetched)) {
+        products.push(...fetched);
+      }
+    }
 
-  const products = response?.data?.products || [];
+    // 2. If fewer than requested limit, fallback to same parent categoryId
+    if (products.filter(p => p.id !== currentProductId).length < limit && categoryId) {
+      const catResponse = await getProducts({ categoryId }, 1, 20);
+      const catProducts = catResponse?.products || catResponse?.data?.products || catResponse?.data || [];
+      if (Array.isArray(catProducts)) {
+        const existingIds = new Set(products.map(p => p.id));
+        for (const p of catProducts) {
+          if (!existingIds.has(p.id)) {
+            products.push(p);
+          }
+        }
+      }
+    }
 
-  return products
-    .filter(p => p.id !== currentProductId)
-    .slice(0, limit);
+    // 3. If still fewer, fallback to mainCategoryId
+    if (products.filter(p => p.id !== currentProductId).length < limit && mainCategoryId) {
+      const mainResponse = await getProducts({ mainCategoryId }, 1, 20);
+      const mainProducts = mainResponse?.products || mainResponse?.data?.products || mainResponse?.data || [];
+      if (Array.isArray(mainProducts)) {
+        const existingIds = new Set(products.map(p => p.id));
+        for (const p of mainProducts) {
+          if (!existingIds.has(p.id)) {
+            products.push(p);
+          }
+        }
+      }
+    }
+
+    return products
+      .filter(p => p && p.id !== currentProductId)
+      .slice(0, limit);
+  } catch (error) {
+    console.error('Error fetching related products:', error);
+    return [];
+  }
 }
 
 

@@ -25,6 +25,7 @@ import WishlistButton from "../ui/WishlistButton";
 import PaymentLogo from "../ui/PaymentLogo";
 import ProductTabs from "../Products/ProductTabs";
 import CountdownTimer from "../CountdownTimer/CountdownTimer";
+import RelatedProductsSlider from "../Products/RelatedProductsSlider";
 import {
   getDefaultVariant,
   calculateDiscountVariantPrice,
@@ -32,7 +33,7 @@ import {
   getVariantImage,
 } from "@/lib/variantHelpers";
 
-export default function DiscountProductDetailsClient({ product }) {
+export default function DiscountProductDetailsClient({ product, relatedProducts = [] }) {
   const router = useRouter();
   const { createBuyNowSession } = useCheckoutSession();
 
@@ -747,6 +748,9 @@ export default function DiscountProductDetailsClient({ product }) {
         <div className="mt-12">
           <ProductTabs product={product} selectedVariant={selectedVariant} />
         </div>
+
+        {/* Related Products Slider */}
+        <RelatedProductsSlider relatedProducts={relatedProducts} user={user} />
       </Container>
     </div>
   );
