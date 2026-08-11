@@ -560,13 +560,7 @@ export default function Checkout() {
         customerId: parseInt(customerId),
         shippingAddressId: parseInt(data.customerAddressId),
         paymentMethod:
-          watch("payment") === "bkash"
-            ? "bKash"
-            : watch("payment") === "nagad"
-            ? "Nagad"
-            : watch("payment") === "cod"
-            ? "COD"
-            : "OnlinePayment",
+          watch("payment") === "cod" ? "COD" : "OnlinePayment",
         totalAmount: Math.ceil(subtotalBeforeDiscount),
         discount: Math.ceil(totalProductDiscount),
         voucher_promo: Math.ceil(couponDiscountAmount),
@@ -575,7 +569,10 @@ export default function Checkout() {
         grandTotal: Math.ceil(grandTotal),
         paidAmount: 0,
         dueAmount: Math.ceil(dueAmount),
-        note: data.note || "",
+        note:
+          (watch("payment") === "bkash" || watch("payment") === "nagad")
+            ? `[Payment Method: ${watch("payment") === "bkash" ? "bKash" : "Nagad"}] ${data.note || ""}`.trim()
+            : data.note || "",
         status: "Pending",
         items: apiRegularItems,
         bundleItems: apiBundleItems,
