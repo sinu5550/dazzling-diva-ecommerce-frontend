@@ -12,28 +12,39 @@ import WishlistCartButton from "./WishlistCartButton";
 import Swal from "sweetalert2";
 import { FaShoppingBag } from "react-icons/fa";
 
+import Container from "@/components/Container/Container";
+import { IoIosArrowForward } from "react-icons/io";
+
 const EmptyWishlist = () => (
-    <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
-        <div className="relative">
-            <Heart size={80} className="text-gray-300 mb-4" />
-            <div className="absolute -top-2 -right-2 bg-red-500 rounded-full p-2">
-                <Package size={20} className="text-white" />
-            </div>
+    <Container className="py-8 sm:py-12 font-outfit">
+        <div className="flex items-center gap-2 text-gray-600 text-xs md:text-sm mb-6">
+            <Link href="/" className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1 transition">
+                Home <IoIosArrowForward size={12} />
+            </Link>
+            <p className="font-semibold text-gray-900">Wishlist</p>
         </div>
-        <h2 className="text-xl md:text-3xl font-semibold text-gray-700 mb-2 text-center font-philosopher">
-            Your Wishlist is Empty
-        </h2>
-        <p className="text-gray-500 mb-6 text-center max-w-lg">
-            Save your favorite items here and never lose track of what you love
-        </p>
-        <Link
-            href="/"
-            className="inline-flex items-center gap-2 px-8 py-4 bg-[#5A0C3D] hover:bg-[#450322] text-white rounded-[8px] font-bold transition-all shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 cursor-pointer"
-        >
-            <FaShoppingBag />
-            Start Shopping
-        </Link>
-    </div>
+        <div className="min-h-[50vh] flex flex-col items-center justify-center px-4">
+            <div className="relative">
+                <Heart size={70} className="text-gray-300 mb-4" />
+                <div className="absolute -top-2 -right-2 bg-red-500 rounded-full p-2">
+                    <Package size={18} className="text-white" />
+                </div>
+            </div>
+            <h2 className="text-xl md:text-3xl font-semibold text-gray-700 mb-2 text-center font-philosopher">
+                Your Wishlist is Empty
+            </h2>
+            <p className="text-gray-500 mb-6 text-center max-w-lg text-sm">
+                Save your favorite items here and never lose track of what you love
+            </p>
+            <Link
+                href="/"
+                className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#5A0C3D] hover:bg-[#450322] text-white rounded-lg font-bold transition-all shadow-md active:scale-95 cursor-pointer text-sm"
+            >
+                <FaShoppingBag />
+                Start Shopping
+            </Link>
+        </div>
+    </Container>
 );
 
 const StockBadge = ({ quantity, status }) => {
@@ -138,7 +149,7 @@ const WishlistClient = ({ user = null }) => {
 
     if (loading) {
         return (
-            <div className="min-h-[60vh] flex items-center justify-center">
+            <div className="py-16 flex items-center justify-center">
                 <LoadingSpinner size="large" />
             </div>
         );
@@ -149,15 +160,23 @@ const WishlistClient = ({ user = null }) => {
     }
 
     return (
-        <div className="min-h-screen py-10">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Container className="py-5 sm:py-8 md:py-10 pb-6 lg:pb-10 font-outfit">
+            {/* Breadcrumb */}
+            <div className="flex items-center gap-2 text-gray-600 text-xs md:text-sm mb-4">
+                <Link href="/" className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1 transition">
+                    Home <IoIosArrowForward size={12} />
+                </Link>
+                <p className="font-semibold text-gray-900">Wishlist</p>
+            </div>
+
+            <div className="max-w-7xl mx-auto">
                 {/* Header */}
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                <div className="flex justify-between items-center gap-4 mb-4 sm:mb-6">
                     <div>
-                        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800 font-philosopher">
+                        <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-1">
                             My Wishlist
                         </h1>
-                        <p className="text-gray-500 mt-1">
+                        <p className="text-xs sm:text-sm text-gray-500 font-light">
                             {wishlist.length} {wishlist.length === 1 ? 'item' : 'items'}
                         </p>
                     </div>
@@ -166,9 +185,9 @@ const WishlistClient = ({ user = null }) => {
                         <button
                             onClick={handleClearAll}
                             disabled={actionLoading.clearAll}
-                            className="text-red-600 hover:text-red-700 font-medium disabled:opacity-50 transition-colors flex items-center gap-2"
+                            className="text-red-600 hover:text-red-700 text-xs sm:text-sm font-medium disabled:opacity-50 transition-colors flex items-center gap-1.5 cursor-pointer"
                         >
-                            <Trash2 size={18} />
+                            <Trash2 size={16} />
                             {actionLoading.clearAll ? "Clearing..." : "Clear All"}
                         </button>
                     )}
@@ -278,11 +297,11 @@ const WishlistClient = ({ user = null }) => {
 
                                         <td className="px-6 py-4">
                                             <div className="flex flex-col">
-                                                <span className="font-semibold text-gray-900 text-lg">
-                                                    {formatPrice(product.discountPrice)}
+                                                <span className="font-bold text-base sm:text-lg text-[#5A0C3D]">
+                                                    {formatPrice(product.discountPrice || product.price)}
                                                 </span>
-                                                {Number(product.discountValue) > 0 && product.price !== product.discountPrice && (
-                                                    <span className="text-sm text-gray-500 line-through">
+                                                {product.price && product.discountPrice && parseFloat(product.price) > parseFloat(product.discountPrice) && (
+                                                    <span className="text-xs sm:text-sm text-gray-400 line-through">
                                                         {formatPrice(product.price)}
                                                     </span>
                                                 )}
@@ -408,12 +427,12 @@ const WishlistClient = ({ user = null }) => {
                                             </p>
                                         )}
 
-                                        <div className="mt-2">
-                                            <span className="font-bold text-lg">
-                                                {formatPrice(product.discountPrice)}
+                                        <div className="mt-2 flex items-baseline gap-2 flex-wrap">
+                                            <span className="font-bold text-base sm:text-lg text-[#5A0C3D]">
+                                                {formatPrice(product.discountPrice || product.price)}
                                             </span>
-                                            {Number(product.discountValue) > 0 && product.price !== product.discountPrice && (
-                                                <span className="text-sm text-gray-500 line-through ml-2">
+                                            {product.price && product.discountPrice && parseFloat(product.price) > parseFloat(product.discountPrice) && (
+                                                <span className="text-xs sm:text-sm text-gray-400 line-through">
                                                     {formatPrice(product.price)}
                                                 </span>
                                             )}
@@ -456,7 +475,7 @@ const WishlistClient = ({ user = null }) => {
                     })}
                 </div>
             </div>
-        </div>
+        </Container>
     );
 };
 

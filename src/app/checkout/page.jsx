@@ -16,10 +16,12 @@ import { useRouter } from "next/navigation";
 import Swal from "sweetalert2";
 import OrderSummary from "@/components/Checkout/OrderSummary";
 import { FaShoppingBag } from "react-icons/fa";
+import { useCartDrawer } from "@/context/CartDrawerContext";
 
 export default function Checkout() {
   const router = useRouter();
   const { user } = useUser();
+  const { openCartDrawer } = useCartDrawer();
 
   const {
     regularCart,
@@ -27,6 +29,7 @@ export default function Checkout() {
     getCombinedTotal,
     clearRegularCart,
     clearBundleCart,
+    removeItem,
   } = useCartManager(user);
 
   const { checkoutSession, clearSession, isBuyNow, isLoaded } =
@@ -292,6 +295,40 @@ export default function Checkout() {
     setPointsToRedeem(0);
     setPointsDiscount(0);
   }, []);
+
+  // Handle removing item from checkout
+  const handleRemoveItem = useCallback(
+    async (itemToRemove) => {
+      if (isBuyNow) {
+        clearSession();
+        setCheckoutItems([]);
+        toast.success("Item removed from checkout");
+        return;
+      }
+
+      const id = itemToRemove.productId || itemToRemove.id;
+      const type = itemToRemove.isBundle ? "bundle" : "regular";
+      const variantId = itemToRemove.variantId || null;
+
+      await removeItem(id, type, variantId);
+
+      setCheckoutItems((prev) =>
+        prev.filter((item) => {
+          if (itemToRemove.isBundle) {
+            return item.id !== itemToRemove.id;
+          }
+          const itemRealId = item.productId || item.id;
+          return !(
+            (itemRealId === id) &&
+            (item.variantId || null) === (variantId || null)
+          );
+        })
+      );
+
+      toast.success("Item removed from checkout");
+    },
+    [isBuyNow, clearSession, removeItem]
+  );
 
   // Validate points before order submission
   const validatePointsRedemption = async (
@@ -723,7 +760,7 @@ export default function Checkout() {
 
   return (
     <div className="bg-white text-gray-900 min-h-screen">
-      <Container className="py-5 sm:py-8 md:py-10 font-outfit text-gray-900">
+      <Container className="py-5 sm:py-8 md:py-10 pb-4 lg:pb-10 font-outfit text-gray-900">
         {/* Breadcrumb */}
         <div className="flex items-center gap-2 text-gray-700 text-xs md:text-sm mb-6">
           <Link
@@ -734,7 +771,13 @@ export default function Checkout() {
           </Link>
           <Link
             href="/cart"
-            className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1 transition"
+            onClick={(e) => {
+              if (window.innerWidth < 1024) {
+                e.preventDefault();
+                openCartDrawer();
+              }
+            }}
+            className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1 transition cursor-pointer"
           >
             Cart <IoIosArrowForward size={12} />
           </Link>
@@ -742,9 +785,78 @@ export default function Checkout() {
         </div>
 
         <div className="max-w-7xl mx-auto text-gray-900">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-            {/* Billing Form Column */}
-            <div className="lg:col-span-7">
+          {/* Mobile View Sequential Order: 1. Your Order Products -> 2. Shipping Address -> 3. Order Summary & Place Order */}
+          <div className="block lg:hidden space-y-6">
+            {/* 1. Ordered Products List */}
+            <OrderSummary
+              cart={checkoutItems}
+              getCartTotal={getCheckoutTotal}
+              register={register}
+              watch={watch}
+              loading={loading}
+              handleSubmit={handleSubmit}
+              onCheckoutSubmit={onCheckoutSubmit}
+              cartType={checkoutType}
+              isBuyNow={isBuyNow}
+              onCouponApplied={handleCouponApplied}
+              onCouponRemoved={handleCouponRemoved}
+              appliedCoupon={appliedCoupon}
+              couponDiscount={couponDiscount}
+              onPointsApplied={handlePointsApplied}
+              onPointsRemoved={handlePointsRemoved}
+              pointsToRedeem={pointsToRedeem}
+              pointsDiscount={pointsDiscount}
+              userEmail={user?.email}
+              placeOrderRef={placeOrderRef}
+              onRemoveItem={handleRemoveItem}
+              renderOnly="products"
+            />
+
+            {/* 2. Shipping Address & Payment Form */}
+            <BillingDetails
+              user={user}
+              register={register}
+              errors={errors}
+              watch={watch}
+              setValue={setValue}
+              handleSubmit={handleSubmit}
+              onCheckoutSubmit={onCheckoutSubmit}
+              loading={loading}
+              setLoading={setLoading}
+              totalAmount={getCheckoutTotal()}
+              placeOrderRef={placeOrderRef}
+            />
+
+            {/* 3. Order Summary (Price Calculation & Place Order Button) */}
+            <OrderSummary
+              cart={checkoutItems}
+              getCartTotal={getCheckoutTotal}
+              register={register}
+              watch={watch}
+              loading={loading}
+              handleSubmit={handleSubmit}
+              onCheckoutSubmit={onCheckoutSubmit}
+              cartType={checkoutType}
+              isBuyNow={isBuyNow}
+              onCouponApplied={handleCouponApplied}
+              onCouponRemoved={handleCouponRemoved}
+              appliedCoupon={appliedCoupon}
+              couponDiscount={couponDiscount}
+              onPointsApplied={handlePointsApplied}
+              onPointsRemoved={handlePointsRemoved}
+              pointsToRedeem={pointsToRedeem}
+              pointsDiscount={pointsDiscount}
+              userEmail={user?.email}
+              placeOrderRef={placeOrderRef}
+              onRemoveItem={handleRemoveItem}
+              renderOnly="summary"
+            />
+          </div>
+
+          {/* Desktop View (2-Column Standard Grid Layout) */}
+          <div className="hidden lg:grid grid-cols-12 gap-8">
+            {/* Left Column: Billing Details */}
+            <div className="col-span-7">
               <BillingDetails
                 user={user}
                 register={register}
@@ -754,13 +866,14 @@ export default function Checkout() {
                 handleSubmit={handleSubmit}
                 onCheckoutSubmit={onCheckoutSubmit}
                 loading={loading}
+                setLoading={setLoading}
                 totalAmount={getCheckoutTotal()}
                 placeOrderRef={placeOrderRef}
               />
             </div>
 
-            {/* Order Summary Column */}
-            <div className="lg:col-span-5">
+            {/* Right Column: Complete Order Summary */}
+            <div className="col-span-5">
               <OrderSummary
                 cart={checkoutItems}
                 getCartTotal={getCheckoutTotal}
@@ -781,6 +894,7 @@ export default function Checkout() {
                 pointsDiscount={pointsDiscount}
                 userEmail={user?.email}
                 placeOrderRef={placeOrderRef}
+                onRemoveItem={handleRemoveItem}
               />
             </div>
           </div>

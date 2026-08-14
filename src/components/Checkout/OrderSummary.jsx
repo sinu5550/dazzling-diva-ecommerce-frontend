@@ -3,10 +3,12 @@
 "use client";
 import { apiClient } from "@/lib/apiClient";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useState, useEffect, useCallback } from "react";
 import { FaBox, FaTag, FaShoppingBag, FaTrophy, FaCoins } from "react-icons/fa";
 import { FiCheck, FiX } from "react-icons/fi";
 import { SiVala } from "react-icons/si";
+import { Trash2 } from "lucide-react";
 import LoadingSpinner from "@/components/ui/LoadingSpinner";
 
 const getItemImage = (item) => {
@@ -47,12 +49,36 @@ const OrderSummary = ({
   pointsDiscount: externalPointsDiscount,
   userEmail, // Pass user email to fetch correct customer ID
   placeOrderRef,
+  onRemoveItem,
+  renderOnly = null, // 'products' | 'summary' | null
 }) => {
   const regularItems = cart.filter((item) => !item.isBundle);
   const bundleItems = cart.filter((item) => item.isBundle);
 
+  // Terms & Conditions state (Checked by default)
+  const [termsAgreed, setTermsAgreed] = useState(true);
+
   // Coupon state
   const [couponCode, setCouponCode] = useState("");
+
+  // IntersectionObserver for Place Order button docking
+  const mainButtonRef = React.useRef(null);
+  const [isMainButtonInView, setIsMainButtonInView] = useState(true);
+
+  useEffect(() => {
+    const target = mainButtonRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        setIsMainButtonInView(entry.isIntersecting);
+      },
+      { threshold: 0.1 }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, []);
   const [appliedCoupon, setAppliedCoupon] = useState(externalAppliedCoupon);
   const [couponError, setCouponError] = useState("");
   const [couponSuccess, setCouponSuccess] = useState("");
@@ -750,12 +776,12 @@ const OrderSummary = ({
     );
   }
 
-  return (
-    <div className="sticky top-6">
-      <h2 className="text-2xl font-semibold mb-6 text-gray-900">Your Order</h2>
-      <div className="border border-gray-200 rounded-2xl p-4 sm:p-6 bg-white shadow-sm">
-        {/* Products Section */}
-        <div className="mb-6 space-y-3">
+  const renderProductsSection = () => (
+    <div className="order-1">
+      <h2 className="text-xl sm:text-2xl font-semibold mb-4 sm:mb-6 text-gray-900">Your Order</h2>
+      <div className="border border-gray-100 rounded-xl p-4 sm:p-6 bg-white shadow-xs mb-6">
+        {/* Products List - Flat list with subtle 1px border-t separation */}
+        <div className="divide-y divide-gray-200">
           {regularItems.map((item, index) => {
             const quantity = parseInt(item.quantity || 1);
             const originalPrice = parseFloat(
@@ -765,8 +791,6 @@ const OrderSummary = ({
 
             const productDiscount = originalPrice - currentPrice;
             const campaignDiscount = parseFloat(item.discountAmount || 0);
-            const totalItemDiscount =
-              (productDiscount + campaignDiscount) * quantity;
 
             let itemVAT = 0;
             const taxType = item.taxType
@@ -778,22 +802,19 @@ const OrderSummary = ({
               itemVAT = (finalPrice * quantity * taxRate) / 100;
             }
 
-            const lineTotal =
-              (currentPrice - campaignDiscount) * quantity + itemVAT;
-
             return (
               <div
                 key={`regular-${item.productId}-${item.variantId || index}`}
-                className="bg-white rounded-2xl border border-gray-200 p-3.5 shadow-xs transition-all hover:border-gray-300"
+                className="bg-white py-3.5 first:pt-0 last:pb-0"
               >
                 <div className="flex gap-3.5">
                   {/* Product Image */}
-                  <div className="relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border border-gray-100 bg-gray-50">
+                  <div className="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
                     <Image
                       src={getItemImage(item)}
                       alt={item.productName || 'Product'}
                       fill
-                      sizes="96px"
+                      sizes="80px"
                       className="object-cover"
                     />
                   </div>
@@ -801,9 +822,22 @@ const OrderSummary = ({
                   {/* Product Details */}
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div>
-                      <h4 className="font-semibold text-gray-900 text-sm sm:text-base line-clamp-2 leading-snug">
-                        {item.productName}
-                      </h4>
+                      <div className="flex items-start justify-between gap-2">
+                        <h4 className="font-semibold text-gray-900 text-xs sm:text-sm line-clamp-2 leading-snug">
+                          {item.productName}
+                        </h4>
+                        {onRemoveItem && (
+                          <button
+                            type="button"
+                            onClick={() => onRemoveItem(item)}
+                            className="text-gray-400 hover:text-red-600 transition-colors p-1 rounded-md hover:bg-red-50 cursor-pointer flex-shrink-0"
+                            title="Remove item from checkout"
+                            aria-label="Remove item"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        )}
+                      </div>
                       {renderVariantAttributes(item)}
                       {item.campaignName && (
                         <span className="inline-block text-[10px] bg-purple-100 text-purple-700 px-2 py-0.5 rounded-md font-medium mt-1">
@@ -812,14 +846,14 @@ const OrderSummary = ({
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100 text-xs sm:text-sm">
+                    <div className="flex items-center justify-between mt-1.5 pt-1.5 text-xs">
                       <span className="text-gray-500 font-medium">Qty: <span className="text-gray-900 font-bold">{quantity}</span></span>
-                      <div className="text-right">
-                        <span className="font-bold text-[#5A0C3D] text-sm sm:text-base">
-                          {formatPrice(lineTotal)}
+                      <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                        <span className="font-bold text-[#5A0C3D] text-xs sm:text-sm">
+                          {formatPrice((currentPrice - campaignDiscount) * quantity + itemVAT)}
                         </span>
-                        {totalItemDiscount > 0 && (
-                          <span className="block text-[10px] sm:text-xs text-gray-400 line-through">
+                        {(productDiscount > 0 || campaignDiscount > 0 || (originalPrice > 0 && originalPrice > currentPrice)) && (
+                          <span className="text-[11px] text-gray-400 line-through">
                             {formatPrice(originalPrice * quantity)}
                           </span>
                         )}
@@ -831,53 +865,57 @@ const OrderSummary = ({
             );
           })}
 
-          {/* Bundle Items */}
           {bundleItems.map((item, index) => {
             const quantity = parseInt(item.quantity || 1);
-            const originalPrice = parseFloat(
-              item.originalPrice || item.totalOriginalPrice || 0
-            );
-            const finalPrice = parseFloat(
-              item.price || item.finalPrice || 0
-            );
+            const unitPrice = parseFloat(item.price);
+            const originalPrice = parseFloat(item.originalPrice || item.totalOriginalPrice || item.price || 0);
             const discountAmount = parseFloat(item.discountAmount || 0);
-            const bundleVAT = calculateBundleVAT(item);
+            const bundleVAT = item.totalVAT || calculateBundleVAT(item);
+            const lineTotal = unitPrice * quantity + bundleVAT;
 
             return (
               <div
-                key={`bundle-${item.id || index}`}
-                className="bg-white rounded-2xl border border-teal-200 p-3.5 shadow-xs transition-all"
+                key={`bundle-${item.id}-${index}`}
+                className="bg-white py-3.5 first:pt-0 last:pb-0"
               >
                 <div className="flex gap-3.5">
-                  <div className="relative flex-shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl overflow-hidden border border-teal-100 bg-teal-50/30">
+                  <div className="relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
                     <Image
                       src={getItemImage(item)}
                       alt={item.name || 'Bundle'}
                       fill
-                      sizes="96px"
+                      sizes="80px"
                       className="object-cover"
                     />
-                    <div className="absolute top-1 right-1 bg-teal-600 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold">
-                      Bundle
-                    </div>
                   </div>
-
                   <div className="flex-1 min-w-0 flex flex-col justify-between">
                     <div>
-                      <h4 className="font-semibold text-gray-900 text-sm sm:text-base line-clamp-2">
-                        {item.name}
-                      </h4>
-                      {renderBundleItems(item)}
+                      <div className="flex items-start justify-between gap-2">
+                        <h4 className="font-semibold text-gray-900 text-xs sm:text-sm line-clamp-2 leading-snug">
+                          {item.name}
+                        </h4>
+                        {onRemoveItem && (
+                          <button
+                            type="button"
+                            onClick={() => onRemoveItem(item)}
+                            className="text-gray-400 hover:text-red-600 transition-colors p-1 rounded-md hover:bg-red-50 cursor-pointer flex-shrink-0"
+                            title="Remove bundle from checkout"
+                            aria-label="Remove item"
+                          >
+                            <Trash2 size={15} />
+                          </button>
+                        )}
+                      </div>
+                      <span className="inline-block text-[10px] bg-teal-100 text-teal-700 px-2 py-0.5 rounded-md font-medium mt-1">
+                        Bundle
+                      </span>
                     </div>
-
-                    <div className="flex items-center justify-between mt-2 pt-2 border-t border-gray-100 text-xs sm:text-sm">
+                    <div className="flex items-center justify-between mt-1.5 pt-1.5 text-xs">
                       <span className="text-gray-500 font-medium">Qty: <span className="text-gray-900 font-bold">{quantity}</span></span>
-                      <div className="text-right">
-                        <span className="font-bold text-teal-700 text-sm sm:text-base">
-                          {formatPrice(finalPrice)}
-                        </span>
-                        {discountAmount > 0 && (
-                          <span className="block text-[10px] sm:text-xs text-gray-400 line-through">
+                      <div className="flex items-center gap-1.5 flex-wrap justify-end">
+                        <span className="font-bold text-[#5A0C3D] text-xs sm:text-sm">{formatPrice(lineTotal)}</span>
+                        {(originalPrice > unitPrice || discountAmount > 0) && (
+                          <span className="text-[11px] text-gray-400 line-through">
                             {formatPrice(originalPrice * quantity)}
                           </span>
                         )}
@@ -889,99 +927,156 @@ const OrderSummary = ({
             );
           })}
         </div>
+      </div>
+    </div>
+  );
 
-        {/* Loyalty Points Section - Disabled per requirements */}
-        {/*
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <FaTrophy className="text-purple-600" />
-            <h3 className="font-medium">Loyalty Points</h3>
-          </div>
+  const renderCalculationSection = () => (
+    <div className="order-3">
+      {/* Summary Section */}
+      <div className="bg-white p-4 sm:p-5 rounded-xl space-y-3 border border-gray-100 shadow-xs">
+        <h3 className="font-bold text-lg mb-3">Order Summary</h3>
+
+        <div className="flex justify-between text-sm">
+          <span>Sub Total</span>
+          <span className="font-semibold">
+            {formatPrice(totals.subtotalBeforeDiscount)}
+          </span>
         </div>
-        */}
 
-        {/* Coupon Section - Disabled per requirements */}
-        {/*
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-3">
-            <FaTag className="text-purple-600" />
-            <h3 className="font-medium">Apply Coupon</h3>
+        {totals.totalProductDiscount > 0 && (
+          <div className="flex justify-between text-sm text-red-600">
+            <span>Total Discount</span>
+            <span className="font-semibold">
+              -{formatPrice(totals.totalProductDiscount)}
+            </span>
           </div>
+        )}
+
+        <div className="flex justify-between text-sm">
+          <span>VAT</span>
+          <span className="font-semibold">
+            {totals.totalVAT > 0
+              ? `+${formatPrice(totals.totalVAT)}`
+              : "Included"}
+          </span>
         </div>
-        */}
 
-        {/* Summary Section */}
-        <div className="bg-white p-4 sm:p-5 rounded-2xl space-y-3 border border-gray-200 shadow-xs">
-          <h3 className="font-bold text-lg mb-3">Order Summary</h3>
+        <div className="flex justify-between text-sm">
+          <span>Shipping Charge</span>
+          <span className="font-semibold">
+            {formatPrice(totals.shippingCost)}
+          </span>
+        </div>
 
-          <div className="flex justify-between text-sm">
-            <span>Sub Total</span>
+        {totals.couponDiscount > 0 && (
+          <div className="flex justify-between text-sm text-green-600">
+            <span>Coupon Discount</span>
             <span className="font-semibold">
-              {formatPrice(totals.subtotalBeforeDiscount)}
+              -{formatPrice(totals.couponDiscount)}
             </span>
           </div>
+        )}
 
-          {totals.totalProductDiscount > 0 && (
-            <div className="flex justify-between text-sm text-red-600">
-              <span>Total Discount</span>
-              <span className="font-semibold">
-                -{formatPrice(totals.totalProductDiscount)}
-              </span>
-            </div>
-          )}
-
-          <div className="flex justify-between text-sm">
-            <span>VAT</span>
+        {totals.pointsDiscount > 0 && (
+          <div className="flex justify-between text-sm text-purple-600">
+            <span>Loyalty Points ({pointsToRedeem} pts)</span>
             <span className="font-semibold">
-              {totals.totalVAT > 0
-                ? `+${formatPrice(totals.totalVAT)}`
-                : "Included"}
+              -{formatPrice(totals.pointsDiscount)}
             </span>
           </div>
+        )}
 
-          <div className="flex justify-between text-sm">
-            <span>Shipping Charge</span>
-            <span className="font-semibold">
-              {formatPrice(totals.shippingCost)}
-            </span>
-          </div>
-
-          {totals.couponDiscount > 0 && (
-            <div className="flex justify-between text-sm text-green-600">
-              <span>Coupon Discount</span>
-              <span className="font-semibold">
-                -{formatPrice(totals.couponDiscount)}
-              </span>
-            </div>
-          )}
-
-          {totals.pointsDiscount > 0 && (
-            <div className="flex justify-between text-sm text-purple-600">
-              <span>Loyalty Points ({pointsToRedeem} pts)</span>
-              <span className="font-semibold">
-                -{formatPrice(totals.pointsDiscount)}
-              </span>
-            </div>
-          )}
-
-          <div className="border-t-2 border-stone-300 pt-3 mt-3 flex justify-between text-lg font-bold">
-            <span>Grand Total</span>
-            <span className="text-secound">
-              {formatPrice(totals.finalTotal)}
-            </span>
-          </div>
+        <div className="border-t-2 border-stone-300 pt-3 mt-3 flex justify-between text-lg font-bold">
+          <span>Grand Total</span>
+          <span className="text-secound">
+            {formatPrice(totals.finalTotal)}
+          </span>
         </div>
       </div>
 
-      {/* Place Order Button - outside of Your Order card container */}
+      {/* Terms & Conditions Agreement Checkbox */}
+      <div className="mt-4 mb-8 lg:mb-0 flex items-start gap-2.5 px-1">
+        <label className="flex items-start gap-2.5 cursor-pointer select-none text-xs sm:text-sm text-gray-700 leading-snug">
+          <div
+            onClick={() => setTermsAgreed(!termsAgreed)}
+            className={`mt-0.5 w-5 h-5 rounded-full flex items-center justify-center transition-colors shrink-0 cursor-pointer ${
+              termsAgreed
+                ? "bg-[#5A0C3D] border border-[#5A0C3D]"
+                : "bg-white border border-gray-300 hover:border-[#5A0C3D]"
+            }`}
+          >
+            {termsAgreed && <FiCheck className="text-white text-[12px] stroke-[3]" />}
+          </div>
+          <span className="text-[13px]">
+            I have read and agree to the{" "}
+            <Link
+              href="/terms-and-conditions"
+              target="_blank"
+              className="text-[#5A0C3D] hover:underline font-medium "
+            >
+              Terms and Conditions
+            </Link>
+            ,{" "}
+            <Link
+              href="/privacy-policy"
+              target="_blank"
+              className="text-[#5A0C3D] hover:underline font-medium"
+            >
+              Privacy Policy
+            </Link>{" "}
+            &amp;{" "}
+            <Link
+              href="/refund-policy"
+              target="_blank"
+              className="text-[#5A0C3D] hover:underline font-medium"
+            >
+              Refund and Return Policy
+            </Link>
+            .
+          </span>
+        </label>
+      </div>
+
+      {/* Place Order Button - Desktop & Default */}
       <button
+        ref={mainButtonRef}
         type="button"
         onClick={() => placeOrderRef?.current && placeOrderRef.current()}
-        disabled={loading}
+        disabled={loading || !termsAgreed}
         className="w-full mt-6 py-3.5 bg-[#5A0C3D] hover:bg-[#450322] text-white rounded-[8px] font-bold text-base md:text-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer uppercase tracking-wider"
       >
         {loading ? "Processing..." : "Place Order"}
       </button>
+
+      {/* Floating Place Order Action Button for Mobile - Visible ONLY when original button is NOT in view */}
+      {!isMainButtonInView && (
+        <div className="fixed bottom-4 left-0 right-0 px-4 z-[9999] lg:hidden">
+          <button
+            type="button"
+            onClick={() => placeOrderRef?.current && placeOrderRef.current()}
+            disabled={loading || !termsAgreed}
+            className="w-full py-3.5 bg-[#5A0C3D] hover:bg-[#450322] text-white rounded-[8px] font-bold text-base transition-all shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer uppercase tracking-wider"
+          >
+            {loading ? "Processing..." : "Place Order"}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  if (renderOnly === 'products') {
+    return renderProductsSection();
+  }
+
+  if (renderOnly === 'summary') {
+    return renderCalculationSection();
+  }
+
+  return (
+    <div className="sticky top-6 flex flex-col">
+      {renderProductsSection()}
+      {renderCalculationSection()}
     </div>
   );
 };

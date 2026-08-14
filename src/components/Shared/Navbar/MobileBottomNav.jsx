@@ -7,9 +7,14 @@ import { Home, LayoutGrid, Search, User, Heart } from 'lucide-react';
 import { CartIcon } from '@/components/svg';
 import { useHeaderCounts } from '@/hooks/useHeaderCounts';
 
+import { useCartDrawer } from "@/context/CartDrawerContext";
+
 export default function MobileBottomNav({ onOpenMenu, onOpenSearch }) {
     const pathname = usePathname();
     const { cartCount, wishlistCount } = useHeaderCounts();
+    const { openCartDrawer } = useCartDrawer();
+
+    if (pathname === '/checkout') return null;
 
     const isActive = (path) => {
         if (path === '/') return pathname === '/';
@@ -41,9 +46,10 @@ export default function MobileBottomNav({ onOpenMenu, onOpenSearch }) {
                 </button>
 
                 {/* CART */}
-                <Link
-                    href="/cart"
-                    className={`flex flex-col items-center justify-center flex-1 h-full py-1 relative transition-colors ${
+                <button
+                    type="button"
+                    onClick={openCartDrawer}
+                    className={`flex flex-col items-center justify-center flex-1 h-full py-1 relative transition-colors cursor-pointer ${
                         isActive('/cart') ? 'text-white font-bold' : 'text-white/90 hover:text-white'
                     }`}
                 >
@@ -56,7 +62,7 @@ export default function MobileBottomNav({ onOpenMenu, onOpenSearch }) {
                         )}
                     </div>
                     <span className="text-[10px] uppercase tracking-wider font-semibold mt-1">CART</span>
-                </Link>
+                </button>
 
                 {/* SEARCH */}
                 <button

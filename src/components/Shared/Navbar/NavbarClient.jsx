@@ -13,6 +13,7 @@ import {
   Menu,
 } from "lucide-react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Image from "next/image";
 import logo from "../../../../public/assects/Logo.png";
 import SearchComponent from "@/components/Search/SearchComponent";
@@ -30,6 +31,8 @@ import {
 const encodeName = (name) => encodeURIComponent(name);
 
 export default function NavbarClient({ data, contactData, config }) {
+  const pathname = usePathname();
+  const isCartOrCheckout = pathname === '/cart' || pathname === '/checkout';
   const { mainCategories, navItems, topbarLinks } = data;
   const { CLOSE_DELAY = 150 } = config || {};
 
@@ -233,25 +236,9 @@ export default function NavbarClient({ data, contactData, config }) {
 
   return (
     <>
-      {/* Navbar Shell — Sticky top-0 on mobile, static on desktop */}
-      <div className="navbar-shell w-full sticky top-0 lg:static z-[60]">
-        {/* Announcement Bar */}
-        {/* {announcementOpen && (
-          <div className="bg-[#5A0C3D] text-white text-[13px] md:text-[14px] min-h-[38px] py-2 md:py-0 px-4 relative flex items-center justify-center font-outfit font-normal">
-            <span className="text-center tracking-wide px-8 leading-normal">
-              Limited Time! Enjoy 15% OFF on Regular Items — Online Only. Shop
-              Before It Ends!
-            </span>
-            <button
-              onClick={() => setAnnouncementOpen(false)}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-white/80 hover:text-white transition-colors cursor-pointer"
-              aria-label="Dismiss announcement"
-            >
-              <X size={14} />
-            </button>
-          </div>
-        )} */}
-
+      <header className="sticky top-0 z-[60] w-full bg-white shadow-xs">
+      {/* Navbar Shell — Topbar section */}
+      <div className="navbar-shell w-full">
         {/* Topbar */}
         <Topbar
           scrolled={scrolled}
@@ -263,9 +250,9 @@ export default function NavbarClient({ data, contactData, config }) {
         />
       </div>
 
-      {/* Primary/Sub-navigation Bar — Sticky top-[72px] on mobile, sticky top-0 on desktop */}
+      {/* Primary/Sub-navigation Bar — Hidden on mobile, visible on desktop */}
       <div
-        className={`primary-nav sticky top-[72px] lg:top-0 z-50 transition-all duration-300 bg-white border-t border-gray-100/80 py-3 lg:py-0 h-auto lg:h-[60px] flex items-center font-outfit  ${
+        className={`primary-nav hidden lg:flex transition-all duration-300 bg-white border-t border-gray-100/80 lg:py-0 h-[60px] items-center font-outfit ${
           isSticky
             ? "shadow-[0_4px_12px_rgba(0,0,0,0.05)] border-b border-gray-150/80 bg-white/95 backdrop-blur-md"
             : "border-b border-transparent shadow-none"
@@ -487,52 +474,7 @@ export default function NavbarClient({ data, contactData, config }) {
             </div>
           </div>
 
-          {/* Mobile Nav Row (horizontal category pills only, search moved to bottom bar & top modal) */}
-          <div className="flex lg:hidden w-full">
-            <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar pb-0.5 w-full">
-              <Link
-                href="/product"
-                className="px-3.5 py-1.5 bg-white text-gray-800 text-[12px] font-normal rounded-full border border-[#44444433] whitespace-nowrap flex-shrink-0"
-              >
-                All Products
-              </Link>
-              <Link
-                href="/new-arrival"
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white text-gray-800 text-[12px] font-normal rounded-full border border-[#44444433] whitespace-nowrap flex-shrink-0 shiny-button"
-              >
-                <Image
-                  src="/assects/new-icon.svg"
-                  alt="New In"
-                  width={14}
-                  height={14}
-                  className="w-3.5 h-3.5"
-                />
-                <span>New In</span>
-              </Link>
-              <Link
-                href="/discount-campaigns"
-                className="flex items-center gap-1.5 px-3.5 py-1.5 bg-white text-gray-800 text-[12px] font-normal rounded-full border border-[#44444433] whitespace-nowrap flex-shrink-0 shiny-button"
-              >
-                <Image
-                  src="/assects/offer-icon.svg"
-                  alt="Offers"
-                  width={14}
-                  height={14}
-                  className="w-3.5 h-3.5"
-                />
-                <span>Offers</span>
-              </Link>
-              {normalCategories?.map((cat) => (
-                <Link
-                  key={cat.id}
-                  href={`/products/category/${encodeName(cat.name)}`}
-                  className="px-3.5 py-1.5 bg-white text-gray-800 text-[12px] font-normal rounded-full border border-[#44444433] whitespace-nowrap flex-shrink-0"
-                >
-                  {cat.name}
-                </Link>
-              ))}
-            </div>
-          </div>
+
         </div>
         {/* Mega Menu - positioned absolute inside primary-nav */}
         <div
@@ -695,8 +637,9 @@ export default function NavbarClient({ data, contactData, config }) {
           </Container>
         </div>
       </div>
+    </header>
 
-      {/* Mobile Drawer */}
+    {/* Mobile Drawer */}
       <MobileDrawer
         isOpen={isMobileMenuOpen}
         onClose={closeMobileMenu}

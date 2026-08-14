@@ -218,6 +218,7 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                 discountValue: discountValue,
                 discountAmount: discountAmount,
                 discountType: product.campaignInfo?.discountType || 'Percentage',
+                stockQuantity: availableQuantity,
                 ...(isVariantProduct && selectedVariant && {
                     variantId: selectedVariant.id,
                     variantAttributes: selectedVariant.attributes,
@@ -301,7 +302,7 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
     };
 
     return (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100000] flex items-center justify-center p-4">
             {/* Backdrop Overlay */}
             <motion.div
                 initial={{ opacity: 0 }}
@@ -320,7 +321,8 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                 {/* Close Button */}
                 <button 
                     onClick={onClose}
-                    className="absolute top-4 right-4 text-gray-400 hover:text-black w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-100 transition-all cursor-pointer z-30"
+                    className="absolute top-3 right-3 sm:top-4 sm:right-4 bg-white text-gray-700 hover:text-black hover:bg-gray-100 w-9 h-9 rounded-full flex items-center justify-center transition-all cursor-pointer z-30 shadow-md border border-gray-100"
+                    aria-label="Close modal"
                 >
                     <X size={18} />
                 </button>

@@ -14,6 +14,7 @@ import MidBannerOne from "./sections/MidBannerOne";
 import BentoImageGalleryTwo from "./sections/BentoImageGalleryTwo";
 import BentoImageGalleryOne from "./sections/BentoImageGalleryOne";
 import Testimonials from "./sections/Testimonials";
+import AllProductsSection from "./sections/AllProductsSection";
 
 // API main categories fetch
 export async function getMainCategories() {
@@ -64,15 +65,29 @@ const Home = async () => {
     mainCategoriesRes,
     activeCampaignsRes,
     testimonialsRes,
+    allProductsRes,
   ] = await Promise.allSettled([
     apiClient("/api/hero-sliders", { tags: ["hero-sliders"], revalidate: 60 }),
-    apiClient("/api/product/new", { tags: ["new-products", "products"], revalidate: 15 }),
-    apiClient("/api/product/top-selling?limit=10", { tags: ["top-selling", "products"], revalidate: 15 }),
+    apiClient("/api/product/new", {
+      tags: ["new-products", "products"],
+      revalidate: 15,
+    }),
+    apiClient("/api/product/top-selling?limit=10", {
+      tags: ["top-selling", "products"],
+      revalidate: 15,
+    }),
     apiClient("/api/mid-banner", { tags: ["mid-banner"], revalidate: 60 }),
-    apiClient("/api/bento-gallery", { tags: ["bento-gallery"], revalidate: 60 }),
+    apiClient("/api/bento-gallery", {
+      tags: ["bento-gallery"],
+      revalidate: 60,
+    }),
     getMainCategories(),
     fetchActiveCampaigns(),
     apiClient("/api/testimonials", { tags: ["testimonials"], revalidate: 60 }),
+    apiClient("/api/product?page=1&limit=12", {
+      tags: ["products"],
+      revalidate: 15,
+    }),
   ]);
 
   const heroSliderData =
@@ -99,6 +114,9 @@ const Home = async () => {
 
   const testimonialsData =
     testimonialsRes.status === "fulfilled" ? testimonialsRes.value : null;
+
+  const allProductsData =
+    allProductsRes.status === "fulfilled" ? allProductsRes.value : null;
 
   // Extract all categories into a flat array
   const allCategories = getAllCategories(mainCategoriesData);
@@ -174,10 +192,24 @@ const Home = async () => {
       }));
 
       processedNewProductData = newProductData?.data?.products
-        ? { ...newProductData, data: { ...newProductData.data, products: enrichedProducts } }
+        ? {
+            ...newProductData,
+            data: { ...newProductData.data, products: enrichedProducts },
+          }
         : enrichedProducts;
     }
   }
+
+  // Process all products catalog list with campaign info
+  const rawCatalogList =
+    allProductsData?.products ||
+    allProductsData?.data?.products ||
+    (Array.isArray(allProductsData) ? allProductsData : []);
+
+  const processedAllProducts = rawCatalogList.map((p) => ({
+    ...p,
+    campaignInfo: p.campaignInfo || activeCampaignInfo,
+  }));
 
   return (
     <div className="space-y-4 bg-white text-gray-800">
@@ -190,6 +222,17 @@ const Home = async () => {
       {/* <Promotional promoData={promoData} /> */}
       <BentoImageGalleryOne bentoImageGalleryData={bentoImageGalleryData} />
       <TopSellingProducts topSellingProductData={topSellingProductData} />
+      <AllProductsSection
+        products={
+          processedAllProducts.length > 0
+            ? processedAllProducts
+            : allProductsFromCampaigns.length > 0
+              ? allProductsFromCampaigns
+              : Array.isArray(processedNewProductData?.data?.products)
+                ? processedNewProductData.data.products
+                : []
+        }
+      />
       <Testimonials testimonialsData={testimonialsData} />
       <MidBannerTwo midBannerData={midBannerData} />
       {/* <BentoImageGalleryTwo bentoImageGalleryData={bentoImageGalleryData} /> */}
