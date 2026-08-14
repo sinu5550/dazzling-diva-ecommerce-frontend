@@ -161,3 +161,17 @@ h3 {
 .diva-rounded {
   border-radius: 8px !important;
 }
+
+/* Prevent iOS Safari from zooming when focusing inputs/selects/textareas */
+@media screen and (max-width: 768px) {
+  input[type="text"],
+  input[type="number"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"],
+  input[type="search"],
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
