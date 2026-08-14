@@ -3,10 +3,12 @@ import React from 'react';
 import Image from 'next/image';
 import Container from "@/components/Container/Container";
 import { FaFacebookF, FaInstagram } from 'react-icons/fa';
-import { FaXTwitter, FaLocationArrow } from "react-icons/fa6";
+import { FaXTwitter } from "react-icons/fa6";
 import { FiMail } from 'react-icons/fi';
+import { MapPin, Phone } from 'lucide-react';
 import { apiClient } from "@/lib/apiClient";
 import ShipingProcess from "@/components/Home/sections/ShipingProcess";
+import FooterClientWrapper from "./FooterClientWrapper";
 
 const footerData = {
     navigation: {
@@ -50,11 +52,12 @@ const Footer = async () => {
     const resolvedPhone = phone_number || "(+92) 3942 7879";
 
     return (
-        <div className="w-full">
+        <FooterClientWrapper>
+            <div className="w-full">
             <ShipingProcess />
             
             {/* Main Footer */}
-            <footer className="relative bg-[#5A0C3D] text-white pt-12 pb-12 w-full font-outfit overflow-hidden">
+            <footer className="relative z-0 bg-[#5A0C3D] text-white pt-12 pb-12 w-full font-outfit overflow-hidden">
                 {/* Background Overlay */}
                 <div 
                     className="absolute inset-0 bg-cover bg-center opacity-10 pointer-events-none z-0" 
@@ -81,13 +84,13 @@ const Footer = async () => {
                         </div>
 
                         {/* Columns Grid (Center aligned columns, left aligned text) */}
-                        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 pt-8 border-t border-white/10 max-w-5xl mx-auto justify-items-start lg:justify-items-center w-full">
+                        <div className="grid grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12 pt-8 border-t border-white/10 max-w-5xl mx-auto justify-items-start lg:justify-items-center w-full">
                             
-                            {/* Contact Column */}
-                            <div className="w-full max-w-[240px] space-y-4 text-stone-200 text-left">
+                            {/* Contact Column - Full Width on Mobile */}
+                            <div className="col-span-2 lg:col-span-1 w-full max-w-full lg:max-w-[240px] space-y-4 text-stone-200 text-left">
                                 {/* Address */}
                                 <div className="flex items-start gap-2.5">
-                                    <FaLocationArrow className="w-3.5 h-3.5 text-white shrink-0 mt-1 rotate-45" />
+                                    <MapPin className="w-4 h-4 text-white shrink-0 mt-0.5" />
                                     <Link
                                         href={`https://maps.google.com/?q=${encodeURIComponent(google_map || resolvedAddress)}`}
                                         target="_blank"
@@ -108,14 +111,20 @@ const Footer = async () => {
                                         {resolvedEmail}
                                     </a>
                                     {/* Copy Indicator icon placeholder */}
-                                    <span className="w-3.5 h-3.5 border border-white/40 rounded flex items-center justify-center text-[8px] cursor-pointer opacity-70 hover:opacity-100 shrink-0">
+                                    {/* <span className="w-3.5 h-3.5 border border-white/40 rounded flex items-center justify-center text-[8px] cursor-pointer opacity-70 hover:opacity-100 shrink-0">
                                         📄
-                                    </span>
+                                    </span> */}
                                 </div>
 
                                 {/* Phone */}
-                                <div className="text-sm md:text-[16px] font-bold text-white pt-1">
-                                    {resolvedPhone}
+                                <div className="flex items-center gap-2.5">
+                                    <Phone className="w-3.5 h-3.5 text-white shrink-0" />
+                                    <a
+                                        href={`tel:${resolvedPhone.replace(/\s+/g, '')}`}
+                                        className="text-xs md:text-sm text-stone-200 hover:text-white transition-colors"
+                                    >
+                                        {resolvedPhone}
+                                    </a>
                                 </div>
                             </div>
 
@@ -201,7 +210,7 @@ const Footer = async () => {
             </footer>
 
             {/* Bottom Bar */}
-            <div className="bg-[#4A0730] text-stone-300 py-6 font-outfit border-t border-white/5 w-full">
+            <div className="bg-[#4A0730] text-stone-300 py-6 pb-26 lg:pb-6 font-outfit border-t border-white/5 w-full">
                 <Container>
                     <div className="flex flex-col md:flex-row items-center justify-between gap-6 px-4">
                         {/* Copyright */}
@@ -256,6 +265,7 @@ const Footer = async () => {
                 </Container>
             </div>
         </div>
+        </FooterClientWrapper>
     );
 };
 

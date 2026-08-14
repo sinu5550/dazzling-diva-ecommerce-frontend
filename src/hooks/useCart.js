@@ -160,10 +160,13 @@ export const useCart = (user = null) => {
                 discountValue: product.discountValue,
                 discountType: product.discountType,
                 sku: product.sku,
+                // Store available stock so cart can enforce limits
+                stockQuantity: product.stockQuantity ?? product.availableQuantity ?? null,
                 // Include variant details
                 ...(targetVariantId && {
                     variantId: targetVariantId,
                     variantAttributes: product.variantAttributes,
+                    variantType: product.variantType || (product.variantAttributes ? Object.entries(product.variantAttributes).map(([k, v]) => `${k}: ${v}`).join(', ') : undefined),
                     productType: 'variant'
                 }),
                 // Include additional properties if they exist

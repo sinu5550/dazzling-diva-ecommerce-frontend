@@ -100,7 +100,7 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
 
   return (
     <section
-      className="relative w-full overflow-hidden bg-black h-[250px] sm:h-[380px] md:h-[clamp(480px,90vh,820px)]"
+      className="relative w-full overflow-hidden bg-black aspect-[2.2/1] sm:aspect-auto h-auto sm:h-[380px] md:h-[clamp(480px,90vh,820px)]"
       aria-label="Hero banner"
     >
       {/* ── Slide Images ─────────────────────────────── */}
@@ -112,7 +112,17 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
           initial="enter"
           animate="center"
           exit="exit"
-          className="absolute inset-0 w-full h-full"
+          drag="x"
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.2}
+          onDragEnd={(e, { offset, velocity }) => {
+            if (offset.x < -40 || velocity.x < -300) {
+              paginate(1);
+            } else if (offset.x > 40 || velocity.x > 300) {
+              paginate(-1);
+            }
+          }}
+          className="absolute inset-0 w-full h-full cursor-grab active:cursor-grabbing touch-pan-y"
         >
           {slide.link ? (
             <Link
@@ -216,7 +226,7 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
             whileTap={{ scale: 0.92 }}
             onClick={() => paginate(-1)}
             aria-label="Previous slide"
-            className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full border border-white/25 bg-white w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
+            className="hidden sm:flex absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 z-20 items-center justify-center rounded-full border border-white/25 bg-white w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -236,7 +246,7 @@ export default function HeroSlider({ heroSliderData, autoPlayInterval = 5000 }) 
             whileTap={{ scale: 0.92 }}
             onClick={() => paginate(1)}
             aria-label="Next slide"
-            className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-20 flex items-center justify-center rounded-full border border-white/25 bg-white w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
+            className="hidden sm:flex absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 z-20 items-center justify-center rounded-full border border-white/25 bg-white w-10 h-10 sm:w-12 sm:h-12 md:w-13 md:h-13"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

@@ -45,21 +45,25 @@ export const metadata = {
   },
 };
 
+import { CartDrawerProvider } from "@/context/CartDrawerContext";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${geistFont.variable} ${instrumentFont.variable} ${playfairDisplayFont.variable} ${poppinsFont.variable} ${outfitFont.variable}`}>
       <body
         className="antialiased text-gray-800"
       >
-        <Navbar />
+        <CartDrawerProvider>
+          <Navbar />
 
-        <div className="min-h-[calc(100vh-350px)]">
-          {children}
-        </div>
+          <div className="min-h-[calc(100vh-350px)]">
+            {children}
+          </div>
 
-        <Footer />
-        <FloatingActions />
-        <Toaster />
+          <Footer />
+          <FloatingActions />
+          <Toaster />
+        </CartDrawerProvider>
       </body>
     </html>
   );

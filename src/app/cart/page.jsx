@@ -13,6 +13,7 @@ import { IoIosArrowForward } from "react-icons/io";
 import { Trash2 } from "lucide-react";
 import Swal from "sweetalert2";
 import Image from "next/image";
+import MobileCartDrawer from "@/components/Cart/MobileCartDrawer";
 
 
 const CartPage = () => {
@@ -33,6 +34,25 @@ const CartPage = () => {
 
     const [clearing, setClearing] = useState(false);
     const [updatingItems, setUpdatingItems] = useState(new Set());
+
+    // IntersectionObserver for Proceed to Checkout button docking
+    const mainCheckoutButtonRef = React.useRef(null);
+    const [isMainCheckoutButtonInView, setIsMainCheckoutButtonInView] = useState(true);
+
+    React.useEffect(() => {
+        const target = mainCheckoutButtonRef.current;
+        if (!target) return;
+
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                setIsMainCheckoutButtonInView(entry.isIntersecting);
+            },
+            { threshold: 0.1 }
+        );
+
+        observer.observe(target);
+        return () => observer.disconnect();
+    }, []);
 
     const cartItems = getAllCartItems();
     const total = getCombinedTotal();
@@ -184,7 +204,7 @@ const CartPage = () => {
     }
 
     return (
-        <Container className="py-5 sm:py-8 md:py-10 font-outfit">
+        <Container className="py-5 sm:py-8 md:py-10 pb-4 lg:pb-10 font-outfit">
             {/* Breadcrumb */}
             <div className="flex items-center gap-2 text-gray-600 text-xs md:text-sm mb-4">
                 <Link href="/" className="hover:underline hover:text-[#5A0C3D] flex items-center gap-1 transition">
@@ -347,37 +367,18 @@ const CartPage = () => {
                             );
                         })}
 
-                        {/* Clear Cart Button */}
+                        {/* Clear Cart Text (Bottom Right after cards) */}
                         {cartItems.length > 0 && (
-                            <div className="mt-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-3.5 sm:p-4 bg-rose-50 rounded-2xl border border-rose-100">
-                                <p className="text-xs sm:text-sm text-rose-700 font-medium">
-                                    Remove all items from your cart
-                                </p>
+                            <div className="mt-4 flex items-center justify-end pt-2 border-t border-gray-100">
                                 <button
                                     onClick={handleClearCart}
                                     disabled={clearing}
-                                    className="w-full sm:w-auto px-4 py-2 bg-rose-600 text-white text-xs sm:text-sm rounded-xl hover:bg-rose-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-semibold cursor-pointer"
+                                    className="text-xs sm:text-sm text-red-600 hover:text-red-700 underline font-semibold transition-colors disabled:opacity-50 cursor-pointer"
                                 >
-                                    {clearing ? (
-                                        <span className="flex items-center justify-center gap-2">
-                                            <div className="animate-spin rounded-full h-3.5 w-3.5 border-b-2 border-white"></div>
-                                            Clearing...
-                                        </span>
-                                    ) : (
-                                        'Clear Cart'
-                                    )}
+                                    {clearing ? 'Clearing Cart...' : 'Clear Cart'}
                                 </button>
                             </div>
                         )}
-
-                        <div className="mt-4">
-                            <Link
-                                href="/"
-                                className="inline-flex items-center text-xs sm:text-sm text-[#5A0C3D] hover:text-[#450322] font-semibold hover:underline transition-colors"
-                            >
-                                ← Continue Shopping
-                            </Link>
-                        </div>
                     </div>
 
                     {/* Order Summary Sidebar */}
@@ -407,6 +408,7 @@ const CartPage = () => {
 
                             {/* Checkout Button */}
                             <button
+                                ref={mainCheckoutButtonRef}
                                 onClick={handleCheckout}
                                 disabled={loading || cartItems.length === 0}
                                 className="w-full py-3 px-4 font-bold text-xs sm:text-sm text-white bg-[#5A0C3D] hover:bg-[#450322] rounded-xl transition-all shadow-sm active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-2 uppercase tracking-wider"
@@ -418,6 +420,26 @@ const CartPage = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Floating Mobile Bottom Action Bar for Cart - Visible ONLY when original button is NOT in view */}
+            {!isMainCheckoutButtonInView && (
+                <div className="fixed bottom-16 left-0 right-0 z-[9999] bg-white border-t border-gray-200 p-3 shadow-[0_-4px_20px_rgba(0,0,0,0.15)] lg:hidden">
+                    <div className="flex items-center justify-between gap-3 max-w-md mx-auto">
+                        <div>
+                            <p className="text-[10px] text-gray-500 uppercase tracking-wider font-medium">Grand Total</p>
+                            <p className="text-lg font-bold text-[#5A0C3D]">{formatPrice(total)}</p>
+                        </div>
+                        <button
+                            onClick={handleCheckout}
+                            disabled={loading || cartItems.length === 0}
+                            className="flex-1 py-3 px-4 font-bold text-xs text-white bg-[#5A0C3D] hover:bg-[#450322] rounded-xl transition-all shadow-md active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 uppercase tracking-wider cursor-pointer"
+                        >
+                            Proceed to Checkout
+                            <FaArrowRight size={12} />
+                        </button>
+                    </div>
+                </div>
+            )}
         </Container>
     );
 };

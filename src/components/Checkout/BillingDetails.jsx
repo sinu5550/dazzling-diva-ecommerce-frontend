@@ -21,6 +21,7 @@ const BillingDetails = ({
     handleSubmit,
     onCheckoutSubmit,
     loading,
+    setLoading,
     totalAmount = 0,
     placeOrderRef
 }) => {
@@ -222,13 +223,19 @@ const BillingDetails = ({
     // Handle save new address and checkout (Matching Multivendor-Frontend integration pattern)
     const handleSaveAndCheckout = async (formData) => {
         try {
-            const emailToUse = (user?.email || formData.email || '').trim();
             const phoneNumber = (formData.phoneNumber || user?.phone || '').trim();
+            const cleanPhone = phoneNumber.replace(/\D/g, '');
+            const emailToUse = (user?.email || formData.email || (cleanPhone ? `guest_${cleanPhone}@dazzlingdiva.com` : '')).trim();
             const recipientName = (formData.recipientName || user?.fullName || '').trim();
 
-            if (!emailToUse) {
-                Swal.fire({ icon: 'error', title: 'Error', text: 'Please enter your email address', confirmButtonColor: '#14b8a6' });
+            if (!phoneNumber) {
+                Swal.fire({ icon: 'error', title: 'Error', text: 'Please enter your phone number', confirmButtonColor: '#5A0C3D' });
                 return;
+            }
+
+            // Immediately set global checkout loading state for instant feedback
+            if (typeof onCheckoutSubmit === 'function') {
+                // If onCheckoutSubmit is available
             }
 
             const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
@@ -236,7 +243,7 @@ const BillingDetails = ({
             // Step 1: Check if Customer already exists by email (matching Multivendor-Frontend)
             let targetCustomerId = customerId;
 
-            if (!targetCustomerId) {
+            if (!targetCustomerId && emailToUse) {
                 try {
                     const customerRes = await fetch(`${apiUrl}/api/customer/email/${encodeURIComponent(emailToUse)}`);
                     const customerData = await customerRes.json();
@@ -257,9 +264,9 @@ const BillingDetails = ({
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({
-                        fullName: recipientName,
-                        email: emailToUse,
-                        phone: phoneNumber.replace(/\D/g, ''),
+                        fullName: recipientName || "Guest Customer",
+                        email: emailToUse || `guest_${cleanPhone || Date.now()}@dazzlingdiva.com`,
+                        phone: cleanPhone,
                         status: true
                     }),
                 });
@@ -323,11 +330,12 @@ const BillingDetails = ({
 
         } catch (error) {
             console.error('Checkout error:', error);
+            if (setLoading) setLoading(false);
             Swal.fire({
                 icon: 'error',
                 title: 'Error',
                 text: error.message || 'Failed to process checkout',
-                confirmButtonColor: '#14b8a6'
+                confirmButtonColor: '#5A0C3D'
             });
         }
     };
@@ -335,10 +343,17 @@ const BillingDetails = ({
     // Assign placeOrderRef handler for OrderSummary's Place Order button
     if (placeOrderRef) {
         placeOrderRef.current = () => {
+            if (setLoading) setLoading(true);
             if (user && customerId && addresses.length > 0 && selectedAddress && !isAddingNewAddress) {
                 handlePlaceOrder();
             } else {
-                handleSubmit(handleSaveAndCheckout)();
+                handleSubmit(
+                    handleSaveAndCheckout,
+                    (formErrors) => {
+                        // If validation errors exist, reset loading immediately
+                        if (setLoading) setLoading(false);
+                    }
+                )();
             }
         };
     }
@@ -621,13 +636,18 @@ const BillingDetails = ({
                         {!user && (
                             <div>
                                 <label className="block mb-1 text-xs md:text-sm font-medium">
-                                    Email Address <span className="text-red-500">*</span>
+                                    Email Address <span className="text-gray-400 font-normal text-xs">(Optional)</span>
                                 </label>
                                 <input
                                     type="email"
                                     {...register("email", {
-                                        required: "Email is required",
-                                        pattern: { value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i, message: "Invalid email" }
+                                        validate: (value) => {
+                                            if (!value || value.trim() === "") return true;
+                                            return (
+                                                /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value.trim()) ||
+                                                "Invalid email address"
+                                            );
+                                        }
                                     })}
                                     placeholder="your@email.com"
                                     className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all"
@@ -687,7 +707,7 @@ const BillingDetails = ({
                                 {errors.upazila && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.upazila.message}</p>}
                             </div>
 
-                            <div className="col-span-2">
+                            {/* <div className="col-span-2">
                                 <label className="block mb-1 font-medium text-xs md:text-sm">Postal Code <span className="text-red-500">*</span></label>
                                 <input
                                     {...register("postalCode", {
@@ -699,7 +719,7 @@ const BillingDetails = ({
                                     className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all"
                                 />
                                 {errors.postalCode && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.postalCode.message}</p>}
-                            </div>
+                            </div> */}
                         </div>
 
                         <div>
