@@ -30,9 +30,9 @@ const footerData = {
             { text: "My Orders", path: "/account/orders" },
         ],
         policies: [
-            { text: "Teams & Condition", path: "/terms" },
-            { text: "Privacy & Policy", path: "/privacy" },
-            { text: "Refund Policy", path: "/refund" },
+            { text: "Teams & Condition", path: "https://drive.google.com/file/d/1qVbMH8aLZ-DkbVFX4v0ReftjGplhI4nX/view?usp=drive_link" },
+            { text: "Privacy & Policy", path: "https://drive.google.com/file/d/1ed0Yt39e2wZNKJMskEB7QkH0IaKdy15o/view?usp=sharing" },
+            { text: "Refund Policy", path: "https://drive.google.com/file/d/1gxXAqVaWIuClyrGSQg_GmGuSIwpyg20c/view?usp=sharing" },
         ],
     }
 };
@@ -252,13 +252,15 @@ const Footer = async () => {
                         {/* Policies */}
                         <div className="flex items-center gap-6 text-xs md:text-sm">
                             {navigation.policies.map(({ text, path }) => (
-                                <Link
+                                <a
                                     key={text}
                                     href={path}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="hover:text-white transition-colors"
                                 >
                                     {text}
-                                </Link>
+                                </a>
                             ))}
                         </div>
                     </div>

@@ -49,69 +49,80 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
 
   // State for "You May Also Like" products
   const [recommendedProducts, setRecommendedProducts] = useState([]);
-  const [recIndex, setRecIndex] = useState(0);
   const [recLoading, setRecLoading] = useState(false);
   const [updatingItems, setUpdatingItems] = useState(new Set());
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const recScrollRef = useRef(null);
 
   // Fetch recommended products and active discount campaigns
-  useEffect(() => {
-    let isMounted = true;
-    const fetchRecommendations = async () => {
-      setRecLoading(true);
+  const fetchRecommendations = useCallback(async () => {
+    setRecLoading(true);
+    try {
+      let res = null;
       try {
-        const [res, campaignsRes] = await Promise.all([
-          apiClient("/api/product/top-selling?limit=10"),
-          apiClient("/api/discount-campaign/active").catch(() => null)
-        ]);
-
-        let products = res?.data || res?.products || (Array.isArray(res) ? res : []);
-        
-        const campaigns = Array.isArray(campaignsRes)
-          ? campaignsRes
-          : (campaignsRes?.data || campaignsRes?.campaigns || []);
-        const appliesToAllCampaign = campaigns.find((c) => c.appliesToAll);
-
-        if (appliesToAllCampaign && Array.isArray(products)) {
-          const campaignInfo = {
-            campaignId: appliesToAllCampaign.id,
-            campaignName: appliesToAllCampaign.name,
-            campaignType: appliesToAllCampaign.campaignType,
-            discountType: appliesToAllCampaign.discountType,
-            discountValue: parseFloat(appliesToAllCampaign.discountValue) || 0,
-            maxDiscountAmount: appliesToAllCampaign.maxDiscountAmount
-              ? parseFloat(appliesToAllCampaign.maxDiscountAmount)
-              : null,
-            appliesToAll: appliesToAllCampaign.appliesToAll,
-            startAt: appliesToAllCampaign.startAt,
-            endAt: appliesToAllCampaign.endAt,
-            showCountdown: appliesToAllCampaign.showCountdown,
-            badgeText: appliesToAllCampaign.badgeText,
-            badgeColor: appliesToAllCampaign.badgeColor,
-            priority: appliesToAllCampaign.priority || 0,
-          };
-
-          products = products.map((p) => ({
-            ...p,
-            campaignInfo: p.campaignInfo || campaignInfo
-          }));
-        }
-
-        if (isMounted && Array.isArray(products) && products.length > 0) {
-          setRecommendedProducts(products);
-        }
-      } catch (err) {
-        console.error("Error fetching recommended products:", err);
-      } finally {
-        if (isMounted) setRecLoading(false);
+        res = await apiClient("/api/product/top-selling?limit=10");
+      } catch (e) {
+        console.warn("Top-selling fetch failed, trying fallback:", e);
       }
-    };
-    fetchRecommendations();
-    return () => {
-      isMounted = false;
-    };
+
+      let products = res?.data || res?.products || (Array.isArray(res) ? res : []);
+
+      if (!products || products.length === 0) {
+        const fallbackRes = await apiClient("/api/product?limit=10").catch(() => null);
+        products = fallbackRes?.data || fallbackRes?.products || (Array.isArray(fallbackRes) ? fallbackRes : []);
+      }
+      
+      const campaignsRes = await apiClient("/api/discount-campaign/active").catch(() => null);
+      const campaigns = Array.isArray(campaignsRes)
+        ? campaignsRes
+        : (campaignsRes?.data || campaignsRes?.campaigns || []);
+      const appliesToAllCampaign = campaigns.find((c) => c.appliesToAll);
+
+      if (appliesToAllCampaign && Array.isArray(products)) {
+        const campaignInfo = {
+          campaignId: appliesToAllCampaign.id,
+          campaignName: appliesToAllCampaign.name,
+          campaignType: appliesToAllCampaign.campaignType,
+          discountType: appliesToAllCampaign.discountType,
+          discountValue: parseFloat(appliesToAllCampaign.discountValue) || 0,
+          maxDiscountAmount: appliesToAllCampaign.maxDiscountAmount
+            ? parseFloat(appliesToAllCampaign.maxDiscountAmount)
+            : null,
+          appliesToAll: appliesToAllCampaign.appliesToAll,
+          startAt: appliesToAllCampaign.startAt,
+          endAt: appliesToAllCampaign.endAt,
+          showCountdown: appliesToAllCampaign.showCountdown,
+          badgeText: appliesToAllCampaign.badgeText,
+          badgeColor: appliesToAllCampaign.badgeColor,
+          priority: appliesToAllCampaign.priority || 0,
+        };
+
+        products = products.map((p) => ({
+          ...p,
+          campaignInfo: p.campaignInfo || campaignInfo
+        }));
+      }
+
+      if (Array.isArray(products) && products.length > 0) {
+        setRecommendedProducts(products);
+      }
+    } catch (err) {
+      console.error("Error fetching recommended products:", err);
+    } finally {
+      setRecLoading(false);
+    }
   }, []);
+
+  useEffect(() => {
+    fetchRecommendations();
+  }, [fetchRecommendations]);
+
+  // Refetch if drawer is opened and recommendedProducts is empty
+  useEffect(() => {
+    if (isOpen && recommendedProducts.length === 0 && !recLoading) {
+      fetchRecommendations();
+    }
+  }, [isOpen, recommendedProducts.length, recLoading, fetchRecommendations]);
 
   // Filter out products already in cart
   const availableRecommendations = recommendedProducts.filter(
@@ -119,25 +130,6 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
   );
 
   const displayList = availableRecommendations.length > 0 ? availableRecommendations : recommendedProducts;
-
-  // Auto-sliding interval for "You May Also Like"
-  useEffect(() => {
-    if (displayList.length <= 1) return;
-    const interval = setInterval(() => {
-      setRecIndex((prev) => (prev + 1) % displayList.length);
-    }, 3500);
-    return () => clearInterval(interval);
-  }, [displayList.length]);
-
-  const handleNextRec = () => {
-    if (displayList.length === 0) return;
-    setRecIndex((prev) => (prev + 1) % displayList.length);
-  };
-
-  const handlePrevRec = () => {
-    if (displayList.length === 0) return;
-    setRecIndex((prev) => (prev - 1 + displayList.length) % displayList.length);
-  };
 
   const formatPrice = (price) => {
     const num = parseFloat(price || 0);
@@ -246,8 +238,6 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
     }, 100);
   };
 
-  const currentRec = displayList[recIndex] || null;
-
   return (
     <AnimatePresence>
       {isOpen && (
@@ -270,10 +260,10 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 28, stiffness: 260 }}
-            className="relative w-full max-w-md bg-white h-full flex flex-col shadow-2xl z-10 overflow-hidden"
+            className="relative w-full max-w-md bg-white h-full h-[100dvh] max-h-[100dvh] flex flex-col shadow-2xl z-10 overflow-hidden"
           >
           {/* Header */}
-          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white">
+          <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100 bg-white flex-shrink-0">
             <h2 className="text-sm sm:text-base font-bold tracking-wider text-gray-900 uppercase">
               SHOPPING CART
             </h2>
@@ -287,7 +277,7 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
           </div>
 
           {/* Cart Items List */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          <div className="flex-1 min-h-0 overflow-y-auto p-4 space-y-3 overscroll-contain">
             {cartItems.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-48 text-center py-8">
                 <p className="text-gray-500 text-sm font-medium">Your shopping cart is empty.</p>
@@ -403,11 +393,11 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
           </div>
 
           {/* Bottom Area: "You May Also Like" Carousel + Total & Checkout */}
-          <div className="border-t border-gray-100 bg-gray-50/80 p-4 space-y-4">
+          <div className="flex-shrink-0 border-t border-gray-100 bg-gray-50/90 p-4 space-y-3">
             {/* "You May Also Like" Section */}
-            {displayList.length > 0 && (
+            {displayList.length > 0 ? (
               <div>
-                <div className="flex items-center justify-between mb-2.5">
+                <div className="flex items-center justify-between mb-2">
                   <h3 className="text-xs font-bold text-gray-900 uppercase tracking-wide">
                     You May Also Like
                   </h3>
@@ -539,7 +529,22 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
                   })}
                 </div>
               </div>
-            )}
+            ) : recLoading ? (
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="h-3.5 w-28 bg-gray-200 rounded animate-pulse" />
+                </div>
+                <div className="flex gap-2.5 overflow-hidden pb-1">
+                  <div className="flex-shrink-0 bg-white rounded-xl border border-gray-100 p-2.5 flex items-center gap-2.5 animate-pulse" style={{ width: 'calc(80% - 5px)' }}>
+                    <div className="w-14 h-14 rounded-lg bg-gray-200 shrink-0" />
+                    <div className="flex-1 space-y-1.5 min-w-0">
+                      <div className="h-3 w-3/4 bg-gray-200 rounded" />
+                      <div className="h-3 w-1/2 bg-gray-200 rounded" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : null}
 
             {/* Total */}
             <div className="flex items-center justify-between pt-2 border-t border-gray-200 text-sm">
