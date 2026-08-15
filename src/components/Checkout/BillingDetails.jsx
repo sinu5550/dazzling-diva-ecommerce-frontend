@@ -42,11 +42,104 @@ const BillingDetails = ({
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [tempCheckoutData, setTempCheckoutData] = useState(null);
 
+  const watchRecipientName = watch("recipientName");
+  const watchPhoneNumber = watch("phoneNumber");
+  const watchEmail = watch("email");
+  const watchAddress = watch("address");
+  const watchType = watch("type");
   const watchDivision = watch("division");
   const watchDistrict = watch("district");
+  const watchUpazila = watch("upazila");
   const watchPayment = watch("payment");
   const watchShipping = watch("shipping");
   const watchNote = watch("note");
+
+  // Restore cached guest shipping details on initial mount
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    try {
+      const savedDetails = localStorage.getItem("dazzling_checkout_shipping_details");
+      if (savedDetails) {
+        const parsed = JSON.parse(savedDetails);
+        if (parsed && typeof parsed === "object") {
+          if (!user?.fullName && parsed.recipientName) {
+            setValue("recipientName", parsed.recipientName, { shouldDirty: true });
+          }
+          if (!user?.phone && parsed.phoneNumber) {
+            setValue("phoneNumber", parsed.phoneNumber, { shouldDirty: true });
+          }
+          if (parsed.email) {
+            setValue("email", parsed.email, { shouldDirty: true });
+          }
+          if (parsed.division) {
+            setValue("division", parsed.division, { shouldDirty: true });
+          }
+          if (parsed.district) {
+            setValue("district", parsed.district, { shouldDirty: true });
+          }
+          if (parsed.upazila) {
+            setValue("upazila", parsed.upazila, { shouldDirty: true });
+          }
+          if (parsed.address) {
+            setValue("address", parsed.address, { shouldDirty: true });
+          }
+          if (parsed.type) {
+            setValue("type", parsed.type, { shouldDirty: true });
+          }
+        }
+      }
+    } catch (e) {
+      console.error("Error restoring cached shipping details:", e);
+    }
+
+    if (user) {
+      if (user.fullName) setValue("recipientName", user.fullName);
+      if (user.phone) setValue("phoneNumber", user.phone);
+      if (user.email) setValue("email", user.email);
+    }
+  }, [user, setValue]);
+
+  // Debounced auto-save of entered shipping details to localStorage
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const timer = setTimeout(() => {
+      if (
+        watchRecipientName ||
+        watchPhoneNumber ||
+        watchEmail ||
+        watchAddress ||
+        watchDivision ||
+        watchDistrict ||
+        watchUpazila
+      ) {
+        try {
+          const toSave = {
+            recipientName: watchRecipientName || "",
+            phoneNumber: watchPhoneNumber || "",
+            email: watchEmail || "",
+            division: watchDivision || "",
+            district: watchDistrict || "",
+            upazila: watchUpazila || "",
+            address: watchAddress || "",
+            type: watchType || "Home",
+          };
+          localStorage.setItem("dazzling_checkout_shipping_details", JSON.stringify(toSave));
+        } catch (e) {}
+      }
+    }, 400);
+
+    return () => clearTimeout(timer);
+  }, [
+    watchRecipientName,
+    watchPhoneNumber,
+    watchEmail,
+    watchAddress,
+    watchDivision,
+    watchDistrict,
+    watchUpazila,
+    watchType,
+  ]);
 
   // Fetch customer data and addresses
   useEffect(() => {
@@ -415,6 +508,25 @@ const BillingDetails = ({
     }
   };
 
+  const scrollToFirstError = (formErrors) => {
+    if (!formErrors) return;
+    const errorKeys = Object.keys(formErrors);
+    if (errorKeys.length > 0) {
+      const firstKey = errorKeys[0];
+      const errorElement = document.querySelector(
+        `[name="${firstKey}"], #${firstKey}`
+      );
+      if (errorElement) {
+        errorElement.scrollIntoView({ behavior: "smooth", block: "center" });
+        setTimeout(() => {
+          try {
+            errorElement.focus();
+          } catch (e) {}
+        }, 300);
+      }
+    }
+  };
+
   // Assign placeOrderRef handler for OrderSummary's Place Order button
   if (placeOrderRef) {
     placeOrderRef.current = () => {
@@ -429,8 +541,8 @@ const BillingDetails = ({
         handlePlaceOrder();
       } else {
         handleSubmit(handleSaveAndCheckout, (formErrors) => {
-          // If validation errors exist, reset loading immediately
           if (setLoading) setLoading(false);
+          scrollToFirstError(formErrors);
         })();
       }
     };
@@ -700,7 +812,10 @@ const BillingDetails = ({
         </div>
       ) : (
         <form
-          onSubmit={handleSubmit(handleSaveAndCheckout)}
+          onSubmit={handleSubmit(handleSaveAndCheckout, (formErrors) => {
+            if (setLoading) setLoading(false);
+            scrollToFirstError(formErrors);
+          })}
           className="bg-white border border-gray-200 rounded-2xl p-4 md:p-6 shadow-sm"
         >
           <div className="space-y-4 mb-6">
@@ -730,7 +845,6 @@ const BillingDetails = ({
                   })}
                   placeholder="Full Name"
                   className="w-full text-xs md:text-sm placeholder:text-xs md:placeholder:text-sm px-3 md:px-4 py-2.5 h-10 md:h-11 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all bg-white text-gray-900"
-                  defaultValue={user?.fullName}
                 />
                 {errors.recipientName && (
                   <p className="text-red-500 text-xs md:text-sm mt-1">
@@ -753,7 +867,6 @@ const BillingDetails = ({
                   })}
                   placeholder="01XXXXXXXXX"
                   className="w-full !text-xs md:text-sm !placeholder:text-xs md:placeholder:text-sm px-3 md:px-4 py-2.5 h-10 md:h-11 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all bg-white text-gray-900"
-                  defaultValue={user?.phone}
                 />
                 {errors.phoneNumber && (
                   <p className="text-red-500 text-xs md:text-sm mt-1">
