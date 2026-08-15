@@ -4,12 +4,13 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import { FaSearchPlus } from 'react-icons/fa';
+import MobileImageLightbox from '../Modal/MobileImageLightbox';
 
 export default function ProductImageGallery({ images, productName }) {
-
     const [selectedImage, setSelectedImage] = useState(0);
     const [isZoomed, setIsZoomed] = useState(false);
     const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     // Reset selected image to 0 when images list changes (e.g., variant selected)
     useEffect(() => {
@@ -23,13 +24,20 @@ export default function ProductImageGallery({ images, productName }) {
         setMousePosition({ x, y });
     };
 
+    const handleImageClick = () => {
+        if (typeof window !== 'undefined' && window.innerWidth < 768) {
+            setIsModalOpen(true);
+        }
+    };
+
     return (
         <div className="space-y-4">
             <div
-                className=" relative aspect-[4/5] overflow-hidden  bg-gray-100 group "
+                className="relative aspect-[4/5] overflow-hidden bg-gray-100 group cursor-pointer md:cursor-crosshair"
                 onMouseMove={handleMouseMove}
                 onMouseEnter={() => setIsZoomed(true)}
                 onMouseLeave={() => setIsZoomed(false)}
+                onClick={handleImageClick}
             >
                 <Image
                     src={images[selectedImage] || ''}
@@ -37,7 +45,7 @@ export default function ProductImageGallery({ images, productName }) {
                     fill
                     priority
                     sizes="(max-width: 768px) 100vw, 50vw"
-                    className=" object-cover transition-transform duration-300 ease-out "
+                    className="object-cover transition-transform duration-300 ease-out"
                     style={{
                         transform: isZoomed ? 'scale(1.6)' : 'scale(1)',
                         transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
@@ -45,16 +53,15 @@ export default function ProductImageGallery({ images, productName }) {
                 />
 
                 <div
-                    className=" absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-all duration-300 pointer-events-none"
+                    className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-all duration-300 pointer-events-none"
                 />
 
                 <div
-                    className=" absolute top-4 right-4 bg-white/90 backdrop-blur-md p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300"
+                    className="absolute top-4 right-4 bg-white/90 backdrop-blur-md p-3 rounded-full shadow-lg opacity-0 group-hover:opacity-100 transition-all duration-300 hidden md:block"
                 >
                     <FaSearchPlus className="text-gray-700 text-sm" />
                 </div>
             </div>
-
 
             {/* Thumbnail Images */}
             <div className="flex gap-4 overflow-x-auto pb-2 mt-8 hide-scrollbar">
@@ -62,10 +69,11 @@ export default function ProductImageGallery({ images, productName }) {
                     <button
                         key={index}
                         onClick={() => setSelectedImage(index)}
-                        className={`relative flex-shrink-0 w-14 md:w-20 h-14 md:h-20 border  overflow-hidden transition-all ${selectedImage === index
+                        className={`relative flex-shrink-0 w-14 md:w-20 h-14 md:h-20 border overflow-hidden transition-all ${
+                            selectedImage === index
                                 ? 'border-secound shadow-lg'
                                 : 'border-gray-200 hover:border-gray-400'
-                            }`}
+                        }`}
                     >
                         <Image
                             src={image}
@@ -78,6 +86,16 @@ export default function ProductImageGallery({ images, productName }) {
                     </button>
                 ))}
             </div>
+
+            {/* Reusable Mobile Fullscreen Lightbox Modal */}
+            <MobileImageLightbox
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                images={images}
+                currentIndex={selectedImage}
+                onIndexChange={setSelectedImage}
+                productName={productName}
+            />
         </div>
     );
 }

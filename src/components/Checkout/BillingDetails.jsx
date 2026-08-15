@@ -1,762 +1,966 @@
 // components/Checkout/BillingDetails.jsx
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { apiClient } from '@/lib/apiClient';
-import { divisions, districts, upazilas } from '@/lib/data';
-import Link from 'next/link';
-import { Home, Briefcase, MapPin, Plus, Star, X } from 'lucide-react';
-import Swal from 'sweetalert2';
-import Image from 'next/image';
+import React, { useState, useEffect } from "react";
+import { apiClient } from "@/lib/apiClient";
+import { divisions, districts, upazilas } from "@/lib/data";
+import Link from "next/link";
+import { Home, Briefcase, MapPin, Plus, Star, X } from "lucide-react";
+import Swal from "sweetalert2";
+import Image from "next/image";
 import AddressAddModal from "../Modal/AddressModal/AddressAddModal";
 import { FaLongArrowAltRight } from "react-icons/fa";
 import PaymentMethodModal from "../Modal/PaymentMethodModal/PaymentMethodModal";
 
 const BillingDetails = ({
-    user,
-    register,
-    errors,
-    watch,
-    setValue,
-    handleSubmit,
-    onCheckoutSubmit,
-    loading,
-    setLoading,
-    totalAmount = 0,
-    placeOrderRef
+  user,
+  register,
+  errors,
+  watch,
+  setValue,
+  handleSubmit,
+  onCheckoutSubmit,
+  loading,
+  setLoading,
+  totalAmount = 0,
+  placeOrderRef,
 }) => {
-    const [customerId, setCustomerId] = useState(null);
-    const [addresses, setAddresses] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [selectedAddress, setSelectedAddress] = useState(null);
-    const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
-    const [showAllAddresses, setShowAllAddresses] = useState(false);
-    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-    const [filteredDistricts, setFilteredDistricts] = useState([]);
-    const [filteredUpazilas, setFilteredUpazilas] = useState([]);
+  const [customerId, setCustomerId] = useState(null);
+  const [addresses, setAddresses] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [selectedAddress, setSelectedAddress] = useState(null);
+  const [isAddingNewAddress, setIsAddingNewAddress] = useState(false);
+  const [showAllAddresses, setShowAllAddresses] = useState(false);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [filteredDistricts, setFilteredDistricts] = useState([]);
+  const [filteredUpazilas, setFilteredUpazilas] = useState([]);
 
-    const [isGuestCheckout, setIsGuestCheckout] = useState(false);
+  const [isGuestCheckout, setIsGuestCheckout] = useState(false);
 
-    // Payment Modal State
-    const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-    const [tempCheckoutData, setTempCheckoutData] = useState(null);
+  // Payment Modal State
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [tempCheckoutData, setTempCheckoutData] = useState(null);
 
-    const watchDivision = watch("division");
-    const watchDistrict = watch("district");
-    const watchPayment = watch("payment");
-    const watchShipping = watch("shipping");
-    const watchNote = watch("note");
+  const watchDivision = watch("division");
+  const watchDistrict = watch("district");
+  const watchPayment = watch("payment");
+  const watchShipping = watch("shipping");
+  const watchNote = watch("note");
 
-    // Fetch customer data and addresses
-    useEffect(() => {
-        const fetchCustomerData = async () => {
-            if (!user?.email) {
-                setIsLoading(false);
-                return;
-            }
-            try {
-                setIsLoading(true);
-                setError(null);
-                const result = await apiClient(`/api/customer/email/${encodeURIComponent(user.email)}`);
-                let customerData = null;
-                if (result && result.success !== undefined) {
-                    customerData = result.data;
-                } else if (result && result.id) {
-                    customerData = result;
-                } else if (result && result.customer) {
-                    customerData = result.customer;
-                }
-
-                if (customerData && customerData.id) {
-                    setCustomerId(customerData.id);
-                    setAddresses(customerData.customerAddresses || []);
-                    const defaultAddr = customerData.customerAddresses?.find(addr => addr.isDefault);
-                    if (defaultAddr) {
-                        setSelectedAddress(defaultAddr.id);
-                        prefillForm(defaultAddr);
-                    }
-                } else {
-                    setCustomerId(null);
-                    setAddresses([]);
-                    setError('Customer profile not found');
-                }
-            } catch (error) {
-                console.error('Error fetching customer data:', error);
-                setError(error.message || 'Failed to load customer data');
-                setCustomerId(null);
-                setAddresses([]);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchCustomerData();
-    }, [user?.email]);
-
-    // Refetch addresses after adding new one
-    const fetchAddresses = async () => {
-        if (!customerId) return;
-        try {
-            const result = await apiClient(`/api/customer/${customerId}/addresses`);
-            let addressData = null;
-            if (result && result.success !== undefined) {
-                addressData = result.data;
-            } else if (Array.isArray(result)) {
-                addressData = result;
-            }
-            setAddresses(addressData || []);
-            const defaultAddr = addressData?.find(addr => addr.isDefault);
-            if (defaultAddr) {
-                setSelectedAddress(defaultAddr.id);
-                prefillForm(defaultAddr);
-            }
-        } catch (error) {
-            console.error('Error fetching addresses:', error);
-        }
-    };
-
-    // Filter districts based on division
-    useEffect(() => {
-        if (watchDivision) {
-            const divisionData = divisions.find((div) => div.name === watchDivision);
-            if (divisionData) {
-                const districtList = districts.filter((dist) => dist.division_id === divisionData.id);
-                setFilteredDistricts(districtList);
-                setValue("city", watchDivision);
-            }
-            setValue("district", "");
-            setValue("upazila", "");
-            setFilteredUpazilas([]);
-        }
-    }, [watchDivision, setValue]);
-
-    // Filter upazilas based on district
-    useEffect(() => {
-        if (watchDistrict) {
-            const districtData = districts.find((dist) => dist.name === watchDistrict);
-            if (districtData) {
-                const upazilaList = upazilas.filter((upazila) => upazila.district_id === districtData.id);
-                setFilteredUpazilas(upazilaList);
-            }
-            setValue("upazila", "");
-        }
-    }, [watchDistrict, setValue]);
-
-    const getIcon = (type) => {
-        switch (type) {
-            case 'Home': return <Home className="w-3 h-3 text-secound" />;
-            case 'Office': return <Briefcase className="w-3 h-3 text-secound" />;
-            default: return <MapPin className="w-3 h-3 text-secound" />;
-        }
-    };
-
-    const prefillForm = (address) => {
-        setValue("recipientName", address.recipientName || user?.fullName || "");
-        setValue("phoneNumber", address.phoneNumber || user?.phone || "");
-        setValue("address", address.address);
-        setValue("upazila", address.upazila);
-        setValue("postalCode", address.postalCode);
-        setValue("district", address.district);
-        setValue("division", address.division);
-        setValue("city", address.city);
-        setValue("country", address.country);
-        setValue("type", address.type);
-    };
-
-    const handleAddressSelect = (address) => {
-        setSelectedAddress(address.id);
-        prefillForm(address);
-        setShowAllAddresses(false);
-    };
-
-    const handleAddressAdded = () => {
-        fetchAddresses();
-        setIsAddModalOpen(false);
-    };
-
-    // Handle payment selection from modal
-    const handlePaymentSelect = async (paymentMethod, paymentDetails) => {
-        if (!tempCheckoutData) return;
-
-        // Update checkout data with selected payment method and details
-        const checkoutData = {
-            ...tempCheckoutData,
-            paymentMethod: paymentMethod,
-            paymentDetails: paymentDetails
-        };
-
-        // Proceed with checkout
-        await onCheckoutSubmit(checkoutData);
-        setTempCheckoutData(null);
-    };
-
-    // Handle place order when address is selected
-    const handlePlaceOrder = async () => {
-        if (!customerId) {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Customer information is missing.', confirmButtonColor: '#14b8a6' });
-            return;
-        }
-        if (!selectedAddress) {
-            Swal.fire({ icon: 'error', title: 'Error', text: 'Please select a shipping address', confirmButtonColor: '#14b8a6' });
-            return;
-        }
-
-        const paymentMethod = watchPayment;
-        const checkoutData = {
-            customerId: customerId,
-            customerAddressId: selectedAddress,
-            note: watchNote || '',
-            shippingMethod: watchShipping,
-            paymentMethod: paymentMethod
-        };
-
-        // If online payment is selected, show payment modal
-        if (paymentMethod === 'online') {
-            setTempCheckoutData(checkoutData);
-            setIsPaymentModalOpen(true);
-        } else {
-            await onCheckoutSubmit(checkoutData);
-        }
-    };
-
-    // Handle save new address and checkout (Matching Multivendor-Frontend integration pattern)
-    const handleSaveAndCheckout = async (formData) => {
-        try {
-            const phoneNumber = (formData.phoneNumber || user?.phone || '').trim();
-            const cleanPhone = phoneNumber.replace(/\D/g, '');
-            const emailToUse = (user?.email || formData.email || (cleanPhone ? `guest_${cleanPhone}@dazzlingdiva.com` : '')).trim();
-            const recipientName = (formData.recipientName || user?.fullName || '').trim();
-
-            if (!phoneNumber) {
-                Swal.fire({ icon: 'error', title: 'Error', text: 'Please enter your phone number', confirmButtonColor: '#5A0C3D' });
-                return;
-            }
-
-            // Immediately set global checkout loading state for instant feedback
-            if (typeof onCheckoutSubmit === 'function') {
-                // If onCheckoutSubmit is available
-            }
-
-            const apiUrl = (process.env.NEXT_PUBLIC_API_URL || '').replace(/\/+$/, '');
-
-            // Step 1: Check if Customer already exists by email (matching Multivendor-Frontend)
-            let targetCustomerId = customerId;
-
-            if (!targetCustomerId && emailToUse) {
-                try {
-                    const customerRes = await fetch(`${apiUrl}/api/customer/email/${encodeURIComponent(emailToUse)}`);
-                    const customerData = await customerRes.json();
-
-                    if (customerRes.ok && customerData && customerData.success && customerData.data) {
-                        targetCustomerId = customerData.data.id;
-                    } else if (customerRes.ok && customerData && customerData.id) {
-                        targetCustomerId = customerData.id;
-                    }
-                } catch (e) {
-                    console.log('Customer lookup by email failed, creating new record');
-                }
-            }
-
-            // Step 2: Create a new Customer record if not found (matching Multivendor-Frontend)
-            if (!targetCustomerId) {
-                const createCustomerRes = await fetch(`${apiUrl}/api/customer`, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                        fullName: recipientName || "Guest Customer",
-                        email: emailToUse || `guest_${cleanPhone || Date.now()}@dazzlingdiva.com`,
-                        phone: cleanPhone,
-                        status: true
-                    }),
-                });
-
-                const createCustomerData = await createCustomerRes.json();
-
-                if (createCustomerRes.ok && (createCustomerData.data?.id || createCustomerData.id)) {
-                    targetCustomerId = createCustomerData.data?.id || createCustomerData.id;
-                } else if (createCustomerData.message?.includes('already exists') || createCustomerRes.status === 409) {
-                    targetCustomerId = createCustomerData.data?.id || createCustomerData.id || createCustomerData.customer?.id;
-                }
-
-                if (!targetCustomerId) {
-                    throw new Error(createCustomerData.message || "Failed to create customer record");
-                }
-            }
-
-            // Step 3: Add or resolve the customer address (matching Multivendor-Frontend)
-            const addressPayload = {
-                recipientName: recipientName,
-                phoneNumber: phoneNumber,
-                address: formData.address.trim(),
-                upazila: formData.upazila,
-                district: formData.district,
-                division: formData.division,
-                city: formData.city?.trim() || formData.division,
-                postalCode: formData.postalCode?.trim() || '1200',
-                country: "Bangladesh",
-                isDefault: formData.isDefault !== undefined ? formData.isDefault : true,
-                type: formData.type || "Home"
-            };
-
-            const createAddressRes = await fetch(`${apiUrl}/api/customer/${targetCustomerId}/addresses`, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(addressPayload),
-            });
-
-            const createAddressData = await createAddressRes.json();
-            if (!createAddressRes.ok && !createAddressData.data && !createAddressData.id) {
-                throw new Error(createAddressData.message || "Failed to create shipping address");
-            }
-
-            const newAddressId = createAddressData.data?.id || createAddressData.id || createAddressData.addressId;
-
-            const checkoutData = {
-                customerId: targetCustomerId,
-                customerAddressId: newAddressId,
-                email: emailToUse,
-                note: formData.note || '',
-                shippingMethod: formData.shipping,
-                paymentMethod: formData.payment
-            };
-
-            if (formData.payment === 'online') {
-                setTempCheckoutData(checkoutData);
-                setIsPaymentModalOpen(true);
-            } else {
-                await onCheckoutSubmit(checkoutData);
-            }
-
-        } catch (error) {
-            console.error('Checkout error:', error);
-            if (setLoading) setLoading(false);
-            Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: error.message || 'Failed to process checkout',
-                confirmButtonColor: '#5A0C3D'
-            });
-        }
-    };
-
-    // Assign placeOrderRef handler for OrderSummary's Place Order button
-    if (placeOrderRef) {
-        placeOrderRef.current = () => {
-            if (setLoading) setLoading(true);
-            if (user && customerId && addresses.length > 0 && selectedAddress && !isAddingNewAddress) {
-                handlePlaceOrder();
-            } else {
-                handleSubmit(
-                    handleSaveAndCheckout,
-                    (formErrors) => {
-                        // If validation errors exist, reset loading immediately
-                        if (setLoading) setLoading(false);
-                    }
-                )();
-            }
-        };
-    }
-
-    const formatPrice = (price) => {
-        if (price === null || price === undefined) return "৳0";
-        const priceNumber = parseFloat(price);
-        if (isNaN(priceNumber)) return "৳0";
-        const ceilPrice = Math.ceil(priceNumber);
-        return `৳${ceilPrice.toLocaleString("en-BD", {
-            minimumFractionDigits: 0,
-            maximumFractionDigits: 0,
-        })}`;
-    };
-
-    // Render shipping and payment options (common for both flows)
-    const renderShippingAndPayment = () => (
-        <>
-            {/* Shipping Method */}
-            <div className="mb-6">
-                <p className="font-medium text-xs md:text-base mb-2 md:mb-3">Shipping Method</p>
-                <div className="grid grid-cols-2 gap-2 md:gap-3">
-                    <label className="flex items-center gap-2 p-2.5 md:p-3 border border-gray-200 rounded-[6px] cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
-                        <input
-                            type="radio"
-                            value="dhaka-city"
-                            {...register("shipping")}
-                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#5A0C3D] accent-[#5A0C3D] shrink-0"
-                            defaultChecked
-                        />
-                        <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">Dhaka City</p>
-                        </div>
-                        <p className="font-semibold text-xs md:text-sm shrink-0">{formatPrice(0)}</p>
-                    </label>
-                    <label className="flex items-center gap-2 p-2.5 md:p-3 border border-gray-200 rounded-[6px] cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
-                        <input
-                            type="radio"
-                            value="outside"
-                            {...register("shipping")}
-                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#5A0C3D] accent-[#5A0C3D] shrink-0"
-                        />
-                        <div className="flex-1 min-w-0">
-                            <p className="font-medium truncate">Outside Dhaka</p>
-                        </div>
-                        <p className="font-semibold text-xs md:text-sm shrink-0">{formatPrice(0)}</p>
-                    </label>
-                </div>
-            </div>
-
-            {/* Payment Method */}
-            <div className="mb-6">
-                <p className="font-medium text-xs md:text-base mb-2 md:mb-3">Payment Method</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3">
-                    {/* Cash on Delivery */}
-                    <label className={`flex items-center gap-2.5 p-3 border rounded-[6px] cursor-pointer transition-all text-xs md:text-sm ${watchPayment === 'cod' ? 'border-[#5A0C3D] bg-[#5A0C3D]/5 font-semibold' : 'border-gray-200 hover:bg-gray-50'}`}>
-                        <input
-                            type="radio"
-                            value="cod"
-                            {...register("payment")}
-                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#5A0C3D] accent-[#5A0C3D] shrink-0"
-                            defaultChecked
-                        />
-                        <span className="text-xs md:text-sm text-gray-900">Cash on Delivery</span>
-                    </label>
-
-                    {/* bKash Mobile Banking */}
-                    <label className={`flex items-center gap-2.5 p-3 border rounded-[6px] cursor-pointer transition-all text-xs md:text-sm ${watchPayment === 'bkash' ? 'border-[#E2136E] bg-[#E2136E]/5 font-semibold' : 'border-gray-200 hover:bg-gray-50'}`}>
-                        <input
-                            type="radio"
-                            value="bkash"
-                            {...register("payment")}
-                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#E2136E] accent-[#E2136E] shrink-0"
-                        />
-                        <div className="flex items-center gap-2">
-                            <Image 
-                                src="/assects/bkash-logo.svg" 
-                                alt="bKash" 
-                                width={24} 
-                                height={24} 
-                                className="w-10 h-6 object-contain shrink-0"
-                            />
-                            <span className="text-xs md:text-sm text-gray-900 font-medium">bKash</span>
-                        </div>
-                    </label>
-
-                    {/* Nagad Mobile Banking */}
-                    <label className={`flex items-center gap-2.5 p-3 border rounded-[6px] cursor-pointer transition-all text-xs md:text-sm ${watchPayment === 'nagad' ? 'border-[#F7931E] bg-[#F7931E]/5 font-semibold' : 'border-gray-200 hover:bg-gray-50'}`}>
-                        <input
-                            type="radio"
-                            value="nagad"
-                            {...register("payment")}
-                            className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#F7931E] accent-[#F7931E] shrink-0"
-                        />
-                        <div className="flex items-center gap-2">
-                            <Image 
-                                src="/assects/nagad-logo.svg" 
-                                alt="Nagad" 
-                                width={24} 
-                                height={24} 
-                                className="w-10 h-6 object-contain shrink-0"
-                            />
-                            <span className="text-xs md:text-sm text-gray-900 font-medium">Nagad</span>
-                        </div>
-                    </label>
-                </div>
-            </div>
-
-            {/* Order Notes */}
-            <div className="mb-6">
-                <label className="block mb-1 font-medium text-xs md:text-sm">Order Notes (Optional)</label>
-                <textarea
-                    {...register("note")}
-                    placeholder="Special instructions for delivery..."
-                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all h-24"
-                    rows={3}
-                />
-            </div>
-        </>
-    );
-
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secound"></div>
-            </div>
+  // Fetch customer data and addresses
+  useEffect(() => {
+    const fetchCustomerData = async () => {
+      if (!user?.email) {
+        setIsLoading(false);
+        return;
+      }
+      try {
+        setIsLoading(true);
+        setError(null);
+        const result = await apiClient(
+          `/api/customer/email/${encodeURIComponent(user.email)}`,
         );
+        let customerData = null;
+        if (result && result.success !== undefined) {
+          customerData = result.data;
+        } else if (result && result.id) {
+          customerData = result;
+        } else if (result && result.customer) {
+          customerData = result.customer;
+        }
+
+        if (customerData && customerData.id) {
+          setCustomerId(customerData.id);
+          setAddresses(customerData.customerAddresses || []);
+          const defaultAddr = customerData.customerAddresses?.find(
+            (addr) => addr.isDefault,
+          );
+          if (defaultAddr) {
+            setSelectedAddress(defaultAddr.id);
+            prefillForm(defaultAddr);
+          }
+        } else {
+          setCustomerId(null);
+          setAddresses([]);
+          setError("Customer profile not found");
+        }
+      } catch (error) {
+        console.error("Error fetching customer data:", error);
+        setError(error.message || "Failed to load customer data");
+        setCustomerId(null);
+        setAddresses([]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchCustomerData();
+  }, [user?.email]);
+
+  // Refetch addresses after adding new one
+  const fetchAddresses = async () => {
+    if (!customerId) return;
+    try {
+      const result = await apiClient(`/api/customer/${customerId}/addresses`);
+      let addressData = null;
+      if (result && result.success !== undefined) {
+        addressData = result.data;
+      } else if (Array.isArray(result)) {
+        addressData = result;
+      }
+      setAddresses(addressData || []);
+      const defaultAddr = addressData?.find((addr) => addr.isDefault);
+      if (defaultAddr) {
+        setSelectedAddress(defaultAddr.id);
+        prefillForm(defaultAddr);
+      }
+    } catch (error) {
+      console.error("Error fetching addresses:", error);
+    }
+  };
+
+  // Filter districts based on division
+  useEffect(() => {
+    if (watchDivision) {
+      const divisionData = divisions.find((div) => div.name === watchDivision);
+      if (divisionData) {
+        const districtList = districts.filter(
+          (dist) => dist.division_id === divisionData.id,
+        );
+        setFilteredDistricts(districtList);
+        setValue("city", watchDivision);
+      }
+    } else {
+      setFilteredDistricts([]);
+      setValue("district", "");
+      setValue("upazila", "");
+      setFilteredUpazilas([]);
+    }
+  }, [watchDivision, setValue]);
+
+  // Filter upazilas based on district
+  useEffect(() => {
+    if (watchDistrict) {
+      const districtData = districts.find(
+        (dist) => dist.name === watchDistrict,
+      );
+      if (districtData) {
+        const upazilaList = upazilas.filter(
+          (upazila) => upazila.district_id === districtData.id,
+        );
+        setFilteredUpazilas(upazilaList);
+      }
+    } else {
+      setFilteredUpazilas([]);
+      setValue("upazila", "");
+    }
+  }, [watchDistrict, setValue]);
+
+  const getIcon = (type) => {
+    switch (type) {
+      case "Home":
+        return <Home className="w-3 h-3 text-secound" />;
+      case "Office":
+        return <Briefcase className="w-3 h-3 text-secound" />;
+      default:
+        return <MapPin className="w-3 h-3 text-secound" />;
+    }
+  };
+
+  const prefillForm = (address) => {
+    setValue("recipientName", address.recipientName || user?.fullName || "");
+    setValue("phoneNumber", address.phoneNumber || user?.phone || "");
+    setValue("address", address.address);
+    setValue("upazila", address.upazila);
+    setValue("postalCode", address.postalCode);
+    setValue("district", address.district);
+    setValue("division", address.division);
+    setValue("city", address.city);
+    setValue("country", address.country);
+    setValue("type", address.type);
+  };
+
+  const handleAddressSelect = (address) => {
+    setSelectedAddress(address.id);
+    prefillForm(address);
+    setShowAllAddresses(false);
+  };
+
+  const handleAddressAdded = () => {
+    fetchAddresses();
+    setIsAddModalOpen(false);
+  };
+
+  // Handle payment selection from modal
+  const handlePaymentSelect = async (paymentMethod, paymentDetails) => {
+    if (!tempCheckoutData) return;
+
+    // Update checkout data with selected payment method and details
+    const checkoutData = {
+      ...tempCheckoutData,
+      paymentMethod: paymentMethod,
+      paymentDetails: paymentDetails,
+    };
+
+    // Proceed with checkout
+    await onCheckoutSubmit(checkoutData);
+    setTempCheckoutData(null);
+  };
+
+  // Handle place order when address is selected
+  const handlePlaceOrder = async () => {
+    if (!customerId) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Customer information is missing.",
+        confirmButtonColor: "#14b8a6",
+      });
+      return;
+    }
+    if (!selectedAddress) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: "Please select a shipping address",
+        confirmButtonColor: "#14b8a6",
+      });
+      return;
     }
 
+    const paymentMethod = watchPayment;
+    const checkoutData = {
+      customerId: customerId,
+      customerAddressId: selectedAddress,
+      note: watchNote || "",
+      shippingMethod: watchShipping,
+      paymentMethod: paymentMethod,
+    };
 
+    // If online payment is selected, show payment modal
+    if (paymentMethod === "online") {
+      setTempCheckoutData(checkoutData);
+      setIsPaymentModalOpen(true);
+    } else {
+      await onCheckoutSubmit(checkoutData);
+    }
+  };
 
+  // Handle save new address and checkout (Matching Multivendor-Frontend integration pattern)
+  const handleSaveAndCheckout = async (formData) => {
+    try {
+      const phoneNumber = (formData.phoneNumber || user?.phone || "").trim();
+      const cleanPhone = phoneNumber.replace(/\D/g, "");
+      const emailToUse = (
+        user?.email ||
+        formData.email ||
+        (cleanPhone ? `guest_${cleanPhone}@dazzlingdiva.com` : "")
+      ).trim();
+      const recipientName = (
+        formData.recipientName ||
+        user?.fullName ||
+        ""
+      ).trim();
+
+      if (!phoneNumber) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "Please enter your phone number",
+          confirmButtonColor: "#5A0C3D",
+        });
+        return;
+      }
+
+      // Immediately set global checkout loading state for instant feedback
+      if (typeof onCheckoutSubmit === "function") {
+        // If onCheckoutSubmit is available
+      }
+
+      const apiUrl = (process.env.NEXT_PUBLIC_API_URL || "").replace(
+        /\/+$/,
+        "",
+      );
+
+      // Step 1: Check if Customer already exists by email (matching Multivendor-Frontend)
+      let targetCustomerId = customerId;
+
+      if (!targetCustomerId && emailToUse) {
+        try {
+          const customerRes = await fetch(
+            `${apiUrl}/api/customer/email/${encodeURIComponent(emailToUse)}`,
+          );
+          const customerData = await customerRes.json();
+
+          if (
+            customerRes.ok &&
+            customerData &&
+            customerData.success &&
+            customerData.data
+          ) {
+            targetCustomerId = customerData.data.id;
+          } else if (customerRes.ok && customerData && customerData.id) {
+            targetCustomerId = customerData.id;
+          }
+        } catch (e) {
+          console.log("Customer lookup by email failed, creating new record");
+        }
+      }
+
+      // Step 2: Create a new Customer record if not found (matching Multivendor-Frontend)
+      if (!targetCustomerId) {
+        const createCustomerRes = await fetch(`${apiUrl}/api/customer`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            fullName: recipientName || "Guest Customer",
+            email:
+              emailToUse ||
+              `guest_${cleanPhone || Date.now()}@dazzlingdiva.com`,
+            phone: cleanPhone,
+            status: true,
+          }),
+        });
+
+        const createCustomerData = await createCustomerRes.json();
+
+        if (
+          createCustomerRes.ok &&
+          (createCustomerData.data?.id || createCustomerData.id)
+        ) {
+          targetCustomerId =
+            createCustomerData.data?.id || createCustomerData.id;
+        } else if (
+          createCustomerData.message?.includes("already exists") ||
+          createCustomerRes.status === 409
+        ) {
+          targetCustomerId =
+            createCustomerData.data?.id ||
+            createCustomerData.id ||
+            createCustomerData.customer?.id;
+        }
+
+        if (!targetCustomerId) {
+          throw new Error(
+            createCustomerData.message || "Failed to create customer record",
+          );
+        }
+      }
+
+      // Step 3: Add or resolve the customer address (matching Multivendor-Frontend)
+      const addressPayload = {
+        recipientName: recipientName,
+        phoneNumber: phoneNumber,
+        address: formData.address.trim(),
+        upazila: formData.upazila,
+        district: formData.district,
+        division: formData.division,
+        city: formData.city?.trim() || formData.division,
+        postalCode: formData.postalCode?.trim() || "1200",
+        country: "Bangladesh",
+        isDefault: formData.isDefault !== undefined ? formData.isDefault : true,
+        type: formData.type || "Home",
+      };
+
+      const createAddressRes = await fetch(
+        `${apiUrl}/api/customer/${targetCustomerId}/addresses`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(addressPayload),
+        },
+      );
+
+      const createAddressData = await createAddressRes.json();
+      if (
+        !createAddressRes.ok &&
+        !createAddressData.data &&
+        !createAddressData.id
+      ) {
+        throw new Error(
+          createAddressData.message || "Failed to create shipping address",
+        );
+      }
+
+      const newAddressId =
+        createAddressData.data?.id ||
+        createAddressData.id ||
+        createAddressData.addressId;
+
+      const checkoutData = {
+        customerId: targetCustomerId,
+        customerAddressId: newAddressId,
+        email: emailToUse,
+        note: formData.note || "",
+        shippingMethod: formData.shipping,
+        paymentMethod: formData.payment,
+      };
+
+      if (formData.payment === "online") {
+        setTempCheckoutData(checkoutData);
+        setIsPaymentModalOpen(true);
+      } else {
+        await onCheckoutSubmit(checkoutData);
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      if (setLoading) setLoading(false);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Failed to process checkout",
+        confirmButtonColor: "#5A0C3D",
+      });
+    }
+  };
+
+  // Assign placeOrderRef handler for OrderSummary's Place Order button
+  if (placeOrderRef) {
+    placeOrderRef.current = () => {
+      if (setLoading) setLoading(true);
+      if (
+        user &&
+        customerId &&
+        addresses.length > 0 &&
+        selectedAddress &&
+        !isAddingNewAddress
+      ) {
+        handlePlaceOrder();
+      } else {
+        handleSubmit(handleSaveAndCheckout, (formErrors) => {
+          // If validation errors exist, reset loading immediately
+          if (setLoading) setLoading(false);
+        })();
+      }
+    };
+  }
+
+  const formatPrice = (price) => {
+    if (price === null || price === undefined) return "৳0";
+    const priceNumber = parseFloat(price);
+    if (isNaN(priceNumber)) return "৳0";
+    const ceilPrice = Math.ceil(priceNumber);
+    return `৳${ceilPrice.toLocaleString("en-BD", {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    })}`;
+  };
+
+  // Render shipping and payment options (common for both flows)
+  const renderShippingAndPayment = () => (
+    <>
+      {/* Shipping Method */}
+      <div className="mb-6">
+        <p className="font-medium text-xs md:text-base mb-2 md:mb-3">
+          Shipping Method
+        </p>
+        <div className="grid grid-cols-2 gap-2 md:gap-3">
+          <label className="flex items-center gap-2 p-2.5 md:p-3 border border-gray-200 rounded-[6px] cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
+            <input
+              type="radio"
+              value="dhaka-city"
+              {...register("shipping")}
+              className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#5A0C3D] accent-[#5A0C3D] shrink-0"
+              defaultChecked
+            />
+            <div className="flex-1 min-w-0">
+              <p className="font-medium truncate">Dhaka City</p>
+            </div>
+            <p className="font-semibold text-xs md:text-sm shrink-0">
+              {formatPrice(0)}
+            </p>
+          </label>
+          <label className="flex items-center gap-2 p-2.5 md:p-3 border border-gray-200 rounded-[6px] cursor-pointer hover:bg-gray-50 transition-colors text-xs md:text-sm">
+            <input
+              type="radio"
+              value="outside"
+              {...register("shipping")}
+              className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#5A0C3D] accent-[#5A0C3D] shrink-0"
+            />
+            <div className="flex-1 min-w-0">
+              <p className="font-medium truncate">Outside Dhaka</p>
+            </div>
+            <p className="font-semibold text-xs md:text-sm shrink-0">
+              {formatPrice(0)}
+            </p>
+          </label>
+        </div>
+      </div>
+
+      {/* Payment Method */}
+      <div className="mb-6">
+        <p className="font-medium text-xs md:text-base mb-2 md:mb-3">
+          Payment Method
+        </p>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 md:gap-3">
+          {/* Cash on Delivery */}
+          <label
+            className={`flex items-center gap-2.5 p-3 border rounded-[6px] cursor-pointer transition-all text-xs md:text-sm ${watchPayment === "cod" ? "border-[#5A0C3D] bg-[#5A0C3D]/5 font-semibold" : "border-gray-200 hover:bg-gray-50"}`}
+          >
+            <input
+              type="radio"
+              value="cod"
+              {...register("payment")}
+              className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#5A0C3D] accent-[#5A0C3D] shrink-0"
+              defaultChecked
+            />
+            <span className="text-xs md:text-sm text-gray-900">
+              Cash on Delivery
+            </span>
+          </label>
+
+          {/* bKash Mobile Banking */}
+          <label
+            className={`flex items-center gap-2.5 p-3 border rounded-[6px] cursor-pointer transition-all text-xs md:text-sm ${watchPayment === "bkash" ? "border-[#E2136E] bg-[#E2136E]/5 font-semibold" : "border-gray-200 hover:bg-gray-50"}`}
+          >
+            <input
+              type="radio"
+              value="bkash"
+              {...register("payment")}
+              className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#E2136E] accent-[#E2136E] shrink-0"
+            />
+            <div className="flex items-center gap-2">
+              <Image
+                src="/assects/bkash-logo.svg"
+                alt="bKash"
+                width={24}
+                height={24}
+                className="w-10 h-6 object-contain shrink-0"
+              />
+              <span className="text-xs md:text-sm text-gray-900 font-medium">
+                bKash
+              </span>
+            </div>
+          </label>
+
+          {/* Nagad Mobile Banking */}
+          <label
+            className={`flex items-center gap-2.5 p-3 border rounded-[6px] cursor-pointer transition-all text-xs md:text-sm ${watchPayment === "nagad" ? "border-[#F7931E] bg-[#F7931E]/5 font-semibold" : "border-gray-200 hover:bg-gray-50"}`}
+          >
+            <input
+              type="radio"
+              value="nagad"
+              {...register("payment")}
+              className="h-3.5 w-3.5 md:h-4 md:w-4 text-[#F7931E] accent-[#F7931E] shrink-0"
+            />
+            <div className="flex items-center gap-2">
+              <Image
+                src="/assects/nagad-logo.svg"
+                alt="Nagad"
+                width={24}
+                height={24}
+                className="w-10 h-6 object-contain shrink-0"
+              />
+              <span className="text-xs md:text-sm text-gray-900 font-medium">
+                Nagad
+              </span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      {/* Order Notes */}
+      <div className="mb-6">
+        <label className="block mb-1 font-medium text-xs md:text-sm">
+          Order Notes (Optional)
+        </label>
+        <textarea
+          {...register("note")}
+          placeholder="Special instructions for delivery..."
+          className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all h-24"
+          rows={3}
+        />
+      </div>
+    </>
+  );
+
+  if (isLoading) {
     return (
-        <div>
-            <h2 className="text-lg md:text-2xl font-semibold mb-4 md:mb-6 text-gray-900">Shipping Address</h2>
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-secound"></div>
+      </div>
+    );
+  }
 
-            {/* User Info Display */}
-            {user && (
-                <div className="mb-6 p-4 bg-white border border-neutral-100 rounded shadow">
-                    <div className="flex items-center justify-between">
-                        <div>
-                            <p className="font-medium">Logged in as: {user.fullName}</p>
-                            <p className="text-sm text-gray-600">{user.email}</p>
-                        </div>
-                        <Link
-                            href="/my-account"
-                            className="text-sm text-secound hover:text-secound-hover hover:underline"
-                        >
-                            Edit Profile
-                        </Link>
-                    </div>
-                </div>
-            )}
+  return (
+    <div>
+      <h2 className="text-lg md:text-2xl font-semibold mb-4 md:mb-6 text-gray-900">
+        Shipping Address
+      </h2>
 
-            {user && !customerId && !isLoading && (
-                <div className="mb-6 p-4 bg-red-50 rounded border border-red-200">
-                    <p className="text-red-800 font-medium">
-                        Customer profile not found. Please contact support or try logging in again.
+      {/* User Info Display */}
+      {user && (
+        <div className="mb-6 p-4 bg-white border border-neutral-100 rounded shadow">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Logged in as: {user.fullName}</p>
+              <p className="text-sm text-gray-600">{user.email}</p>
+            </div>
+            <Link
+              href="/my-account"
+              className="text-sm text-secound hover:text-secound-hover hover:underline"
+            >
+              Edit Profile
+            </Link>
+          </div>
+        </div>
+      )}
+
+      {user && !customerId && !isLoading && (
+        <div className="mb-6 p-4 bg-red-50 rounded border border-red-200">
+          <p className="text-red-800 font-medium">
+            Customer profile not found. Please contact support or try logging in
+            again.
+          </p>
+        </div>
+      )}
+
+      {/* Address Book View - When user has saved addresses */}
+      {user && customerId && addresses.length > 0 && !isAddingNewAddress ? (
+        <div className="space-y-6">
+          {/* Selected Address Display */}
+          <div className="bg-white border border-gray-200 diva-rounded p-5 shadow-sm">
+            <div className="flex items-start justify-between mb-3">
+              <h3 className="text-md font-bold text-gray-800">
+                Selected Shipping Address
+              </h3>
+              <button
+                type="button"
+                onClick={() => setShowAllAddresses(true)}
+                className="text-sm text-secound hover:text-secound-hover font-medium hover:underline flex items-center gap-1"
+              >
+                Change Address <FaLongArrowAltRight className="text-xs" />
+              </button>
+            </div>
+            {selectedAddress &&
+              addresses.find((a) => a.id === selectedAddress) && (
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <p className="text-gray-800 font-medium">
+                      {
+                        addresses.find((a) => a.id === selectedAddress)
+                          .recipientName
+                      }
                     </p>
+                  </div>
+                  <p className="text-gray-700">
+                    📞{" "}
+                    {
+                      addresses.find((a) => a.id === selectedAddress)
+                        .phoneNumber
+                    }
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    📍 {addresses.find((a) => a.id === selectedAddress).address}
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    {addresses.find((a) => a.id === selectedAddress).upazila},{" "}
+                    {addresses.find((a) => a.id === selectedAddress).postalCode}
+                  </p>
+                  <p className="text-gray-600 text-sm">
+                    {addresses.find((a) => a.id === selectedAddress).district},{" "}
+                    {addresses.find((a) => a.id === selectedAddress).division}
+                  </p>
+                  <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-gray-100 rounded-full text-xs">
+                    {getIcon(
+                      addresses.find((a) => a.id === selectedAddress).type,
+                    )}
+                    <span className="text-gray-700 font-semibold">
+                      {addresses.find((a) => a.id === selectedAddress).type}
+                    </span>
+                  </div>
                 </div>
+              )}
+          </div>
+
+          {/* Add Address Button */}
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setIsAddModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 text-secound border border-secound diva-rounded hover:bg-secound/5 transition-colors font-medium cursor-pointer"
+            >
+              <Plus className="w-4 h-4" />
+              Add New Address
+            </button>
+            {addresses.length > 1 && (
+              <button
+                type="button"
+                onClick={() => setShowAllAddresses(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 border border-stone-300 diva-rounded hover:bg-gray-200 transition-colors font-medium cursor-pointer"
+              >
+                View All Addresses <FaLongArrowAltRight />
+              </button>
             )}
+          </div>
 
-            {/* Address Book View - When user has saved addresses */}
-            {user && customerId && addresses.length > 0 && !isAddingNewAddress ? (
-                <div className="space-y-6">
-                    {/* Selected Address Display */}
-                    <div className="bg-white border border-gray-200 diva-rounded p-5 shadow-sm">
-                        <div className="flex items-start justify-between mb-3">
-                            <h3 className="text-md font-bold text-gray-800">Selected Shipping Address</h3>
-                            <button
-                                type="button"
-                                onClick={() => setShowAllAddresses(true)}
-                                className="text-sm text-secound hover:text-secound-hover font-medium hover:underline flex items-center gap-1"
-                            >
-                                Change Address <FaLongArrowAltRight className="text-xs" />
-                            </button>
-                        </div>
-                        {selectedAddress && addresses.find(a => a.id === selectedAddress) && (
-                            <div className="space-y-2">
-                                <div className="flex items-center gap-2">
-                                    <p className="text-gray-800 font-medium">
-                                        {addresses.find(a => a.id === selectedAddress).recipientName}
-                                    </p>
-                                </div>
-                                <p className="text-gray-700">
-                                    📞 {addresses.find(a => a.id === selectedAddress).phoneNumber}
-                                </p>
-                                <p className="text-gray-600 text-sm">
-                                    📍 {addresses.find(a => a.id === selectedAddress).address}
-                                </p>
-                                <p className="text-gray-600 text-sm">
-                                    {addresses.find(a => a.id === selectedAddress).upazila}, {addresses.find(a => a.id === selectedAddress).postalCode}
-                                </p>
-                                <p className="text-gray-600 text-sm">
-                                    {addresses.find(a => a.id === selectedAddress).district}, {addresses.find(a => a.id === selectedAddress).division}
-                                </p>
-                                <div className="inline-flex items-center gap-2 px-2 py-0.5 bg-gray-100 rounded-full text-xs">
-                                    {getIcon(addresses.find(a => a.id === selectedAddress).type)}
-                                    <span className="text-gray-700 font-semibold">
-                                        {addresses.find(a => a.id === selectedAddress).type}
-                                    </span>
-                                </div>
-                            </div>
-                        )}
-                    </div>
+          {/* Shipping and Payment Options */}
+          {renderShippingAndPayment()}
+        </div>
+      ) : (
+        <form
+          onSubmit={handleSubmit(handleSaveAndCheckout)}
+          className="bg-white border border-gray-200 rounded-2xl p-4 md:p-6 shadow-sm"
+        >
+          <div className="space-y-4 mb-6">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="font-medium text-base md:text-lg text-gray-900">
+                {user ? "Add New Shipping Address" : "Guest Shipping Details"}
+              </h3>
+              {!user && (
+                <button
+                  type="button"
+                  onClick={() => setIsGuestCheckout(false)}
+                  className="text-xs text-[#5A0C3D] hover:underline font-semibold"
+                >
+                  Already have an account? Log In
+                </button>
+              )}
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 text-gray-900">
+              <div>
+                <label className="block mb-1 text-xs md:text-sm font-medium text-gray-900">
+                  Recipient Name <span className="text-red-500">*</span>
+                </label>
+                <input
+                  {...register("recipientName", {
+                    required: "Recipient Name is required",
+                    minLength: { value: 2, message: "At least 2 characters" },
+                  })}
+                  placeholder="Full Name"
+                  className="w-full text-xs md:text-sm placeholder:text-xs md:placeholder:text-sm px-3 md:px-4 py-2.5 h-10 md:h-11 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all bg-white text-gray-900"
+                  defaultValue={user?.fullName}
+                />
+                {errors.recipientName && (
+                  <p className="text-red-500 text-xs md:text-sm mt-1">
+                    {errors.recipientName.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block mb-1 text-xs md:text-sm font-medium text-gray-900">
+                  Phone Number <span className="text-red-500">*</span>
+                </label>
+                <input
+                  type="tel"
+                  {...register("phoneNumber", {
+                    required: "Phone number is required",
+                    pattern: {
+                      value: /^(?:\+88|01)?\d{9,11}$/,
+                      message: "Valid BD number",
+                    },
+                  })}
+                  placeholder="01XXXXXXXXX"
+                  className="w-full !text-xs md:text-sm !placeholder:text-xs md:placeholder:text-sm px-3 md:px-4 py-2.5 h-10 md:h-11 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all bg-white text-gray-900"
+                  defaultValue={user?.phone}
+                />
+                {errors.phoneNumber && (
+                  <p className="text-red-500 text-xs md:text-sm mt-1">
+                    {errors.phoneNumber.message}
+                  </p>
+                )}
+              </div>
+            </div>
+            {!user && (
+              <div>
+                <label className="block mb-1 text-xs md:text-sm font-medium text-gray-900">
+                  Email Address{" "}
+                  <span className="text-gray-400 font-normal text-xs">
+                    (Optional)
+                  </span>
+                </label>
+                <input
+                  type="email"
+                  {...register("email", {
+                    validate: (value) => {
+                      if (!value || value.trim() === "") return true;
+                      return (
+                        /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(
+                          value.trim(),
+                        ) || "Invalid email address"
+                      );
+                    },
+                  })}
+                  placeholder="your@email.com"
+                  className="w-full !text-xs md:text-sm !placeholder:text-xs md:placeholder:text-sm px-3 md:px-4 py-2.5 h-10 md:h-11 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all bg-white text-gray-900"
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-xs md:text-sm mt-1">
+                    {errors.email.message}
+                  </p>
+                )}
+              </div>
+            )}
+          </div>
 
-                    {/* Add Address Button */}
-                    <div className="flex gap-3">
-                        <button
-                            type="button"
-                            onClick={() => setIsAddModalOpen(true)}
-                            className="flex items-center gap-2 px-4 py-2 text-secound border border-secound diva-rounded hover:bg-secound/5 transition-colors font-medium cursor-pointer"
-                        >
-                            <Plus className="w-4 h-4" />
-                            Add New Address
-                        </button>
-                        {addresses.length > 1 && (
-                            <button
-                                type="button"
-                                onClick={() => setShowAllAddresses(true)}
-                                className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 border border-stone-300 diva-rounded hover:bg-gray-200 transition-colors font-medium cursor-pointer"
-                            >
-                                View All Addresses <FaLongArrowAltRight />
-                            </button>
-                        )}
-                    </div>
+          <div className="space-y-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-4 text-xs md:text-sm">
+              {/* Country & Division in 1 Row */}
+              <div>
+                <label className="block mb-1 font-medium text-xs md:text-sm text-gray-900">
+                  Country <span className="text-red-500">*</span>
+                </label>
+                <input
+                  {...register("country")}
+                  className="w-full !text-xs md:text-sm !placeholder:text-xs md:placeholder:text-sm px-3 md:px-4 py-2.5 h-10 md:h-11 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all bg-gray-50 text-gray-900"
+                  value="Bangladesh"
+                  readOnly
+                />
+              </div>
+              <div>
+                <label className="block mb-1 font-medium text-xs md:text-sm text-gray-900">
+                  Division <span className="text-red-500">*</span>
+                </label>
+                <select
+                  {...register("division", {
+                    required: "Division is required",
+                  })}
+                  value={watchDivision || ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setValue("division", val, { shouldValidate: true });
+                    setValue("district", "");
+                    setValue("upazila", "");
+                  }}
+                  className="w-full !text-xs md:text-sm font-normal text-gray-800 px-2.5 md:px-4 py-2 md:py-2.5 h-10 md:h-11 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all cursor-pointer bg-white font-outfit"
+                >
+                  <option value="">Select Division</option>
+                  {divisions.map((division) => (
+                    <option key={division.id} value={division.name}>
+                      {division.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.division && (
+                  <p className="text-red-500 text-xs md:text-sm mt-1">
+                    {errors.division.message}
+                  </p>
+                )}
+              </div>
 
-                    {/* Shipping and Payment Options */}
-                    {renderShippingAndPayment()}
-                </div>
-            ) : (
-                <form onSubmit={handleSubmit(handleSaveAndCheckout)} className="bg-white border border-gray-200 rounded-2xl p-4 md:p-6 shadow-sm">
-                    <div className="space-y-4 mb-6">
-                        <div className="flex items-center justify-between mb-3">
-                            <h3 className="font-medium text-base md:text-lg text-gray-900">
-                                {user ? "Add New Shipping Address" : "Guest Shipping Details"}
-                            </h3>
-                            {!user && (
-                                <button
-                                    type="button"
-                                    onClick={() => setIsGuestCheckout(false)}
-                                    className="text-xs text-[#5A0C3D] hover:underline font-semibold"
-                                >
-                                    Already have an account? Log In
-                                </button>
-                            )}
-                        </div>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4 text-gray-900">
-                            <div>
-                                <label className="block mb-1 text-xs md:text-sm font-medium text-gray-900">
-                                    Recipient Name <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    {...register("recipientName", {
-                                        required: "Recipient Name is required",
-                                        minLength: { value: 2, message: "At least 2 characters" }
-                                    })}
-                                    placeholder="Full Name"
-                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all bg-white text-gray-900"
-                                    defaultValue={user?.fullName}
-                                />
-                                {errors.recipientName && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.recipientName.message}</p>}
-                            </div>
-                            <div>
-                                <label className="block mb-1 text-xs md:text-sm font-medium text-gray-900">
-                                    Phone Number <span className="text-red-500">*</span>
-                                </label>
-                                <input
-                                    type="tel"
-                                    {...register("phoneNumber", {
-                                        required: "Phone number is required",
-                                        pattern: { value: /^(?:\+88|01)?\d{9,11}$/, message: "Valid BD number" }
-                                    })}
-                                    placeholder="01XXXXXXXXX"
-                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all bg-white text-gray-900"
-                                    defaultValue={user?.phone}
-                                />
-                                {errors.phoneNumber && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.phoneNumber.message}</p>}
-                            </div>
-                        </div>
-                        {!user && (
-                            <div>
-                                <label className="block mb-1 text-xs md:text-sm font-medium">
-                                    Email Address <span className="text-gray-400 font-normal text-xs">(Optional)</span>
-                                </label>
-                                <input
-                                    type="email"
-                                    {...register("email", {
-                                        validate: (value) => {
-                                            if (!value || value.trim() === "") return true;
-                                            return (
-                                                /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value.trim()) ||
-                                                "Invalid email address"
-                                            );
-                                        }
-                                    })}
-                                    placeholder="your@email.com"
-                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all"
-                                />
-                                {errors.email && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.email.message}</p>}
-                            </div>
-                        )}
-                    </div>
+              {/* District & Upazila in 1 Row */}
+              <div>
+                <label className="block mb-1 font-medium text-xs md:text-sm text-gray-900">
+                  District <span className="text-red-500">*</span>
+                </label>
+                <select
+                  {...register("district", {
+                    required: "District is required",
+                  })}
+                  value={watchDistrict || ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setValue("district", val, { shouldValidate: true });
+                    setValue("upazila", "");
+                  }}
+                  className="w-full !text-xs md:text-sm font-normal text-gray-800 px-2.5 md:px-4 py-2 md:py-2.5 h-10 md:h-11 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all disabled:bg-gray-100 disabled:text-gray-400 cursor-pointer bg-white font-outfit"
+                  disabled={!watchDivision}
+                >
+                  <option value="">
+                    {watchDivision ? "Select District" : "Select Division"}
+                  </option>
+                  {filteredDistricts.map((district) => (
+                    <option key={district.id} value={district.name}>
+                      {district.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.district && (
+                  <p className="text-red-500 text-xs md:text-sm mt-1">
+                    {errors.district.message}
+                  </p>
+                )}
+              </div>
+              <div>
+                <label className="block mb-1 font-medium text-xs md:text-sm text-gray-900">
+                  Upazila / Thana <span className="text-red-500">*</span>
+                </label>
+                <select
+                  {...register("upazila", { required: "Upazila is required" })}
+                  value={watch("upazila") || ""}
+                  onChange={(e) => {
+                    setValue("upazila", e.target.value, { shouldValidate: true });
+                  }}
+                  className="w-full !text-xs md:text-sm font-normal text-gray-800 px-2.5 md:px-4 py-2 md:py-2.5 h-10 md:h-11 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all disabled:bg-gray-100 disabled:text-gray-400 cursor-pointer bg-white font-outfit"
+                  disabled={!watchDistrict}
+                >
+                  <option value="">
+                    {watchDistrict
+                      ? "Select Upazila / Thana"
+                      : "Select District First"}
+                  </option>
+                  {filteredUpazilas.map((upazila) => (
+                    <option key={upazila.id} value={upazila.name}>
+                      {upazila.name}
+                    </option>
+                  ))}
+                </select>
+                {errors.upazila && (
+                  <p className="text-red-500 text-xs md:text-sm mt-1">
+                    {errors.upazila.message}
+                  </p>
+                )}
+              </div>
+            </div>
 
-                    <div className="space-y-4 mb-6">
-                        <div className="grid grid-cols-2 md:grid-cols-2 gap-3 md:gap-4 text-xs md:text-sm">
-                            {/* Country & Division in 1 Row */}
-                            <div>
-                                <label className="block mb-1 font-medium text-xs md:text-sm">Country <span className="text-red-500">*</span></label>
-                                <input
-                                    {...register("country")}
-                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all bg-gray-50"
-                                    value="Bangladesh"
-                                    readOnly
-                                />
-                            </div>
-                            <div>
-                                <label className="block mb-1 font-medium text-xs md:text-sm">Division <span className="text-red-500">*</span></label>
-                                <select {...register("division", { required: "Division is required" })}
-                                    className="w-full text-xs md:text-sm pl-2 md:pl-4 pr-2 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all cursor-pointer">
-                                    <option value="">Select Division</option>
-                                    {divisions.map((division) => (
-                                        <option key={division.id} value={division.name}>{division.name}</option>
-                                    ))}
-                                </select>
-                                {errors.division && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.division.message}</p>}
-                            </div>
+            <div>
+              <label className="block mb-1 font-medium text-xs md:text-sm text-gray-900">
+                Street Address <span className="text-red-500">*</span>
+              </label>
+              <textarea
+                {...register("address", {
+                  required: "Address is required",
+                  minLength: { value: 10, message: "At least 10 characters" },
+                })}
+                placeholder="House No, Road No, Area"
+                className="w-full !text-xs md:text-sm placeholder:text-xs md:placeholder:text-sm px-3 md:px-4 py-2.5 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all h-20 md:h-24 bg-white text-gray-900 font-outfit"
+                rows={3}
+              />
+              {errors.address && (
+                <p className="text-red-500 text-xs md:text-sm mt-1">
+                  {errors.address.message}
+                </p>
+              )}
+            </div>
 
-                            {/* District & Upazila in 1 Row */}
-                            <div>
-                                <label className="block mb-1 font-medium text-xs md:text-sm">District <span className="text-red-500">*</span></label>
-                                <select {...register("district", { required: "District is required" })} className="w-full text-xs md:text-sm pl-2 md:pl-4 pr-2 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all disabled:bg-gray-100 cursor-pointer" disabled={!watchDivision}>
-                                    <option value="">{watchDivision ? "Select District" : "Select Division"}</option>
-                                    {filteredDistricts.map((district) => (
-                                        <option key={district.id} value={district.name}>{district.name}</option>
-                                    ))}
-                                </select>
-                                {errors.district && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.district.message}</p>}
-                            </div>
-                            <div>
-                                <label className="block mb-1 font-medium text-xs md:text-sm">Upazila / Thana <span className="text-red-500">*</span></label>
-                                <select
-                                    {...register("upazila", { required: "Upazila is required" })}
-                                    className="w-full text-xs md:text-sm pl-2 md:pl-4 pr-2 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all disabled:bg-gray-100 cursor-pointer"
-                                    disabled={!watchDistrict}
-                                >
-                                    <option value="">{watchDistrict ? "Select Upazila / Thana" : "Select District First"}</option>
-                                    {filteredUpazilas.map((upazila) => (
-                                        <option key={upazila.id} value={upazila.name}>{upazila.name}</option>
-                                    ))}
-                                </select>
-                                {errors.upazila && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.upazila.message}</p>}
-                            </div>
+            <div>
+              <label className="block mb-1 font-medium text-xs md:text-sm text-gray-900">
+                Address Type
+              </label>
+              <select
+                {...register("type")}
+                value={watch("type") || "Home"}
+                onChange={(e) => {
+                  setValue("type", e.target.value);
+                }}
+                className="w-full !text-xs md:text-sm font-normal text-gray-800 px-2.5 md:px-4 py-2 md:py-2.5 h-10 md:h-11 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all cursor-pointer bg-white font-outfit"
+              >
+                <option value="Home">Home</option>
+                <option value="Office">Office</option>
+                <option value="Other">Other</option>
+              </select>
+            </div>
+            {user && customerId && (
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  {...register("isDefault")}
+                  className="h-4 w-4 text-secound rounded"
+                  defaultChecked={addresses.length === 0}
+                />
+                <label className="ml-2 text-xs md:text-sm text-gray-700">
+                  Set as default shipping address
+                </label>
+              </div>
+            )}
+          </div>
 
-                            {/* <div className="col-span-2">
-                                <label className="block mb-1 font-medium text-xs md:text-sm">Postal Code <span className="text-red-500">*</span></label>
-                                <input
-                                    {...register("postalCode", {
-                                        required: "Postal code is required",
-                                        pattern: { value: /^\d{4}$/, message: "Must be 4 digits" }
-                                    })}
-                                    placeholder="1230"
-                                    maxLength="4"
-                                    className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all"
-                                />
-                                {errors.postalCode && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.postalCode.message}</p>}
-                            </div> */}
-                        </div>
+          {/* Shipping and Payment Options in Form */}
+          {renderShippingAndPayment()}
 
-                        <div>
-                            <label className="block mb-1 font-medium text-xs md:text-sm">Street Address <span className="text-red-500">*</span></label>
-                            <textarea
-                                {...register("address", {
-                                    required: "Address is required",
-                                    minLength: { value: 10, message: "At least 10 characters" }
-                                })}
-                                placeholder="House No, Road No, Area"
-                                className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all h-20 md:h-24"
-                                rows={3}
-                            />
-                            {errors.address && <p className="text-red-500 text-xs md:text-sm mt-1">{errors.address.message}</p>}
-                        </div>
-
-                        <div>
-                            <label className="block mb-1 font-medium text-xs md:text-sm">Address Type</label>
-                            <select {...register("type")} className="w-full text-xs md:text-sm pl-3 md:pl-4 pr-3 md:pr-4 py-2 border border-gray-200 rounded-[6px] focus:outline-none focus:ring-1 focus:ring-[#5A0C3D] focus:border-[#5A0C3D] transition-all cursor-pointer">
-                                <option value="Home">Home</option>
-                                <option value="Office">Office</option>
-                                <option value="Other">Other</option>
-                            </select>
-                        </div>
-                        {user && customerId && (
-                            <div className="flex items-center">
-                                <input type="checkbox" {...register("isDefault")} className="h-4 w-4 text-secound rounded" defaultChecked={addresses.length === 0} />
-                                <label className="ml-2 text-xs md:text-sm text-gray-700">Set as default shipping address</label>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* Shipping and Payment Options in Form */}
-                    {renderShippingAndPayment()}
-
-                    {/* Submit Button - Moved to OrderSummary section */}
-                    {/*
+          {/* Submit Button - Moved to OrderSummary section */}
+          {/*
                     <div className="space-y-3">
                         <button
                             type="submit"
@@ -767,93 +971,112 @@ const BillingDetails = ({
                         </button>
                     </div>
                     */}
-                </form>
-            )}
+        </form>
+      )}
 
-            {/* Modals */}
-            <AddressAddModal
-                isOpen={isAddModalOpen}
-                onClose={() => setIsAddModalOpen(false)}
-                onSuccess={handleAddressAdded}
-                customerId={customerId}
-            />
+      {/* Modals */}
+      <AddressAddModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={handleAddressAdded}
+        customerId={customerId}
+      />
 
-            {/* Payment Method Modal */}
-            <PaymentMethodModal
-                isOpen={isPaymentModalOpen}
-                onClose={() => {
-                    setIsPaymentModalOpen(false);
-                    setTempCheckoutData(null);
-                }}
-                onSelectPayment={handlePaymentSelect}
-                totalAmount={totalAmount}
-            />
+      {/* Payment Method Modal */}
+      <PaymentMethodModal
+        isOpen={isPaymentModalOpen}
+        onClose={() => {
+          setIsPaymentModalOpen(false);
+          setTempCheckoutData(null);
+        }}
+        onSelectPayment={handlePaymentSelect}
+        totalAmount={totalAmount}
+      />
 
-            {/* Modal for existing address showing */}
-            {showAllAddresses && (
-                <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-                    <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6">
-                            <div className="flex justify-between items-center mb-6 pb-4 border-b">
-                                <h2 className="text-2xl font-bold text-gray-800">Select Shipping Address</h2>
-                                <button onClick={() => setShowAllAddresses(false)} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                                    <X className="w-5 h-5 text-gray-500" />
-                                </button>
-                            </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                {addresses.map((address) => {
-                                    const isSelected = selectedAddress === address.id;
-                                    return (
-                                        <div
-                                            key={address.id}
-                                            className={`relative bg-white rounded-xl border-2 transition-all duration-300 cursor-pointer hover:shadow-lg ${isSelected ? 'border-secound shadow-lg' : 'border-gray-200 hover:border-secound/40'}`}
-                                            onClick={() => handleAddressSelect(address)}
-                                        >
-                                            {address.isDefault && (
-                                                <div className="absolute -top-2 left-4 px-3 py-1 bg-gradient-to-r from-secound to-secound-hover text-white text-xs font-bold rounded-full shadow-md flex items-center gap-1.5">
-                                                    <Star className="w-3 h-3 fill-current" /> DEFAULT
-                                                </div>
-                                            )}
-                                            <div className="p-5 space-y-3">
-                                                <div className="flex items-center gap-2">
-                                                    {getIcon(address.type)}
-                                                    <span className="font-bold text-gray-900">{address.type}</span>
-                                                </div>
-                                                <div>
-                                                    <p className="font-semibold text-gray-900">{address.recipientName}</p>
-                                                    <p className="text-gray-700">📞 {address.phoneNumber}</p>
-                                                </div>
-                                                <div className="text-sm text-gray-600">
-                                                    <p>{address.address}</p>
-                                                    <p>{address.upazila}, {address.district}</p>
-                                                    <p>{address.division} - {address.postalCode}</p>
-                                                    <p className="font-semibold">{address.country}</p>
-                                                </div>
-                                                <div className="flex items-center justify-center pt-2">
-                                                    <div className={`w-6 h-6 border-2 rounded-full flex items-center justify-center ${isSelected ? 'border-secound bg-secound' : 'border-stone-300'}`}>
-                                                        {isSelected && <div className="w-2.5 h-2.5 bg-white rounded-full"></div>}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                            <div className="mt-6 flex gap-3">
-                                <button
-                                    onClick={() => setShowAllAddresses(false)}
-                                    disabled={!selectedAddress}
-                                    className="flex-1 py-3 bg-secound text-white diva-rounded font-bold hover:bg-secound-hover transition-colors disabled:opacity-50"
-                                >
-                                    Use Selected Address
-                                </button>
-                            </div>
+      {/* Modal for existing address showing */}
+      {showAllAddresses && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex justify-between items-center mb-6 pb-4 border-b">
+                <h2 className="text-2xl font-bold text-gray-800">
+                  Select Shipping Address
+                </h2>
+                <button
+                  onClick={() => setShowAllAddresses(false)}
+                  className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                >
+                  <X className="w-5 h-5 text-gray-500" />
+                </button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {addresses.map((address) => {
+                  const isSelected = selectedAddress === address.id;
+                  return (
+                    <div
+                      key={address.id}
+                      className={`relative bg-white rounded-xl border-2 transition-all duration-300 cursor-pointer hover:shadow-lg ${isSelected ? "border-secound shadow-lg" : "border-gray-200 hover:border-secound/40"}`}
+                      onClick={() => handleAddressSelect(address)}
+                    >
+                      {address.isDefault && (
+                        <div className="absolute -top-2 left-4 px-3 py-1 bg-gradient-to-r from-secound to-secound-hover text-white text-xs font-bold rounded-full shadow-md flex items-center gap-1.5">
+                          <Star className="w-3 h-3 fill-current" /> DEFAULT
                         </div>
+                      )}
+                      <div className="p-5 space-y-3">
+                        <div className="flex items-center gap-2">
+                          {getIcon(address.type)}
+                          <span className="font-bold text-gray-900">
+                            {address.type}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-900">
+                            {address.recipientName}
+                          </p>
+                          <p className="text-gray-700">
+                            📞 {address.phoneNumber}
+                          </p>
+                        </div>
+                        <div className="text-sm text-gray-600">
+                          <p>{address.address}</p>
+                          <p>
+                            {address.upazila}, {address.district}
+                          </p>
+                          <p>
+                            {address.division} - {address.postalCode}
+                          </p>
+                          <p className="font-semibold">{address.country}</p>
+                        </div>
+                        <div className="flex items-center justify-center pt-2">
+                          <div
+                            className={`w-6 h-6 border-2 rounded-full flex items-center justify-center ${isSelected ? "border-secound bg-secound" : "border-stone-300"}`}
+                          >
+                            {isSelected && (
+                              <div className="w-2.5 h-2.5 bg-white rounded-full"></div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                </div>
-            )}
+                  );
+                })}
+              </div>
+              <div className="mt-6 flex gap-3">
+                <button
+                  onClick={() => setShowAllAddresses(false)}
+                  disabled={!selectedAddress}
+                  className="flex-1 py-3 bg-secound text-white diva-rounded font-bold hover:bg-secound-hover transition-colors disabled:opacity-50"
+                >
+                  Use Selected Address
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
-    );
+      )}
+    </div>
+  );
 };
 
 export default BillingDetails;

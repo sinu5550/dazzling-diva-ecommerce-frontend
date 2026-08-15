@@ -4,12 +4,14 @@ import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { X, Heart, ShoppingBag, ArrowRight, Minus, Plus } from 'lucide-react';
+import { FaWhatsapp, FaPhoneAlt, FaChevronLeft, FaChevronRight, FaTimes } from 'react-icons/fa';
 import { toast } from 'react-hot-toast';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/hooks/useCart';
 import { useWishlist } from '@/hooks/useWishlist';
 import { useCheckoutSession } from '@/hooks/useCheckoutSession';
+import { apiClient } from '@/lib/apiClient';
 import {
     extractVariantOptions,
     findMatchingVariant,
@@ -17,6 +19,7 @@ import {
     formatPrice,
     calculateDiscountVariantPrice
 } from '@/lib/variantHelpers';
+import MobileImageLightbox from './MobileImageLightbox';
 
 const getImageUrl = (img) => {
     if (!img) return 'https://res.cloudinary.com/dh34eqbhu/image/upload/v1747211252/ju2uf9y33y1bncwufrl7.png';
@@ -40,6 +43,20 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
     const [isCartLoading, setIsCartLoading] = useState(false);
     const [isBuyNowLoading, setIsBuyNowLoading] = useState(false);
     const [isWishlistLoading, setIsWishlistLoading] = useState(false);
+    const [contactData, setContactData] = useState(null);
+
+    // Mobile image lightbox state
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+    const [touchStart, setTouchStart] = useState(null);
+    const [touchEnd, setTouchEnd] = useState(null);
+
+    useEffect(() => {
+        apiClient('/api/contact')
+            .then(res => {
+                if (res?.data) setContactData(res.data);
+            })
+            .catch(() => {});
+    }, []);
 
     const isVariantProduct = product?.productType === 'variant';
 
@@ -332,7 +349,14 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
 
                 {/* Left Section: Gallery */}
                 <div className="md:w-1/2 flex flex-col">
-                    <div className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100/50 shadow-inner group/zoom">
+                    <div 
+                        className="relative w-full aspect-[3/4] rounded-2xl overflow-hidden bg-gray-50 border border-gray-100/50 shadow-inner group/zoom cursor-pointer"
+                        onClick={() => {
+                            if (typeof window !== 'undefined' && window.innerWidth < 768) {
+                                setIsImageModalOpen(true);
+                            }
+                        }}
+                    >
                         {discountValue > 0 && (
                             <div className="absolute top-3 left-3 z-10">
                                 <span className="bg-[#FF0000] text-white text-[11px] md:text-[12px] font-bold px-2.5 py-0.5 rounded-[4px] font-outfit uppercase tracking-wider">
@@ -378,6 +402,20 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                         </div>
                     )}
                 </div>
+
+                {/* Reusable Mobile Fullscreen Lightbox Modal for QuickView */}
+                <MobileImageLightbox
+                    isOpen={isImageModalOpen}
+                    onClose={() => setIsImageModalOpen(false)}
+                    images={allGalleryImages}
+                    currentIndex={Math.max(0, allGalleryImages.findIndex(img => img === getImageUrl(activeImage)))}
+                    onIndexChange={(idx) => {
+                        if (allGalleryImages[idx]) {
+                            setActiveImage(allGalleryImages[idx]);
+                        }
+                    }}
+                    productName={product.productName}
+                />
 
                 {/* Right Section: Product Details */}
                 <div className="md:w-1/2 flex flex-col justify-between py-1">
@@ -501,23 +539,42 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                         </div>
                     </div>
 
-                    {/* Bottom Action buttons */}
+                    {/* Bottom Action buttons - 2 buttons per row */}
                     <div className="mt-auto">
-                        <div className="flex flex-col sm:flex-row gap-3">
+                        <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                            {/* Row 1: Add to Cart & Buy Now */}
                             <button
                                 onClick={handleAddToCart}
                                 disabled={!isAvailable || isCartLoading}
-                                className="flex-1 py-3.5 px-4 text-center border-2 border-[#5A0C3D] text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white transition-all duration-300 cursor-pointer rounded-[8px] font-outfit font-semibold text-xs md:text-sm uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed"
+                                className="py-3 px-2 sm:px-4 text-center border-2 border-[#5A0C3D] text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white transition-all duration-300 cursor-pointer rounded-[8px] font-outfit font-semibold text-[11px] sm:text-xs md:text-sm uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                             >
                                 {isCartLoading ? 'Adding...' : 'Add to Cart'}
                             </button>
                             <button
                                 onClick={handleBuyNow}
                                 disabled={!isAvailable || isBuyNowLoading}
-                                className="flex-1 py-3.5 px-4 text-center bg-[#5A0C3D] text-white hover:bg-[#450322] shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer rounded-[8px] font-outfit font-semibold text-xs md:text-sm uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed"
+                                className="py-3 px-2 sm:px-4 text-center bg-[#5A0C3D] text-white hover:bg-[#450322] shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer rounded-[8px] font-outfit font-semibold text-[11px] sm:text-xs md:text-sm uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                             >
                                 {isBuyNowLoading ? 'Processing...' : 'Buy Now'}
                             </button>
+
+                            {/* Row 2: WhatsApp & Call for Order */}
+                            <a
+                                href={`https://wa.me/${(contactData?.phone_number || "+8801324297000").replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, I would like to order: ${product?.productName} (SKU: ${sku || product?.sku || 'N/A'})\nPrice: ৳${discountedPrice}\nQuantity: ${quantity}`)}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="py-3 px-2 sm:px-4 text-center bg-[#25D366] hover:bg-[#1ebd5a] text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-[8px] font-outfit font-semibold text-[11px] sm:text-xs md:text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer"
+                            >
+                                <FaWhatsapp size={16} />
+                                <span className="truncate">Order On WhatsApp</span>
+                            </a>
+                            <a
+                                href={`tel:${(contactData?.phone_number || "+8801324297000").replace(/\D/g, '')}`}
+                                className="py-3 px-2 sm:px-4 text-center bg-gray-900 hover:bg-black text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-[8px] font-outfit font-semibold text-[11px] sm:text-xs md:text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer"
+                            >
+                                <FaPhoneAlt size={13} />
+                                <span className="truncate">Call for Order</span>
+                            </a>
                         </div>
 
                         {/* Add to Wishlist Link */}

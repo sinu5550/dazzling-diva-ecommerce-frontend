@@ -102,7 +102,7 @@ const Category = ({ data }) => {
     <section className="overflow-hidden py-4 md:py-12 md:pt-4">
       <Container>
         {/*Heading */}
-        <div className="flex flex-col items-center mb-10 space-y-1">
+        <div className="flex flex-col items-center mb-6 space-y-1">
           <motion.span
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}

@@ -27,7 +27,7 @@ const Topbar = ({
 
     return (
         <div
-            className="bg-[#F8F8F8] text-gray-800 h-[72px] flex items-center border-b border-gray-200/40 w-full"
+            className="bg-[#F8F8F8] text-gray-800 h-[54px] md:h-[72px] flex items-center border-b border-gray-200/40 w-full transition-all"
             style={{ fontFamily: 'var(--font-outfit, Outfit, sans-serif)' }}
         >
             {/* Flex row fills 100% width — guarantees logo is always centered and doesn't get clipped on mobile */}
@@ -36,11 +36,11 @@ const Topbar = ({
                 {/* COL 1 — LEFT: Hamburger and Links */}
                 <div className="flex-1 flex items-center justify-start gap-4">
                     <button
-                        className="w-10 h-10 flex items-center justify-center !bg-transparent hover:bg-gray-200/50 active:scale-90 transition-all duration-200 cursor-pointer group"
+                        className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center !bg-transparent hover:bg-gray-200/50 active:scale-90 transition-all duration-200 cursor-pointer group"
                         onClick={onMobileMenuToggle}
                         aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
                     >
-                        <div className="relative w-6 h-5 flex flex-col justify-between items-start">
+                        <div className="relative w-5 h-4 md:w-6 md:h-5 flex flex-col justify-between items-start">
                             {/* Line 1 */}
                             <span
                                 className={`h-[2px] bg-black rounded-full transition-all duration-300 ease-in-out ${isMobileMenuOpen
@@ -116,12 +116,12 @@ const Topbar = ({
                     {/* Wishlist */}
                     <Link
                         href="/wishlist"
-                        className="flex items-center justify-center relative w-10 h-10 rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] group/wishlist  active:scale-95 transition-all duration-200"
+                        className="flex items-center justify-center relative w-8 h-8 md:w-10 md:h-10 rounded-full border border-[#44444433] bg-white hover:bg-[#5A0C3D] group/wishlist active:scale-95 transition-all duration-200"
                         aria-label="Wishlist"
                     >
-                        <Heart className="w-[18px] h-[18px] text-black group-hover/wishlist:text-white" />
+                        <Heart className="w-4 h-4 md:w-[18px] md:h-[18px] text-black group-hover/wishlist:text-white" />
                         {wishlistCount > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-[#5A0C3D] text-white text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center leading-none">
+                            <span className="absolute -top-1 -right-1 bg-[#5A0C3D] text-white text-[8px] md:text-[9px] font-bold rounded-full h-3.5 w-3.5 md:h-4 md:w-4 flex items-center justify-center leading-none">
                                 {wishlistCount > 99 ? '99+' : wishlistCount}
                             </span>
                         )}

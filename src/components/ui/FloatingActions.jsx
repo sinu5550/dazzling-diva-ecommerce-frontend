@@ -126,10 +126,10 @@ export default function FloatingActions() {
             )}
 
             {/* Bottom-right Floating Actions Panel */}
-            <div className="fixed bottom-20 md:bottom-6 right-6 z-40 flex flex-col items-center gap-3.5 font-outfit">
+            <div className="fixed bottom-16 md:bottom-6 right-4 md:right-6 z-40 flex flex-col items-center gap-3.5 font-outfit">
                 
                 {/* Social Links Speed Dial (Collapsed by default, opens on hover/click) */}
-                <div ref={speedDialRef} className="relative group/speeddial flex flex-col items-center">
+                <div ref={speedDialRef} className={`relative group/speeddial flex flex-col items-center ${isCartOrCheckout ? 'mb-2' : '-mb-1'}`}>
                     
                     {/* Collapsed menu items */}
                     <div className={`absolute bottom-full flex flex-col items-center gap-3.5 pb-3.5 transition-all duration-300 origin-bottom 
