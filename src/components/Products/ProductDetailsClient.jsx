@@ -3,6 +3,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { FaStar, FaRegStar, FaCheck } from "react-icons/fa6";
 import { FaWhatsapp, FaPhoneAlt } from "react-icons/fa";
 import {
@@ -461,7 +462,7 @@ export default function ProductDetailsClient({
                         </div> */}
 
             {/* Price Section */}
-            <div className="py-4 border-t border-b border-gray-200 text-gray-700">
+            <div className="py-4 border-b border-gray-200 text-gray-700">
               <div className="flex items-center gap-4 flex-wrap">
                 <span className="text-2xl md:text-3xl font-bold text-primary flex items-center">
                   ৳{formatPrice(discountedPrice)}
@@ -556,12 +557,12 @@ export default function ProductDetailsClient({
             </div>
 
             {/* SKU Display */}
-            <div className="text-sm text-gray-600">
+            {/* <div className="text-sm text-gray-600">
               <span className="font-semibold">SKU:</span>{" "}
               {isVariantProduct && selectedVariant
                 ? selectedVariant.sku
                 : product.sku || "N/A"}
-            </div>
+            </div> */}
 
             {/* Variant Selector - Only for variant products */}
             {isVariantProduct && (

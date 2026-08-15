@@ -35,7 +35,10 @@ import {
   getVariantImage,
 } from "@/lib/variantHelpers";
 
-export default function DiscountProductDetailsClient({ product, relatedProducts = [] }) {
+export default function DiscountProductDetailsClient({
+  product,
+  relatedProducts = [],
+}) {
   const router = useRouter();
   const { createBuyNowSession } = useCheckoutSession();
 
@@ -50,8 +53,8 @@ export default function DiscountProductDetailsClient({ product, relatedProducts 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    apiClient('/api/contact')
-      .then(res => {
+    apiClient("/api/contact")
+      .then((res) => {
         if (res?.data) setContactData(res.data);
       })
       .catch(() => {});
@@ -476,16 +479,16 @@ export default function DiscountProductDetailsClient({ product, relatedProducts 
                             </Link>
                         </div>
                         */}
-            {/* loyal point Info */}
-            <div className="bg-amber-50 border border-amber-200 diva-rounded p-3">
+            {/* loyal point / Buy Now Info */}
+            {/* <div className="bg-amber-50 border border-amber-200 diva-rounded p-3">
               <p className="text-sm text-amber-800">
                 <strong>Buy Now:</strong> Skip the cart and checkout instantly
                 with this product only.
               </p>
-            </div>
+            </div> */}
 
             {/* Price Section */}
-            <div className="py-4 border-t border-b border-gray-200">
+            <div className="pb-4 border-b border-gray-200">
               <div className="flex items-center gap-4 flex-wrap">
                 <span className="text-2xl md:text-4xl font-semibold text-primary">
                   ৳{formatPrice(discountedPrice)}
@@ -510,12 +513,12 @@ export default function DiscountProductDetailsClient({ product, relatedProducts 
             </div>
 
             {/* SKU Display */}
-            <div className="text-sm text-gray-600">
+            {/* <div className="text-sm text-gray-600">
               <span className="font-semibold">SKU:</span>{" "}
               {isVariantProduct && selectedVariant
                 ? selectedVariant.sku
                 : product.sku || "N/A"}
-            </div>
+            </div> */}
 
             {/* Variant Selector */}
             {isVariantProduct &&
@@ -530,7 +533,8 @@ export default function DiscountProductDetailsClient({ product, relatedProducts 
               )}
 
             {/* Quantity and Actions */}
-            <div className="flex flex-col md:flex-row items-start md:items-center gap-4 pt-4">
+            <div className="flex flex-col  items-start  gap-4 pt-4">
+              
               {/* Quantity Selector */}
               <div className="flex items-center border border-stone-300 diva-rounded">
                 <button
@@ -553,13 +557,13 @@ export default function DiscountProductDetailsClient({ product, relatedProducts 
               </div>
 
               {/* Action Buttons - 2 per row */}
-              <div className="flex-1 w-full md:w-auto">
+              <div className="flex-1 w-full ">
                 <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
                   {/* Row 1: Add to Cart & Buy Now */}
                   <button
                     onClick={handleAddToCart}
                     disabled={!isAvailable || isInCart}
-                    className={`bg-transparent hover:bg-secound border border-secound text-secound hover:text-white py-3 px-3 sm:px-6 diva-rounded font-semibold flex items-center justify-center gap-1.5 transition-colors uppercase w-full text-xs sm:text-sm tracking-wide ${isInCart ? "bg-green-100 text-green-600 border-green-600 hover:bg-green-200" : ""} ${!isAvailable ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                    className={`bg-transparent hover:bg-secound border border-secound text-secound hover:text-white py-3 px-3 sm:px-6 diva-rounded font-semibold flex items-center justify-center gap-1.5 transition-colors uppercase w-full text-[10px] sm:text-sm tracking-wide ${isInCart ? "bg-green-100 text-green-600 border-green-600 hover:bg-green-200" : ""} ${!isAvailable ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                   >
                     {isInCart ? (
                       <>
@@ -573,7 +577,7 @@ export default function DiscountProductDetailsClient({ product, relatedProducts 
                   <button
                     onClick={handleBuyNow}
                     disabled={!isAvailable || buyNowLoading}
-                    className={`bg-primary hover:bg-primary-hover !text-white py-3 px-3 sm:px-6 diva-rounded font-semibold transition-colors uppercase w-full text-xs sm:text-sm tracking-wide flex items-center justify-center gap-1.5 ${!isAvailable || buyNowLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
+                    className={`bg-primary hover:bg-primary-hover !text-white py-3 px-3 sm:px-6 diva-rounded font-semibold transition-colors uppercase w-full text-[10px] sm:text-sm tracking-wide flex items-center justify-center gap-1.5 ${!isAvailable || buyNowLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                   >
                     {buyNowLoading ? (
                       <span className="flex items-center justify-center gap-2">
@@ -605,18 +609,18 @@ export default function DiscountProductDetailsClient({ product, relatedProducts 
 
                   {/* Row 2: WhatsApp & Call for Order */}
                   <a
-                    href={`https://wa.me/${(contactData?.phone_number || "+8801324297000").replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, I would like to order: ${product?.productName} (SKU: ${isVariantProduct && selectedVariant ? selectedVariant.sku : product?.sku || 'N/A'})\nPrice: ৳${discountedPrice}\nQuantity: ${quantity}`)}`}
+                    href={`https://wa.me/${(contactData?.phone_number || "+8801324297000").replace(/\D/g, "")}?text=${encodeURIComponent(`Hi, I would like to order: ${product?.productName} (SKU: ${isVariantProduct && selectedVariant ? selectedVariant.sku : product?.sku || "N/A"})\nPrice: ৳${discountedPrice}\nQuantity: ${quantity}`)}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="bg-[#25D366] hover:bg-[#1ebd5a] text-white py-3 px-3 sm:px-6 diva-rounded font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 uppercase w-full text-xs sm:text-sm tracking-wide shadow-sm hover:shadow-md cursor-pointer"
+                    className="bg-[#25D366] hover:bg-[#1ebd5a] text-white py-3 px-3 sm:px-6 diva-rounded font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 uppercase w-full text-[10px] sm:text-sm tracking-wide shadow-sm hover:shadow-md cursor-pointer"
                   >
                     <FaWhatsapp size={17} />
                     <span className="truncate">Order On WhatsApp</span>
                   </a>
 
                   <a
-                    href={`tel:${(contactData?.phone_number || "+8801324297000").replace(/\D/g, '')}`}
-                    className="bg-gray-900 hover:bg-black text-white py-3 px-3 sm:px-6 diva-rounded font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 uppercase w-full text-xs sm:text-sm tracking-wide shadow-sm hover:shadow-md cursor-pointer"
+                    href={`tel:${(contactData?.phone_number || "+8801324297000").replace(/\D/g, "")}`}
+                    className="bg-gray-900 hover:bg-black text-white py-3 px-3 sm:px-6 diva-rounded font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 uppercase w-full text-[10px] sm:text-sm tracking-wide shadow-sm hover:shadow-md cursor-pointer"
                   >
                     <FaPhoneAlt size={14} />
                     <span className="truncate">Call for Order</span>

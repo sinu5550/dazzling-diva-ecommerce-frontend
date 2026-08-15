@@ -312,7 +312,7 @@ export default function AllProductsClient({
     };
 
     return (
-        <div className="bg-gray-50/50 min-h-screen pb-16 font-outfit">
+        <div className="bg-gray-50/50 pb-8 font-outfit">
 
             {/* Page Header and Breadcrumbs Container */}
             <Container className="pt-[20px] md:pt-[20px] lg:pt-[20px]">
@@ -774,16 +774,16 @@ export default function AllProductsClient({
                                         placeholder="Min"
                                         value={priceRange.min}
                                         onChange={(e) => setPriceRange(prev => ({ ...prev, min: e.target.value }))}
-                                        className="w-full p-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#5A0C3D] focus:ring-1 focus:ring-[#5A0C3D]"
+                                        className="w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 rounded-lg text-sm font-medium focus:outline-none focus:border-[#5A0C3D] focus:ring-1 focus:ring-[#5A0C3D] shadow-2xs"
                                         min="0"
                                     />
-                                    <span className="text-gray-400 self-center">-</span>
+                                    <span className="text-gray-500 font-bold self-center">-</span>
                                     <input
                                         type="number"
                                         placeholder="Max"
                                         value={priceRange.max}
                                         onChange={(e) => setPriceRange(prev => ({ ...prev, max: e.target.value }))}
-                                        className="w-full p-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:border-[#5A0C3D] focus:ring-1 focus:ring-[#5A0C3D]"
+                                        className="w-full px-3 py-2 border border-gray-300 bg-white text-gray-900 placeholder:text-gray-500 rounded-lg text-sm font-medium focus:outline-none focus:border-[#5A0C3D] focus:ring-1 focus:ring-[#5A0C3D] shadow-2xs"
                                         min="0"
                                     />
                                 </div>

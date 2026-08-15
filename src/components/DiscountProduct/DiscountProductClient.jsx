@@ -437,7 +437,7 @@ const DiscountProductClient = ({ products = [], user = null, isLoading: initialL
                                                     placeholder="Min"
                                                     value={filters.minPrice}
                                                     onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
-                                                    className="w-full p-2 border border-stone-300 rounded text-sm focus:border-primary focus:ring-primary"
+                                                    className="w-full p-2 border border-stone-300 bg-white text-gray-900 placeholder:text-gray-500 rounded text-sm focus:border-primary focus:ring-primary"
                                                     min="0"
                                                     step="100"
                                                 />
@@ -447,7 +447,7 @@ const DiscountProductClient = ({ products = [], user = null, isLoading: initialL
                                                     placeholder="Max"
                                                     value={filters.maxPrice}
                                                     onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
-                                                    className="w-full p-2 border border-stone-300 rounded text-sm focus:border-primary focus:ring-primary focus:ring-1"
+                                                    className="w-full p-2 border border-stone-300 bg-white text-gray-900 placeholder:text-gray-500 rounded text-sm focus:border-primary focus:ring-primary focus:ring-1"
                                                     min="0"
                                                     step="100"
                                                 />
