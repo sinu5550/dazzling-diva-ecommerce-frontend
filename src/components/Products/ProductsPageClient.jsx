@@ -232,7 +232,7 @@ export default function ProductsPageClient({ initialProducts, subCategoryName, i
                                                 placeholder="Min"
                                                 value={filters.minPrice}
                                                 onChange={(e) => setFilters(prev => ({ ...prev, minPrice: e.target.value }))}
-                                                className="w-full p-2 border border-stone-300 rounded-md text-sm focus:border-amber-400 focus:ring-amber-400"
+                                                className="w-full p-2 border border-stone-300 bg-white text-gray-900 placeholder:text-gray-500 rounded-md text-sm focus:border-amber-400 focus:ring-amber-400"
                                                 min="0"
                                                 step="100"
                                             />
@@ -242,7 +242,7 @@ export default function ProductsPageClient({ initialProducts, subCategoryName, i
                                                 placeholder="Max"
                                                 value={filters.maxPrice}
                                                 onChange={(e) => setFilters(prev => ({ ...prev, maxPrice: e.target.value }))}
-                                                className="w-full p-2 border border-stone-300 rounded-md text-sm focus:border-amber-400 focus:ring-amber-400"
+                                                className="w-full p-2 border border-stone-300 bg-white text-gray-900 placeholder:text-gray-500 rounded-md text-sm focus:border-amber-400 focus:ring-amber-400"
                                                 min="0"
                                                 step="100"
                                             />

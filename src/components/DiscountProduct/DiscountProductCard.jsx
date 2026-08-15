@@ -379,11 +379,15 @@ const DiscountProductCard = ({
     }
   };
 
+  const productPath = product.isCampaign || product.isDiscountCampaign || product.campaignSlug
+    ? `/discount-campaigns/${product.slug}`
+    : `/product/${product.slug}`;
+
   const handleShare = async (e) => {
     e.preventDefault();
     e.stopPropagation();
 
-    const shareUrl = `${window.location.origin}/discount-campaigns/${product.slug}`;
+    const shareUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}${productPath}`;
     const shareText = `Check out ${product.productName} at ৳${formatPrice(discountedPrice)}!`;
 
     if (navigator.share) {
@@ -415,7 +419,7 @@ const DiscountProductCard = ({
   };
   return (
     <Link
-      href={`/discount-campaigns/${product.slug}`}
+      href={productPath}
       className="block group/card animate-fadeIn"
       prefetch={false}
     >

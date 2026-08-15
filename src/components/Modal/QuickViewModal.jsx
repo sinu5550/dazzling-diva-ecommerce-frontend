@@ -546,14 +546,14 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                             <button
                                 onClick={handleAddToCart}
                                 disabled={!isAvailable || isCartLoading}
-                                className="py-3 px-2 sm:px-4 text-center border-2 border-[#5A0C3D] text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white transition-all duration-300 cursor-pointer rounded-[8px] font-outfit font-semibold text-[11px] sm:text-xs md:text-sm uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+                                className="py-3 px-2 sm:px-4 text-center border-2 border-[#5A0C3D] text-[#5A0C3D] hover:bg-[#5A0C3D] hover:text-white transition-all duration-300 cursor-pointer rounded-[8px] font-outfit font-semibold text-[10px] sm:text-xs md:text-sm uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                             >
                                 {isCartLoading ? 'Adding...' : 'Add to Cart'}
                             </button>
                             <button
                                 onClick={handleBuyNow}
                                 disabled={!isAvailable || isBuyNowLoading}
-                                className="py-3 px-2 sm:px-4 text-center bg-[#5A0C3D] text-white hover:bg-[#450322] shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer rounded-[8px] font-outfit font-semibold text-[11px] sm:text-xs md:text-sm uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
+                                className="py-3 px-2 sm:px-4 text-center bg-[#5A0C3D] text-white hover:bg-[#450322] shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer rounded-[8px] font-outfit font-semibold text-[10px] sm:text-xs md:text-sm uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-1.5"
                             >
                                 {isBuyNowLoading ? 'Processing...' : 'Buy Now'}
                             </button>
@@ -563,14 +563,14 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                                 href={`https://wa.me/${(contactData?.phone_number || "+8801324297000").replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, I would like to order: ${product?.productName} (SKU: ${sku || product?.sku || 'N/A'})\nPrice: ৳${discountedPrice}\nQuantity: ${quantity}`)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="py-3 px-2 sm:px-4 text-center bg-[#25D366] hover:bg-[#1ebd5a] text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-[8px] font-outfit font-semibold text-[11px] sm:text-xs md:text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer"
+                                className="py-3 px-2 sm:px-4 text-center bg-[#25D366] hover:bg-[#1ebd5a] text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-[8px] font-outfit font-semibold text-[10px] sm:text-xs md:text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer"
                             >
                                 <FaWhatsapp size={16} />
                                 <span className="truncate">Order On WhatsApp</span>
                             </a>
                             <a
                                 href={`tel:${(contactData?.phone_number || "+8801324297000").replace(/\D/g, '')}`}
-                                className="py-3 px-2 sm:px-4 text-center bg-gray-900 hover:bg-black text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-[8px] font-outfit font-semibold text-[11px] sm:text-xs md:text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer"
+                                className="py-3 px-2 sm:px-4 text-center bg-gray-900 hover:bg-black text-white shadow-sm hover:shadow-md transition-all duration-300 rounded-[8px] font-outfit font-semibold text-[10px] sm:text-xs md:text-sm uppercase tracking-wider flex items-center justify-center gap-1.5 cursor-pointer"
                             >
                                 <FaPhoneAlt size={13} />
                                 <span className="truncate">Call for Order</span>
@@ -578,7 +578,7 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
                         </div>
 
                         {/* Add to Wishlist Link */}
-                        <div className="flex flex-col sm:flex-row sm:items-center justify-between mt-4 border-t border-gray-100 pt-3">
+                        <div className="flex flex-row items-center justify-between mt-4 border-t border-gray-100 pt-3">
                             <button
                                 onClick={handleWishlistToggle}
                                 disabled={isWishlistLoading}
@@ -590,9 +590,9 @@ const QuickViewModal = ({ product, isOpen, onClose, user = null }) => {
 
                             {/* View Full Details Link */}
                             <Link
-                                href={`/discount-campaigns/${product.slug}`}
+                                href={product?.isCampaign || product?.isDiscountCampaign || product?.campaignSlug ? `/discount-campaigns/${product.slug}` : `/product/${product.slug}`}
                                 onClick={onClose}
-                                className="text-xs font-semibold text-[#5A0C3D] hover:text-[#450322] flex items-center gap-1 font-outfit w-fit transition-colors mt-2 sm:mt-0"
+                                className="text-xs font-semibold text-[#5A0C3D] hover:text-[#450322] flex items-center gap-1 font-outfit w-fit transition-colors "
                             >
                                 View Full Details <ArrowRight size={14} className="mt-0.5" />
                             </Link>

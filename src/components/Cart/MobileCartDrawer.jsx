@@ -33,6 +33,8 @@ const getItemImage = (item) => {
   return DEFAULT_IMAGE;
 };
 
+let cachedRecommendations = null;
+
 export default function MobileCartDrawer({ isOpen = true, onClose }) {
   const router = useRouter();
   const {
@@ -47,35 +49,41 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
   const cartItems = getAllCartItems();
   const total = getCombinedTotal();
 
-  // State for "You May Also Like" products
-  const [recommendedProducts, setRecommendedProducts] = useState([]);
-  const [recLoading, setRecLoading] = useState(false);
+  // State for "You May Also Like" products - initialize from in-memory cache if available
+  const [recommendedProducts, setRecommendedProducts] = useState(cachedRecommendations || []);
+  const [recLoading, setRecLoading] = useState(!cachedRecommendations);
   const [updatingItems, setUpdatingItems] = useState(new Set());
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const recScrollRef = useRef(null);
 
-  // Fetch recommended products and active discount campaigns
+  // Fetch recommended products and active discount campaigns in parallel
   const fetchRecommendations = useCallback(async () => {
-    setRecLoading(true);
+    if (!cachedRecommendations) {
+      setRecLoading(true);
+    }
     try {
-      let res = null;
-      try {
-        res = await apiClient("/api/product/top-selling?limit=10");
-      } catch (e) {
-        console.warn("Top-selling fetch failed, trying fallback:", e);
-      }
+      const [topRes, campRes] = await Promise.allSettled([
+        apiClient("/api/product/top-selling?limit=10"),
+        apiClient("/api/discount-campaign/active")
+      ]);
 
-      let products = res?.data || res?.products || (Array.isArray(res) ? res : []);
+      let products = [];
+      if (topRes.status === "fulfilled" && topRes.value) {
+        const val = topRes.value;
+        products = val?.data || val?.products || (Array.isArray(val) ? val : []);
+      }
 
       if (!products || products.length === 0) {
         const fallbackRes = await apiClient("/api/product?limit=10").catch(() => null);
         products = fallbackRes?.data || fallbackRes?.products || (Array.isArray(fallbackRes) ? fallbackRes : []);
       }
-      
-      const campaignsRes = await apiClient("/api/discount-campaign/active").catch(() => null);
-      const campaigns = Array.isArray(campaignsRes)
-        ? campaignsRes
-        : (campaignsRes?.data || campaignsRes?.campaigns || []);
+
+      let campaigns = [];
+      if (campRes.status === "fulfilled" && campRes.value) {
+        const val = campRes.value;
+        campaigns = Array.isArray(val) ? val : (val?.data || val?.campaigns || []);
+      }
+
       const appliesToAllCampaign = campaigns.find((c) => c.appliesToAll);
 
       if (appliesToAllCampaign && Array.isArray(products)) {
@@ -104,6 +112,7 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
       }
 
       if (Array.isArray(products) && products.length > 0) {
+        cachedRecommendations = products;
         setRecommendedProducts(products);
       }
     } catch (err) {
@@ -298,6 +307,10 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
                 const isUpdating = updatingItems.has(itemKey);
                 const stockLimit = item.stockQuantity != null ? parseInt(item.stockQuantity) : Infinity;
                 const atStockLimit = isFinite(stockLimit) && stockLimit > 0 && quantity >= stockLimit;
+                const itemSlug = item.slug || item.productId || item.id;
+                const itemHref = item.isBundle
+                  ? `/bundle-products/${itemSlug}`
+                  : `/product/${itemSlug}`;
 
                 return (
                   <div
@@ -305,7 +318,11 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
                     className="relative bg-white border border-gray-150 rounded-xl p-3 flex items-center gap-3 shadow-2xs hover:shadow-xs transition-shadow"
                   >
                     {/* Item Thumbnail */}
-                    <div className="relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-gray-100 bg-gray-50">
+                    <Link
+                      href={itemHref}
+                      onClick={onClose}
+                      className="relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border border-gray-100 bg-gray-50 block hover:opacity-90 transition-opacity"
+                    >
                       <Image
                         src={imgUrl}
                         alt={item.productName || item.name || "Product"}
@@ -313,13 +330,17 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
                         sizes="64px"
                         className="object-cover"
                       />
-                    </div>
+                    </Link>
 
                     {/* Item Details */}
                     <div className="flex-1 min-w-0 pr-6">
-                      <h4 className="text-xs sm:text-sm font-semibold text-gray-900 truncate">
+                      <Link
+                        href={itemHref}
+                        onClick={onClose}
+                        className="text-xs sm:text-sm font-semibold text-gray-900 truncate block hover:text-[#5A0C3D] hover:underline transition-colors"
+                      >
                         {item.productName || item.name || "Product"}
-                      </h4>
+                      </Link>
 
                       {/* Variant Attributes */}
                       {(item.variantAttributes || item.variantType) && (
