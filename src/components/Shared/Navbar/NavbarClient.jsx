@@ -933,10 +933,32 @@ function MobileDrawer({
           </div>
 
           <div className="divide-y divide-gray-200">
+            {/* Custom Quick Links: All Products & New In */}
+            <Link
+              href="/product"
+              className="flex items-center justify-between px-5 py-3.5 text-xs font-medium text-gray-700 hover:text-[#5A0C3D] hover:bg-gray-50 transition-colors font-outfit"
+              onClick={onLinkClick}
+            >
+              All Products
+              <ArrowRight size={12} className="text-gray-300" />
+            </Link>
+
+            <Link
+              href="/new-arrival"
+              className="flex items-center justify-between px-5 py-3.5 text-xs font-medium text-gray-700 hover:text-[#5A0C3D] hover:bg-gray-50 transition-colors font-outfit"
+              onClick={onLinkClick}
+            >
+              New In
+              <ArrowRight size={12} className="text-gray-300" />
+            </Link>
+
             {[...(topbarLinks || []), ...(navItems || [])]
               .filter(
                 (item) =>
                   ![
+                    "Home",
+                    "New Arrival",
+                    "All Products",
                     "About Us",
                     "Find a Store",
                     "Corpora",

@@ -1044,7 +1044,7 @@ const OrderSummary = ({
         type="button"
         onClick={() => placeOrderRef?.current && placeOrderRef.current()}
         disabled={loading || !termsAgreed}
-        className="w-full mt-6 py-3.5 bg-[#5A0C3D] hover:bg-[#450322] text-white rounded-[8px] font-bold text-base md:text-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer uppercase tracking-wider"
+        className="w-full mt-6 py-3 bg-[#5A0C3D] hover:bg-[#450322] text-white rounded-[8px] font-bold text-base md:text-lg transition-all shadow-md hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer uppercase tracking-wider"
       >
         {loading ? "Processing..." : "Place Order"}
       </button>
@@ -1056,7 +1056,7 @@ const OrderSummary = ({
             type="button"
             onClick={() => placeOrderRef?.current && placeOrderRef.current()}
             disabled={loading || !termsAgreed}
-            className="w-full py-3.5 bg-[#5A0C3D] hover:bg-[#450322] text-white rounded-[8px] font-bold text-base transition-all shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer uppercase tracking-wider"
+            className="w-full py-3 bg-[#5A0C3D] hover:bg-[#450322] text-white rounded-[8px] font-bold text-base transition-all shadow-2xl disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer uppercase tracking-wider"
           >
             {loading ? "Processing..." : "Place Order"}
           </button>

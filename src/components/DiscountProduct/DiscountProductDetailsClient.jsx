@@ -10,6 +10,7 @@ import {
   FaCheck,
   FaBangladeshiTakaSign,
 } from "react-icons/fa6";
+import { FaWhatsapp, FaPhoneAlt } from "react-icons/fa";
 import {
   MdOutlineAssignmentReturn,
   MdSupportAgent,
@@ -17,6 +18,7 @@ import {
 } from "react-icons/md";
 import toast from "react-hot-toast";
 import { useCheckoutSession } from "@/hooks/useCheckoutSession";
+import { apiClient } from "@/lib/apiClient";
 import LoadingSpinner from "../ui/LoadingSpinner";
 import Container from "../Container/Container";
 import ProductImageGallery from "../Products/ProductImageGallery";
@@ -44,7 +46,16 @@ export default function DiscountProductDetailsClient({ product, relatedProducts 
   const [buyNowLoading, setBuyNowLoading] = useState(false);
   const [isClient, setIsClient] = useState(false);
   const [isInCart, setIsInCart] = useState(false);
+  const [contactData, setContactData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    apiClient('/api/contact')
+      .then(res => {
+        if (res?.data) setContactData(res.data);
+      })
+      .catch(() => {});
+  }, []);
   const getAllProductImages = () => {
     const baseImages = product?.images || [];
     const variantImages = product?.productVariants
@@ -541,13 +552,14 @@ export default function DiscountProductDetailsClient({ product, relatedProducts 
                 </button>
               </div>
 
-              {/* Action Buttons */}
+              {/* Action Buttons - 2 per row */}
               <div className="flex-1 w-full md:w-auto">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+                  {/* Row 1: Add to Cart & Buy Now */}
                   <button
                     onClick={handleAddToCart}
                     disabled={!isAvailable || isInCart}
-                    className={`bg-transparent hover:bg-secound border border-secound text-secound hover:text-white py-3 px-6 diva-rounded font-semibold flex items-center justify-center gap-2 transition-colors uppercase w-full ${isInCart ? "bg-green-100 text-green-600 border-green-600 hover:bg-green-200" : ""} ${!isAvailable ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`bg-transparent hover:bg-secound border border-secound text-secound hover:text-white py-3 px-3 sm:px-6 diva-rounded font-semibold flex items-center justify-center gap-1.5 transition-colors uppercase w-full text-xs sm:text-sm tracking-wide ${isInCart ? "bg-green-100 text-green-600 border-green-600 hover:bg-green-200" : ""} ${!isAvailable ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                   >
                     {isInCart ? (
                       <>
@@ -561,12 +573,12 @@ export default function DiscountProductDetailsClient({ product, relatedProducts 
                   <button
                     onClick={handleBuyNow}
                     disabled={!isAvailable || buyNowLoading}
-                    className={`bg-primary hover:bg-primary-hover !text-white py-3 px-8 diva-rounded font-semibold transition-colors uppercase w-full ${!isAvailable || buyNowLoading ? "opacity-50 cursor-not-allowed" : ""}`}
+                    className={`bg-primary hover:bg-primary-hover !text-white py-3 px-3 sm:px-6 diva-rounded font-semibold transition-colors uppercase w-full text-xs sm:text-sm tracking-wide flex items-center justify-center gap-1.5 ${!isAvailable || buyNowLoading ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}`}
                   >
                     {buyNowLoading ? (
                       <span className="flex items-center justify-center gap-2">
                         <svg
-                          className="animate-spin h-5 w-5"
+                          className="animate-spin h-4 w-4"
                           viewBox="0 0 24 24"
                         >
                           <circle
@@ -590,6 +602,25 @@ export default function DiscountProductDetailsClient({ product, relatedProducts 
                       "Buy Now"
                     )}
                   </button>
+
+                  {/* Row 2: WhatsApp & Call for Order */}
+                  <a
+                    href={`https://wa.me/${(contactData?.phone_number || "+8801324297000").replace(/\D/g, '')}?text=${encodeURIComponent(`Hi, I would like to order: ${product?.productName} (SKU: ${isVariantProduct && selectedVariant ? selectedVariant.sku : product?.sku || 'N/A'})\nPrice: ৳${discountedPrice}\nQuantity: ${quantity}`)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-[#25D366] hover:bg-[#1ebd5a] text-white py-3 px-3 sm:px-6 diva-rounded font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 uppercase w-full text-xs sm:text-sm tracking-wide shadow-sm hover:shadow-md cursor-pointer"
+                  >
+                    <FaWhatsapp size={17} />
+                    <span className="truncate">Order On WhatsApp</span>
+                  </a>
+
+                  <a
+                    href={`tel:${(contactData?.phone_number || "+8801324297000").replace(/\D/g, '')}`}
+                    className="bg-gray-900 hover:bg-black text-white py-3 px-3 sm:px-6 diva-rounded font-semibold flex items-center justify-center gap-1.5 transition-all duration-300 uppercase w-full text-xs sm:text-sm tracking-wide shadow-sm hover:shadow-md cursor-pointer"
+                  >
+                    <FaPhoneAlt size={14} />
+                    <span className="truncate">Call for Order</span>
+                  </a>
                 </div>
               </div>
             </div>

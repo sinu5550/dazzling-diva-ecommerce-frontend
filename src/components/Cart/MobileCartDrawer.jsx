@@ -152,7 +152,6 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
 
     if (newQty < 1) {
       await removeItem(itemId, item.isBundle ? "bundle" : "regular", variantId);
-      toast.success("Item removed");
       return;
     }
 
@@ -176,7 +175,6 @@ export default function MobileCartDrawer({ isOpen = true, onClose }) {
     const variantId = item.variantId || null;
     const type = item.isBundle ? "bundle" : "regular";
     await removeItem(itemId, type, variantId);
-    toast.success("Item removed");
   };
 
   const handleAddRecommendation = async (prod) => {

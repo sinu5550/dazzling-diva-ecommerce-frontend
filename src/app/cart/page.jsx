@@ -58,12 +58,11 @@ const CartPage = () => {
     const total = getCombinedTotal();
 
     const formatPrice = (price) => {
-        return new Intl.NumberFormat('en-BD', {
-            style: 'currency',
-            currency: 'BDT',
+        const num = parseFloat(price || 0);
+        return `৳${num.toLocaleString('en-IN', {
             minimumFractionDigits: 0,
             maximumFractionDigits: 0
-        }).format(price);
+        })}`;
     };
 
     // FIXED: Handle quantity change for variant products
