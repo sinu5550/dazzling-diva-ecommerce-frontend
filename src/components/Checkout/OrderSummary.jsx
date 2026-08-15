@@ -1010,29 +1010,32 @@ const OrderSummary = ({
           </div>
           <span className="text-[13px]">
             I have read and agree to the{" "}
-            <Link
-              href="/terms-and-conditions"
+            <a
+              href="https://drive.google.com/file/d/1qVbMH8aLZ-DkbVFX4v0ReftjGplhI4nX/view?usp=drive_link"
               target="_blank"
-              className="text-[#5A0C3D] hover:underline font-medium "
+              rel="noopener noreferrer"
+              className="text-[#5A0C3D] hover:underline font-medium"
             >
               Terms and Conditions
-            </Link>
+            </a>
             ,{" "}
-            <Link
-              href="/privacy-policy"
+            <a
+              href="https://drive.google.com/file/d/1ed0Yt39e2wZNKJMskEB7QkH0IaKdy15o/view?usp=sharing"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-[#5A0C3D] hover:underline font-medium"
             >
               Privacy Policy
-            </Link>{" "}
+            </a>{" "}
             &amp;{" "}
-            <Link
-              href="/refund-policy"
+            <a
+              href="https://drive.google.com/file/d/1gxXAqVaWIuClyrGSQg_GmGuSIwpyg20c/view?usp=sharing"
               target="_blank"
+              rel="noopener noreferrer"
               className="text-[#5A0C3D] hover:underline font-medium"
             >
-              Refund and Return Policy
-            </Link>
+              Refund Policy
+            </a>
             .
           </span>
         </label>
