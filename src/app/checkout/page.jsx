@@ -785,9 +785,8 @@ export default function Checkout() {
         </div>
 
         <div className="max-w-7xl mx-auto text-gray-900">
-          {/* Mobile View Sequential Order: 1. Your Order Products -> 2. Shipping Address -> 3. Order Summary & Place Order */}
-          <div className="block lg:hidden space-y-6">
-            {/* 1. Ordered Products List */}
+          {/* Mobile-only Products List Header (Shown at top before Shipping Address on Mobile) */}
+          <div className="block lg:hidden mb-6">
             <OrderSummary
               cart={checkoutItems}
               getCartTotal={getCheckoutTotal}
@@ -811,52 +810,12 @@ export default function Checkout() {
               onRemoveItem={handleRemoveItem}
               renderOnly="products"
             />
-
-            {/* 2. Shipping Address & Payment Form */}
-            <BillingDetails
-              user={user}
-              register={register}
-              errors={errors}
-              watch={watch}
-              setValue={setValue}
-              handleSubmit={handleSubmit}
-              onCheckoutSubmit={onCheckoutSubmit}
-              loading={loading}
-              setLoading={setLoading}
-              totalAmount={getCheckoutTotal()}
-              placeOrderRef={placeOrderRef}
-            />
-
-            {/* 3. Order Summary (Price Calculation & Place Order Button) */}
-            <OrderSummary
-              cart={checkoutItems}
-              getCartTotal={getCheckoutTotal}
-              register={register}
-              watch={watch}
-              loading={loading}
-              handleSubmit={handleSubmit}
-              onCheckoutSubmit={onCheckoutSubmit}
-              cartType={checkoutType}
-              isBuyNow={isBuyNow}
-              onCouponApplied={handleCouponApplied}
-              onCouponRemoved={handleCouponRemoved}
-              appliedCoupon={appliedCoupon}
-              couponDiscount={couponDiscount}
-              onPointsApplied={handlePointsApplied}
-              onPointsRemoved={handlePointsRemoved}
-              pointsToRedeem={pointsToRedeem}
-              pointsDiscount={pointsDiscount}
-              userEmail={user?.email}
-              placeOrderRef={placeOrderRef}
-              onRemoveItem={handleRemoveItem}
-              renderOnly="summary"
-            />
           </div>
 
-          {/* Desktop View (2-Column Standard Grid Layout) */}
-          <div className="hidden lg:grid grid-cols-12 gap-8">
-            {/* Left Column: Billing Details */}
-            <div className="col-span-7">
+          {/* Main Layout: Responsive 1-Column on Mobile, 2-Column on Desktop */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Left Column: Billing Details (Single Instance in DOM) */}
+            <div className="lg:col-span-7">
               <BillingDetails
                 user={user}
                 register={register}
@@ -873,7 +832,35 @@ export default function Checkout() {
             </div>
 
             {/* Right Column: Complete Order Summary */}
-            <div className="col-span-5">
+            <div className="lg:col-span-5 space-y-6">
+              {/* Products Section on Desktop (Hidden on Mobile) */}
+              <div className="hidden lg:block">
+                <OrderSummary
+                  cart={checkoutItems}
+                  getCartTotal={getCheckoutTotal}
+                  register={register}
+                  watch={watch}
+                  loading={loading}
+                  handleSubmit={handleSubmit}
+                  onCheckoutSubmit={onCheckoutSubmit}
+                  cartType={checkoutType}
+                  isBuyNow={isBuyNow}
+                  onCouponApplied={handleCouponApplied}
+                  onCouponRemoved={handleCouponRemoved}
+                  appliedCoupon={appliedCoupon}
+                  couponDiscount={couponDiscount}
+                  onPointsApplied={handlePointsApplied}
+                  onPointsRemoved={handlePointsRemoved}
+                  pointsToRedeem={pointsToRedeem}
+                  pointsDiscount={pointsDiscount}
+                  userEmail={user?.email}
+                  placeOrderRef={placeOrderRef}
+                  onRemoveItem={handleRemoveItem}
+                  renderOnly="products"
+                />
+              </div>
+
+              {/* Order Calculations, Terms, and Place Order Button (Visible on both Mobile & Desktop) */}
               <OrderSummary
                 cart={checkoutItems}
                 getCartTotal={getCheckoutTotal}
@@ -895,6 +882,7 @@ export default function Checkout() {
                 userEmail={user?.email}
                 placeOrderRef={placeOrderRef}
                 onRemoveItem={handleRemoveItem}
+                renderOnly="summary"
               />
             </div>
           </div>
